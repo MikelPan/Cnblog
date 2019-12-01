@@ -247,15 +247,56 @@ apple|APPLE)
 - 系统服务启动脚本传参的判断多用case语句，多参考rpcbind/nfs/crond脚本；菜单脚本也可以使用case
 
 ## 其他补充说明
-### inux中产生随机数的方法
+### linux中产生随机数的方法
 ```bash
+# 产生随机数方法一
 [root@kube-master ~]#  echo $RANDOM 
 29291
 [root@kube-master ~]#  echo $RANDOM 
 5560
 [root@kube-master ~]#  echo $RANDOM 
 2904
+# 产生随机数方法二
+[root@kube-master ~]#　openssl rand -base64 8
+5AKtA67bdjg=
+# 产生随机数方法三
+[root@kube-master ~]# yum install -y expect
+[root@kube-master ~]# man mkpasswd
+USAGE
+       With no arguments, mkpasswd returns a new password.
+
+            mkpasswd
+
+       With a user name, mkpasswd assigns a new password to the user.
+
+            mkpasswd don
+
+       The passwords are randomly generated according to the flags below.
+
+FLAGS
+       The -l flag defines the length of the password.  The default is 9.  The following example creates a 20 character password.
+
+            mkpasswd -l 20
+
+       The -d flag defines the minimum number of digits that must be in the password.  The default is 2.  The following example creates a password with at least 3 digits.
+
+            mkpasswd -d 3
+
+       The -c flag defines the minimum number of lowercase alphabetic characters that must be in the password.  The default is 2.
+
+       The -C flag defines the minimum number of uppercase alphabetic characters that must be in the password.  The default is 2.
+
+       The -s flag defines the minimum number of special characters that must be in the password.  The default is 1.
+
+       The -p flag names a program to set the password.  By default, /etc/yppasswd is used if present, otherwise /bin/passwd is used.
+
+       The  -2  flag  causes  characters  to be chosen so that they alternate between right and left hands (qwerty-style), making it harder for anyone watching passwords being entered.
+       This can also make it easier for a password-guessing program.
+
+       The -v flag causes the password-setting interaction to be visible.  By default, it is suppressed.
+[root@kube-master ~]# mkpasswd -l 16 -d 2 -c 3 -C 3 -s 1 | md5sum |cut -c 2-18
 ```
+
 ### echo 命令输出带颜色字符
 ```bash
 # 彩色字体
