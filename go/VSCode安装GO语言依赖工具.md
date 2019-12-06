@@ -140,7 +140,9 @@ go install golang.org/x/tools/cmd/guru
   "go.docsTool": "gogetdoc",
 }
 ```
-###　示例
+
+### 示例
+
 进入到$GOPATH/src下,创建mian.go
 ```go
 package main
@@ -151,6 +153,7 @@ func main() {
     fmt.Println("Hello,world")
 }
 ```
+
 运行go run main.go, 输出如下：
 ```bash
 Hello,world
