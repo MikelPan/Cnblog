@@ -1,0 +1,21 @@
+cat > prometheus-blackbox-exporter-svc.yaml <<EOF
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prometheus-blackbox-exporter
+  name: prometheus-blackbox-exporter
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+spec:
+  #type: NodePort
+  selector:
+    app: prometheus-blackbox-exporter
+  ports:
+  - name: blackbox-port
+    port: 9115
+    targetPort: 9115
+    #nodePort: 30009
+    protocol: TCP
+EOF
