@@ -69,6 +69,8 @@ cd $GOPATH/src/golang.org/x/
 ```bash
 git clone https://github.com/golang/tools.git
 git clone https://github.com/golang/lint.git
+git clone https://github.com/golang/sys.git
+git clone https://github.com/golang/net.git
 ```
 3、下载github源码
 按照go get -u -v命令，从GitHub上下载代码后还会fetch，我们很可能会在fetch https://golang.org/xxx的时候挂掉，原因你懂的。所以去掉-u选项，禁止从网络更新现有代码。
