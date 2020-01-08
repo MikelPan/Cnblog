@@ -129,7 +129,7 @@ data:
         regex: "zzzz.*8080.*"
         action: drop
       #- source_labels: [__meta_kubernetes_namespace]
-      #  regex: "dadi-saas-member-pre"
+      #  regex: "pre"
       #  action: keep
   
     - job_name: 'kubernetes-Business-redis'
