@@ -1,0 +1,11 @@
+## 
+### OpenResty概述
+OpenResty是一个基于Nginx与Lua的高性能Web平台，集成了大量精良的Lua库、第三方模块以及大多数的依赖项，用于方便地搭建能够处理超高并发、扩展性极高的动态Web应用、Web服务和动态网关。
+
+OpenResty通过汇聚各种设计精良的Nginx模块（主要由OpenResty团队自主开发），从而将Nginx有效地变成一个强大的通用Web应用平台。这样，Web开发人员和系统工程师可以使用Lua脚本语言调动Nginx支持的各种C以及Lua模块，快速构造出足以胜任10K乃至1000K以上单机并发连接的高性能Web应用系统。
+
+OpenResty致力于将服务器端应用完全运行于Nginx服务器中，充分利用Nginx的事件模型进行非阻塞I/O通信，不仅仅和HTTP客户端间的网络通信是非阻塞的，与MySQL、PostgreSQL、Memcached以及Redis等众多后端之间的网络通信也是非阻塞的。
+
+因为OpenResty软件包的维护者也是其中打包的许多Nginx模块的作者，所以Open-Resty可以确保所包含的所有组件可以可靠地协同工作.
+
+### OpenResty 安装
