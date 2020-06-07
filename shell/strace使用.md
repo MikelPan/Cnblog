@@ -1,3 +1,4 @@
+```bash
 strace -o output.txt -T -tt -e trace=all -p 28979
 strace -T -tt -e trace=all -p 20114
 strace -T -tt -e trace=process -v -p 22149
@@ -8,3 +9,4 @@ strace -T -tt -e trace=process -v -p 22149
 -e trace=desc  和文件描述符相关，比如write/read/select/epoll等
 -e trace=ipc 进程见同学相关，比如shmget等
 strace -T -tt -e trace=network -v -p 22149
+```
