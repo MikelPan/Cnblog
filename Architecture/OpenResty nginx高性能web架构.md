@@ -13,6 +13,7 @@ OpenResty致力于将服务器端应用完全运行于Nginx服务器中，充分
 # 安装
 wget https://openresty.org/download/openresty-1.15.8.3.tar.gz -P /apps/software
 tar zxvf /apps/software/openresty-1.15.8.3.tar.gz -C /usr/local/src
+yum install readline-devel pcre-devel openssl-devel
 cd /usr/local/src/openresty-1.15.8.3 && ./configure --prefix=/opt/openresty \
     --with-luajit \
     --without-http_redis2_module \
@@ -31,4 +32,8 @@ source /etc/profile
 openrsty #启动
 openrsty -s stop #停止
 ```
+
+### Lua语言介绍
+
+
 

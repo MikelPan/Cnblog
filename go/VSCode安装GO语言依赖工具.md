@@ -4,6 +4,7 @@
 uname -a
 Linux deppen 4.15.0-30deepin-generic #31 SMP Fri Nov 30 04:29:02 UTC 2018 x86_64 GNU/Linux
 # 下载64位系统
+wget https://dl.google.com/go/go1.14.3.linux-amd64.tar.gz -P /usr/local/src
 wget https://studygolang.com/dl/golang/go1.13.4.linux-amd64.tar.gz -P /usr/local/src
 cd /usr/local/src && tar zxvf go1.13.4.linux-amd64.tar.gz
 mv go /usr/local/go
@@ -12,6 +13,8 @@ cat > /etc/profile.d/go.sh <<EOF
 export PATH=$PATH:/usr/local/go/bin
 export GOPATH=~/workspaces/servers/go
 export GOROOT=/usr/local/go
+export GO111MODULE=on
+export GOPROXY=https://goproxy.cn
 EOF
 source /etc/profile
 ```
@@ -89,6 +92,13 @@ go get -v github.com/haya14busa/goplay/cmd/goplay
 go get -v github.com/uudashr/gopkgs/cmd/gopkgs
 go get -v github.com/davidrjenni/reftools/cmd/fillstruct
 go get -v github.com/alecthomas/gometalinter
+
+go get -u -v github.com/rogpeppe/godef
+go get -u -v golang.org/x/lint/golint
+go get -u -v github.com/lukehoban/go-find-references
+go get -u -v github.com/lukehoban/go-outline
+go get -u -v github.com/tpng/gopkgs
+go get -u -v github.com/newhook/go-symbols
 ```
 4、安装工具｀
 ```bash
@@ -140,6 +150,7 @@ go install golang.org/x/tools/cmd/guru
   "go.useCodeSnippetsOnFunctionSuggest": true,
   "go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
   "go.docsTool": "gogetdoc",
+  "files.autoSave": "onFocusChange",
 }
 ```
 

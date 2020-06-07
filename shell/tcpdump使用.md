@@ -1,6 +1,9 @@
 
 
 ### tcpdump
+打开网卡混杂模式
+ifconfig eth0 promisc
+ifconfig eth0 -promisc
 #### 抓取http request post
 tcpdump -s 0 -nn -vv -AA 'tcp dst port 9001 and (tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504f5354)'
 #### 抓取http request get

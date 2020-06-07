@@ -22,6 +22,12 @@ server {
 # 重新加载nginx
 service nginx reload
 ```
+#### nginx 自动下载
+
+#### upstream配置
+upstream apigateway{
+    server 10.10.0.1:80 weight=1 max_fails=2 fail_timeout=10s;
+}
 #### proxy 配置
 ```bash
 proxy_set _header Host $host;
@@ -35,5 +41,26 @@ proxy_busy_buffers_size 64k;
 proxy_temp_file_write_size 64k;
 proxy_http_version 1.1;
 proxy_set_header Connection "";
+proxy_next_upstream invalid_header error timeout http_500 http_502 http_503 http_504;
 ```
 [官方文档说明](http://nginx.org/en/docs/http/ngx_http_proxy_module.html)
+
+#### location 配置
+#### http nginx.conf 主配置文件
+```bash
+# 掩藏版本号
+server_tokens off;
+# 客户端请求文件大小
+client_max_body_size  10m;
+
+```
+
+
+
+
+
+
+
+
+
+
