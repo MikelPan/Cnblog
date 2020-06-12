@@ -5,6 +5,11 @@
 ```bash
 # linux rehat & centos
 yum install -y wireshark wireshark-qt
+# 创建独立用户 tshark
+useradd tshark
+usermod -a -G wireshark tshark
+chgrp wireshark /usr/sbin/dumpcap
+chmod 4750 /usr/sbin/dumpcap
 ```
 
 ### 主要参数
