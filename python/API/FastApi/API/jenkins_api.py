@@ -1,11 +1,10 @@
-from fastapi import APIRouter
+#!/usr/bin/env python3
+#coding:utf-8
 
 import json
 import jenkins
 import time
 from config import Config
-
-router = APIRouter()
 
 class JenkinsApi(object):
     def __init__(self,env):
@@ -26,27 +25,6 @@ class JenkinsApi(object):
             job_name_list.append(j['name'])
         return job_name_list
 
-
-@router.get("/jobs/{Job_Name}/build")
-async def build_jobs(Job_Name: str):
-    
-    return [{"username": "Foo"}, {"username": "Bar"}]
-
-@router.get("/jobs/{Job_Name}/update")
-async def update_jobs():
-    return {"username": "fakecurrentuser"}
-
-
-@router.get("/jobs/{Job_Name}/list")
-async def list_jobs(username: str):
-    JenkinsApi = JenkinsApi('dev')
-    jobs = JenkinsApi._get_jobs()
-    return [{"jobs": job}]
-
-@router.get("/jobs/list")
-async def list_jobs():
-    jenkinsapi = JenkinsApi('dev')
-    jobs = jenkinsapi._get_jobs()
-    for i in jobs:
-        job = i
-    return {"jobs": job}
+    def _build_jobs(self):
+        jobs = self.server.build_job()
+        return 

@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import Depends, FastAPI, Header, HTTPException
-from routers import items, users
+from routers import items, users, jenkins, aliyun, nacos
 from sqlalchemy.orm import Session
 
 from db import crud, models, schemas
@@ -25,6 +25,13 @@ app.include_router(
     items.router,
     prefix="/api/items/v1",
     tags=["事件服务"],
+    # dependencies=[Depends(get_token_header)],
+    responses={404: {"description": "Not found"}},
+)
+app.include_router(
+    jenkins.router,
+    prefix="/api/jenkins/v1",
+    tags=["Jenkins持续集成"],
     # dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )

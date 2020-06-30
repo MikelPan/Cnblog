@@ -16,3 +16,23 @@ tcpdump -s 0 -nn -vv -AA 'tcp dst port 9001 and (tcp[20:2]=0x4745 or tcp[20:2]=0
 tcpdump net 192.168.1.0/24
 #### 获取主机数据包
 tcpdump host 192.168.1.100
+#### 获取tcp数据包
+tcpdump -i eth0 host 10.100.1.4 and port 9001 -w /tmp/gateway.pcap
+tcpdump -i eth0 host 10.100.2.4 and port 9001 -w /tmp/gateway.pcap
+
+tcpdump -i eth0 host 10.100.1.4 and port 8181 -w /tmp/admin.pcap
+tcpdump -i eth0 host 10.100.2.4 and port 8181 -w /tmp/admin.pcap
+
+#### 监听特定来源地址
+tcpdump src host hostname
+#### 监听目的地址
+tcpdump -i eht0 dst host histname
+
+
+
+
+
+
+
+
+
