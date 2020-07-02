@@ -1,63 +1,60 @@
 dev:
     aliyun:
-        access-key-id : "LTAI4FhUYuUcBnwAdBhk6qrc"
-        access-key-secret : "4IADRTBnXOJoE30s9SNJazWV51Yrt1"
-        region-id : "cn-shenzhen"
+        access-key-id : 
+        access-key-secret : 
+        region-id : 
     nacos:
-        server_addr: "120.77.78.63:20013"
-        namespace: "1c25e217-891d-4ab2-9329-e030d3d765ba"
+        server_addr: 
+        namespace: 
     jenkins:
-        secret : SECa0343b0e11d1806fc9401e754fc9631751cdb6d6e9f343e37adc3edd11659cff
-        dingtalk_url : https://oapi.dingtalk.com/robot/send?access_token=3582a7cebb07f8295b8adf1cf9ab7f862ee68b0b175a8b4327b85da11478ebb9
-        jenkins_url : http://120.77.78.63:20011
-        user_id : admin
-        api_token : admin123
+        secret : 
+        dingtalk_url : 
+        jenkins_url : 
+        user_id : 
+        api_token : 
         dev:
-            view_name: scrm_dev
-            job_name : dd01-member-scrm-facade
+            view_name: 
+            job_name : 
         test:
-            view_name: scrm_test
+            view_name: 
 test:
     aliyun:
-        access-key-id : "LTAI4FhUYuUcBnwAdBhk6qrc"
-        access-key-secret : "4IADRTBnXOJoE30s9SNJazWV51Yrt1"
-        region-id : "cn-shenzhen"
+        access-key-id : 
+        access-key-secret : 
+        region-id : 
     nacos:
-        server_addr: "120.79.205.76:21013"
-        namespace: "59e0d099-d457-4861-b6ed-453590a3250a"
+        server_addr: 
+        namespace: 
     jenkins:
-        secret : SECa0343b0e11d1806fc9401e754fc9631751cdb6d6e9f343e37adc3edd11659cff
-        dingtalk_url : https://oapi.dingtalk.com/robot/send?access_token=3582a7cebb07f8295b8adf1cf9ab7f862ee68b0b175a8b4327b85da11478ebb9
-        jenkins_url : http://120.77.78.63:20011
-        user_id : admin
-        api_token : admin123
+        secret : 
+        dingtalk_url : 
+        jenkins_url : 
+        user_id : 
+        api_token : 
         dev:
-            view_name: scrm_dev
-            job_name : dd01-member-scrm-facade
+            view_name: 
+            job_name : 
         test:
-            view_name: scrm_test
+            view_name: 
 prod:
     aliyun:
-        access-key-id : "LTAI4GKdDRqGoELmewWSKkyY"
-        access-key-secret : "e4deAgtB1JcYR27fHgsULdv7hkao2u"
-        region-id : "cn-beijing"
+        access-key-id : ""
+        access-key-secret : ""
+        region-id : ""
     nacos:
-        server_addr: "120.77.78.63:20013"
-        namespace: "1c25e217-891d-4ab2-9329-e030d3d765ba"
+        server_addr: ""
+        namespace: ""
     jenkins:
-        secret : SECa0343b0e11d1806fc9401e754fc9631751cdb6d6e9f343e37adc3edd11659cff
-        dingtalk_url : https://oapi.dingtalk.com/robot/send?access_token=3582a7cebb07f8295b8adf1cf9ab7f862ee68b0b175a8b4327b85da11478ebb9
-        jenkins_url : http://120.77.78.63:20011
-        user_id : admin
-        api_token : admin123
+        secret : 
+        dingtalk_url : 
+        jenkins_url : 
+        user_id : 
+        api_token : 
         dev:
-            view_name: scrm_dev
-            job_name : dd01-member-scrm-facade
+            view_name: 
+            job_name : 
         test:
-            view_name: scrm_test
-        scrm_gituser: dd01bot
-        scrm_gituser_token: 67ba38e56a7e5cf0059cbb0bb4706949fe3cf683
+            view_name: 
+        scrm_gituser: 
+        scrm_gituser_token: 
 
-#             用户登录名称 prod-aliyun-api@1826953826499155.onaliyun.com
-# AccessKey ID LTAI4GGdEHjjoGFhJrbRem9u
-# AccessKeySecret Yipgfbt1jvnVVMLc6b9boluRKc37wp
