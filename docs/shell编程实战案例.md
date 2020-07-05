@@ -6,7 +6,7 @@
 采用openssl 生成随机数，操作结果如下：
 1、生成40位随机数
 openssl rand -base64 40
-2、替换掉飞小写字母的字符
+2、替换掉非小写字母的字符
 openssl rand -base64 40 | sed 's#[^a-z]##g'
 3、利用cut截取10位
 openssl rand -base64 40 | sed 's#[^a-z]##g' | cut -c 2-10
