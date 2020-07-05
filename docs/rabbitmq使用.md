@@ -39,6 +39,28 @@ RabitMQ的工作流程
 - headers也是根据一个规则进行匹配,在消息队列和交换机绑定的时候会指定一组键值对规则,而发送消息的时候也会指定一组键值对规则,当两组键值对规则相匹配的时候,消息会被发送到匹配的消息队列中.
 - Fanout是路由广播的形式,将会把消息发给绑定它的全部队列,即便设置了key,也会被忽略.
 
+### RabbitMQ 虚拟主机
+每一个RabbitMQ服务器都能创建虚拟消息服务器，我们称之为虚拟主机。每一个vhost本质上是一个mini版的RabbitMQ服务器，拥有自己的交换机、队列、绑定等，拥有自己的权限机制。vhost之于Rabbit就像虚拟机之于物理机一样。他们通过在各个实例间提供逻辑上分离，允许为不同的应用程序安全保密的运行数据，这很有，它既能将同一个Rabbit的众多客户区分开来，又可以避免队列和交换器的命名冲突。RabbitMQ提供了开箱即用的默认的虚拟主机“/”，如果不需要多个vhost可以直接使用这个默认的vhost，通过使用缺省的guest用户名和guest密码来访问默认的vhost。
+
+vhost之间是相互独立的，这避免了各种命名的冲突，就像App中的沙盒的概念一样，每个沙盒是相互独立的，且只能访问自己的沙盒，以保证非法访问别的沙盒带来的安全隐患。
+
+### RabbitMQ 虚拟主机操作
+列举所有虚拟主机 rabbitmqctl list_vhosts
+添加虚拟主机 rabbitmqctl add_vhost <vhost_name>
+删除虚拟主机rabbitmqctl delete_vhost <vhost_name>
+添加用户 add_user <username> <password>
+设置用户标签 set_user_tags <username> <tag>// 设置这个才能在页面上登录,tag可以为administrator, monitoring, management
+设置权限 set_permissions [-p <vhost>] <user> <conf> <write> <read>
+权限配置包括：配置(队列和交换机的创建和删除)、写(发布消息)、读(有关消息的任何操作，包括清除这个队列)
+conf:一个正则表达式match哪些配置资源能够被该用户访问。
+write:一个正则表达式match哪些配置资源能够被该用户读。
+read:一个正则表达式match哪些配置资源能够被该用户访问。
+
+
+![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MTg0OTQ3ODc2)
+
+
+
 ### RabbitMQ安装
 #### 安装erlang
 [下载地址](https://packagecloud.io/rabbitmq/erlang/packages/el/7/erlang-23.0.2-1.el7.x86_64.rpm)
@@ -73,6 +95,19 @@ rabbitmqctl add_user admin StrongPassword
 rabbitmqctl set_user_tags admin administrator
 # 配置权限
 rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+```
+
+#### RabbitMQ 添加虚拟主机
+权限配置是针对于vhost进行配置的，如果有多个vhost，如果某个用户需要相同的配置就要配置多次。".":匹配任何队列和交换器，"checks-.":只匹配checks-开头的队列和交换器，"":不匹配队列和交换器，
+```bash
+# 添加用户
+rabbitmqctl add_user root root
+# 分配角色
+rabbitmqctl set_user_tags root administrator
+# 添加虚拟主机
+rabbitmqctl add_vhost my_vhost
+# 设置权限
+rabbitmqctl set_permissions -p my_vhost root ".*" ".*" ".*"
 ```
 
 ### RabbitMQ配置
