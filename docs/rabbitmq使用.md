@@ -45,6 +45,7 @@ RabitMQ的工作流程
 vhost之间是相互独立的，这避免了各种命名的冲突，就像App中的沙盒的概念一样，每个沙盒是相互独立的，且只能访问自己的沙盒，以保证非法访问别的沙盒带来的安全隐患。
 
 ### RabbitMQ 虚拟主机操作
+```bash
 列举所有虚拟主机 rabbitmqctl list_vhosts
 添加虚拟主机 rabbitmqctl add_vhost <vhost_name>
 删除虚拟主机rabbitmqctl delete_vhost <vhost_name>
@@ -55,6 +56,7 @@ vhost之间是相互独立的，这避免了各种命名的冲突，就像App中
 conf:一个正则表达式match哪些配置资源能够被该用户访问。
 write:一个正则表达式match哪些配置资源能够被该用户读。
 read:一个正则表达式match哪些配置资源能够被该用户访问。
+```
 
 
 ![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTcxMjA2MTg0OTQ3ODc2)
