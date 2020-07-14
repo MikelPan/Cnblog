@@ -68,11 +68,26 @@ rabbitmq-plugins enable rabbitmq_management
 #　配置权限
 chown -R rabbitmq:rabbitmq /var/lib/rabbitmq/
 # 设置管理员密码
-rabbitmqctl add_user admin StrongPassword
+rabbitmqctl add_user admin ******
 # 分配角色
 rabbitmqctl set_user_tags admin administrator
 # 配置权限
 rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+```
+#### RabbitMQ 配置环境变量
+```bash
+cat > /etc/rabbitmq/rabbitmq-env.conf <<EOF
+# I am a complete /etc/rabbitmq/rabbitmq-env.conf file.
+# Comment lines start with a hash character.
+# This is a /bin/sh script file - use ordinary envt var syntax
+NODENAME=prod-scrm-rabbitmq
+EOF
+
+```
+#### RabbitMQ 配置集群模式
+```bash
+# 主节点执行
+rabbitmqctl set_policy -p / ha-all “^” ‘{“ha-mode”:”all”}’
 ```
 
 ### RabbitMQ配置
