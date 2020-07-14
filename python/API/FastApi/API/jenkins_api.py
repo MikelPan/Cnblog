@@ -27,4 +27,4 @@ class JenkinsApi(object):
 
     def _build_jobs(self):
         jobs = self.server.build_job()
-        return 
+        return jobs

@@ -52,7 +52,6 @@ proxy_next_upstream invalid_header error timeout http_500 http_502 http_503 http
 server_tokens off;
 # 客户端请求文件大小
 client_max_body_size  10m;
-
 ```
 
 
