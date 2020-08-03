@@ -82,4 +82,16 @@ grep [-acinv] [--color=auto] '搜寻字符串' filename
 --color=auto ：可以将找到的关键词部分加上颜色的显示喔！
 ```
 
+## sed 正则表达式
+### sed 用法
+```bash
+# 批量替换
+sed -i "s/oldstring/newstring/g" grep oldstring -rl path
+```
 
+## awk 正则表达式
+### awk用法
+```bash
+# 统计数据
+cat xx.log |awk '{a[$1]+=1;} END {for(i in a){print a[i]" "i;}}'
+```

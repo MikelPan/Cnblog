@@ -173,7 +173,7 @@ sudo rabbitmqctl set_user_tags user_proj management
 创建和赋角色完成后查看并确认
 ```bash
 sudo rabbitmqctl list_users
-```  
+```
 
 ##### RabbitMQ权限控制
 默认virtual host："/"
