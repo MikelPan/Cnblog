@@ -206,5 +206,5 @@ Listing permissions for user "user_admin" ...
 # 
 sudo rabbitmqctl list_permissions -p /vhost1  
 Listing permissions in vhost "/vhost1" ...  
-user_admin<span style="white-space:pre">  </span>.*<span style="white-space:pre"> </span>.*<span style="white-space:pre"> </span>.*
+user_admin<span style="white-space:pre">  </span>.*<span style="whitet-space:pre"> </span>.*<span style="white-space:pre"> </span>.*
 ```
