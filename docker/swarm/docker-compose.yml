@@ -20,7 +20,7 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-      logging:
+    logging:
       driver: "json-file"
       options:
         max-size: "200k"
