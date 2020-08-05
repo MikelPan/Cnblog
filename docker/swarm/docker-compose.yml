@@ -13,18 +13,18 @@ services:
     deploy:
       mode: replicated
       replicas: 2
-      # resources:
-      #   limits:
-      #     cpus: '0.50'
-      #     memory: 50M
-      #   reservations:
-      #     cpus: '0.25'
-      #     memory: 20M
-      # restart_policy:
-      #   condition: on-failure
-      #   delay: 5s
-      #   max_attempts: 3
-      #   window: 120s
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
 
 networks:
   default:
