@@ -182,7 +182,7 @@ export 命令说明：
 ```bash
 /etc/proflie
 /etc/bashrc
-~/.bashr
+~/.bashrc
 ~/.bash_profile
 /etc/proflie.d/  # 目录
 ```

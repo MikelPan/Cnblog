@@ -26,7 +26,7 @@ service nginx reload
 
 #### upstream配置
 upstream apigateway{
-    server 10.10.0.1:80 weight=1 max_fails=2 fail_timeout=10s;
+    server ip:port weight=1 max_fails=2 fail_timeout=10s;
 }
 #### proxy 配置
 ```bash

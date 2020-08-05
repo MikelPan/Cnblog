@@ -17,3 +17,10 @@ async def read_user_me():
 @router.get("/aliyun/{Resources_Name}/")
 async def read_user(username: str):
     return {"username": username}
+
+router = APIRouter()
+
+
+
+
+
