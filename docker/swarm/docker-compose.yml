@@ -27,7 +27,7 @@ services:
         max-file: "10"
 
 networks:
-  swarm_net:
+  default:
     external:
       name: swarm_net
 
