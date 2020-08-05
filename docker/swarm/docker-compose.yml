@@ -3,6 +3,11 @@ version: "3.8"
 services:
   nginx:
     image: nginx:latest
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
     ports:
       - 8088:80
     deploy:
@@ -20,11 +25,6 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "10"
 
 networks:
   default:
