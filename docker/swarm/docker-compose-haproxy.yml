@@ -9,7 +9,7 @@ services:
         max-size: "200k"
         max-file: "10"
     ports:
-      - 8088:80
+      - 8089:80
     networks:
       - swarm_net
     deploy:
