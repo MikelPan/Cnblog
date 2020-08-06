@@ -27,7 +27,7 @@ services:
         window: 120s
 
 networks:
-  default:
+  swarm_net:
     external:
       name: swarm_net
 
