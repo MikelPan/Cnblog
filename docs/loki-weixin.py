@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf8 -*-
 
+import asyncio
+import sys
 import requests
 import json
 import yaml
@@ -22,21 +24,22 @@ import shlex
 #     'Content-Type': 'text/plain'
 # }
 
-def cmd(command):
-    cmd = shlex.split(command)
-    p = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,encoding="utf-8")
-    while p.poll() is None:
-        line = p.stdout.readline()
-        line = line.strip()
-        if line:
-            print('Subprogram output: [{}]'.format(line))
-    if p.returncode == 0:
-        print('Subprogram success')
-    else:
-        print('Subprogram failed')
+async def loki_log(cmd):
+    # Create the subprocess; redirect the standard output
+    # into a pipe.
+    proc = await asyncio.create_subprocess_shell(
+        cmd, stdout=asyncio.subprocess.PIPE)
+
+    # Read one line of output.
+    data = await proc.stdout.readline()
+    line = data.decode('ascii').rstrip()
+
+    # Wait for the subprocess exit.
+    # await proc.wait()
+    return line
 
 if __name__ == "__main__":
-    print(cmd('sh /media/mikel_pan/_dde_data1/data/github/Cnblog/docs/loki_api.sh'))
+    loki_log('./media/mikel_pan/_dde_data1/data/github/Cnblog/docs/loki_api.sh')
 
 
 

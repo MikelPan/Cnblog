@@ -21,15 +21,15 @@ do
             result_lines+=$result_line
         done
         result_lines=`echo $result_lines |sed "s/${date}/\n${date}/g"`
-        curl $uat_url -H 'Content-Type: application/json' \
-           -d '{
-                "msgtype": "markdown",
-                "markdown": {
-                  "content": "
-                项目名称: '"$j"'
-                错误日志:'"$result_lines"'
-                  "
-                }
-             }'   
+        # curl $uat_url -H 'Content-Type: application/json' \
+        #    -d '{
+        #         "msgtype": "markdown",
+        #         "markdown": {
+        #           "content": "
+        #         项目名称: '"$j"'
+        #         错误日志:'"$result_lines"'
+        #           "
+        #         }
+        #      }'   
     fi
 done
