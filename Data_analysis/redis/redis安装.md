@@ -6,13 +6,12 @@ yum clean all
 yum maakecache
 wget -P /usr/local/src http://download.redis.io/releases/redis-5.0.3.tar.gz
 cd /usr/local/src && tar zxvf redis-5.0.3.tar.gz
-cd redis-5.0.3 && maake
-mkdir-p/usr/local/redis/etc
+mkdir-p /usr/local/redis/etc
 cd src && make install PREFIX=/usr/local/redis
-cd../ &&mvredis.conf /usr/local/redis/etc
+cd../ && mv redis.conf /usr/local/redis/etc
 sed -i 's@daemonize no@daemonize yes@g' /usr/local/redis/etc/redis.conf
 echo 'export PATH=/usr/local/redis/bin:$PATH'>> /etc/profile
-source/etc/profile
+source /etc/profile
 ```
 #### 二、redis配置开机启动
 ```shell

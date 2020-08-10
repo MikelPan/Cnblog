@@ -112,7 +112,9 @@ rabbitmqctl add_vhost my_vhost
 rabbitmqctl set_permissions -p my_vhost root ".*" ".*" ".*"
 ```
 
-### RabbitMQ配置
+#### RabbitMQ 集群安装
+
+#### RabbitMQ配置
 
 ### RabbitMQ用户角色及权限控制
 #### RabbitMQ的用户角色分类
