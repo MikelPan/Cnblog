@@ -1,0 +1,24 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-webui-tls
+  namespace: kube-system
+spec:
+  entryPoints:
+  - websecure  # 注意这里是websecure这个entryPoint，监控443端口
+  tls:
+    certResolver: foo
+    domains:
+     - main: "test.com"
+       sans:
+         - "*.test.com"
+    passthrough: false
+    options:
+      name: tlsoption
+      namespace: kube-system
+  routes:
+  - match: Host(`test.com`)
+    kind: Rule
+    services:
+    - name: traefik
+      port: 8080
