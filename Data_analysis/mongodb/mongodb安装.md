@@ -82,5 +82,4 @@ show tables
 # 创建固定集合
 db.createCollection("mycol", { capped : true, autoIndexId : true, size : 
    6142800, max : 10000 } )
-
 ```
