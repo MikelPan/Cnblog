@@ -1,9 +1,12 @@
 FROM java:openjdk-8-jre-alpine
-ARG jar_name
-ARG port
-ENV jar_name=${jar_name} \
-    port=${port}
-ADD ./${jar_name} /apps/
+ARG JAR_NAME
+ARG JAR_DIR
+ARG PORT
+ENV JAVA_OPTS="" \
+    JAR_NAME=$JAR_NAME \
+    PORT=$PORT
 WORKDIR /apps
-EXPOSE ${port}
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","${jar_name}"]
+ADD ${JAR_DIR}/${JAR_NAME} /apps/
+RUN ls -la /apps
+EXPOSE $PORT
+ENTRYPOINT ["sh","-c","java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar $JAR_NAME"]
