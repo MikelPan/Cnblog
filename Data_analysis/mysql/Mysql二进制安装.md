@@ -62,6 +62,7 @@ systemctl start mysqld3306
 ```
 ### mysql win下安装
 1、下载 mysql5.7 版本 https://dev.mysql.com/downloads/mysql/
+
 2、创建my.ini文件
 ```python
 [mysql]
