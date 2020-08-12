@@ -1,9 +1,7 @@
 FROM java:openjdk-8-jre-alpine
-ARG jar_name
 ARG port
-ENV jar_name=${jar_name} \
-    port=${port}
-COPY ${jar_name} /apps/
+ENV port=${port}
+COPY yunfeigj-devops-1.0-SNAPSHOT.jar /apps/
 WORKDIR /apps
 EXPOSE ${port}
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","${jar_name}"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","yunfeigj-devops-1.0-SNAPSHOT.jar"]
