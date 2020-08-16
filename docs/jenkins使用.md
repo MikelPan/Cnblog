@@ -90,6 +90,7 @@ Build Pipeline Plugin：灰度发布
 Mask Passwords Plugin：密码加密
 Configuration Slicing Plugin：批量修改JOB的配置
 BlueOcean
+Locale
 ```
 ### jenkins升级
 ```bash
@@ -114,18 +115,22 @@ node()
     job_name="${env.JOB_NAME}".replace('%2F','/').split('/')
     job_name=job_name[0]
 
-    workspace="data/jenkins/workspace/CICD"
+    workspace="/data/jenkins/workspace/CICD"
 
     ws("$workspace")
     {
         dir("pipeline")
         {
-            git url: 'https://'
-            def check_groovy_file="${job_name}/${env.BRANCH_NAME}/Jenkinsfile"
-            load "${check_groovy_file"}
+            git url: 'https://MikelPan:be88608eea8650cc17609fd84d93b60f4ccd2fbb@github.com/MikelPan/Cnblog.git'
+            def check_groovy_file="kubernetes/Jenkinsfile/${job_name}/${env.BRANCH_NAME}/Jenkinsfile"
+            load "${check_groovy_file"}"
         }
     }
 }
+//  在项目根目录中实现如下结构
+---Cnblog
+  ---master
+    ---Jenkinsfile
 ```
 ### jenkins 忘记管理员密码
 ```bash

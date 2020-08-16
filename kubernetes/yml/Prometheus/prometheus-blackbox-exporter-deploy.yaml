@@ -1,0 +1,60 @@
+cat > prometheus-blackbox-exporter-deploy.yaml <<EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prometheus-blackbox-exporter
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-blackbox-exporter
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus-blackbox-exporter
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: prometheus-blackbox-exporter
+        image: prom/blackbox-exporter:v0.16.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: blackbox-port
+          containerPort: 9115
+        readinessProbe:
+          tcpSocket:
+            port: 9115
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        resources:
+          requests:
+            memory: 50Mi
+            cpu: 100m
+          limits:
+            memory: 60Mi
+            cpu: 200m
+        volumeMounts:
+        - name: config
+          mountPath: /etc/blackbox_exporter
+        args:
+        - --config.file=/etc/blackbox_exporter/blackbox.yml
+        - --log.level=debug
+        - --web.listen-address=:9115
+      volumes:
+      - name: config
+        configMap:
+          name: prometheus-blackbox-exporter
+      #nodeSelector:
+      #  node-role.kubernetes.io/master: "true"
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        effect: "NoSchedule"
+EOF
+
+
+
+
+
+        
+  

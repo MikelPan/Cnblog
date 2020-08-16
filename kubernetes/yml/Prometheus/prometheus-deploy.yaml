@@ -1,0 +1,64 @@
+cat > prometheus-deploy.yaml <<EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true' 
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus
+      annotations:
+        prometheus.io/scrape: 'true'
+    spec:
+      serviceAccountName: prometheus
+      containers:
+      - image: prom/prometheus:v2.14.0
+        name: prometheus
+        command:
+        - "/bin/prometheus"
+        args:
+        - "--config.file=/etc/prometheus/prometheus.yml"
+        - "--storage.tsdb.path=/prometheus"
+        - "--storage.tsdb.retention=24h"
+        - "--web.enable-admin-api"  # 控制对admin HTTP API的访问，其中包括删除时间序列等功能
+        - "--web.enable-lifecycle"  # 支持热更新，直接执行localhost:9090/-/reload立即生效
+        ports:
+        - containerPort: 9090
+          protocol: TCP
+          name: http
+        volumeMounts:
+        - mountPath: "/prometheus"
+          subPath: prometheus
+          name: data
+        - mountPath: "/etc/prometheus"
+          name: config-volume
+        - name: etcd-secret
+          mountPath: "/etc/prometheus/secrets/etcd-certs"
+        resources:
+          requests:
+            cpu: 100m
+            #memory: 512Mi
+          limits:
+            cpu: 300m
+            #memory: 912Mi
+      securityContext:
+        runAsUser: 0
+      volumes:
+      - name: etcd-secret
+        secret:
+          secretName: etcd-certs
+      - name: data
+        # persistentVolumeClaim:
+        #   claimName: prometheus
+        emptyDir: {}
+      - configMap:
+          name: prometheus-config
+        name: config-volume
+EOF
