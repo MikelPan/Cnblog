@@ -122,7 +122,7 @@ node()
         dir("pipeline")
         {
             git url: 'https://MikelPan:be88608eea8650cc17609fd84d93b60f4ccd2fbb@github.com/MikelPan/Cnblog.git'
-            def check_groovy_file="kubernetes/Jenkinsfile/${job_name}/${env.BRANCH_NAME}/Jenkinsfile"
+            def check_groovy_file="kubernetes/CICD/Jenkinsfile/${job_name}/${env.BRANCH_NAME}/Jenkinsfile"
             load "${check_groovy_file"}"
         }
     }
