@@ -127,7 +127,7 @@ node()
       println("{env}")
       sh "git --help"
       git url: 'https://github.com/MikelPan/Cnblog.git'
-      def check_groovy_file="${job_name}/kubernetes/CICD/Jenkinsfile/${job_name}/${env.BRANCH_NAME}/Jenkinsfile.groovy"
+      def check_groovy_file="kubernetes/CICD/Jenkinsfile/${job_name}/${env.BRANCH_NAME}/Jenkinsfile.groovy"
       load "${check_groovy_file}"
     }
 }
