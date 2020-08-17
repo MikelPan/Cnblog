@@ -110,8 +110,8 @@ import groovy.transform.Field
 
 @Field def job_name=""
 
-node()
-{
+node() {
+
     environment {
        PATH = "/usr/local/git/bin:$PATH" 
     }
@@ -123,12 +123,12 @@ node()
 
     ws("$workspace")
     {
-  
-      println("{env}")
-      sh "git --help"
-      git url: 'https://github.com/MikelPan/Cnblog.git'
-      def check_groovy_file="kubernetes/CICD/Jenkinsfile/${job_name}/${env.BRANCH_NAME}/Jenkinsfile.groovy"
-      load "${check_groovy_file}"
+      dir('Cnblog')
+      {
+        git url: 'https://github.com/MikelPan/Cnblog.git'
+        def check_groovy_file="kubernetes/CICD/Jenkinsfile/${job_name}/${env.BRANCH_NAME}/Jenkinsfile.groovy"
+        load "${check_groovy_file}"
+      }
     }
 }
 //  在项目根目录中实现如下结构
