@@ -56,7 +56,7 @@ curl -v http://localhost:8080
 # docker 安装
 ## 制作镜像
 tee > Dockerfile <<- 'EOF'
-FROM jenkins
+FROM jenkins/jenkins
 ARG dockerGid=999
 ENV JENKINS_HOME=/data/jenkins
 USER root
@@ -112,6 +112,10 @@ import groovy.transform.Field
 
 node()
 {
+    environment {
+       PATH = "/usr/local/git/bin:$PATH" 
+    }
+
     job_name="${env.JOB_NAME}".replace('%2F','/').split('/')
     job_name=job_name[0]
 
@@ -119,12 +123,12 @@ node()
 
     ws("$workspace")
     {
-        dir("pipeline")
-        {
-            git url: 'https://github.com/MikelPan/Cnblog.git'
-            def check_groovy_file="kubernetes/CICD/Jenkinsfile/${job_name}/${env.BRANCH_NAME}/Jenkinsfile.groovy"
-            load "${check_groovy_file"}"
-        }
+  
+      println("{env}")
+      sh "git --help"
+      git url: 'https://github.com/MikelPan/Cnblog.git'
+      def check_groovy_file="${job_name}/kubernetes/CICD/Jenkinsfile/${job_name}/${env.BRANCH_NAME}/Jenkinsfile.groovy"
+      load "${check_groovy_file}"
     }
 }
 //  在项目根目录中实现如下结构
