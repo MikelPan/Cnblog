@@ -12,6 +12,22 @@ https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.6.3/binaries/apache-
 https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
 
 ### 安装
+#### linux
+```bash
+# 添加jdk环境变量
+cat > /etc/profile.d/jdk.sh <<EOF
+export JAVA_HOME=/usr/local/jdk1.8.0_221
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+export PATH=${JAVA_HOME}/bin:$PATH
+EOF
+# 添加mvn环境变量
+cat > /etc/profile.d/mvn.sh <<EOF
+export MAVEN_HOME=/usr/local/apache-maven-3.6.3
+export PATH=${MAVEN_HOME}/bin:$PATH
+EOF
+```
+
 #### windows
 ```bash
 # 配置环境变量
@@ -19,10 +35,12 @@ https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.6.3/binaries/apache-
 修改PATH，在PATH的最后加上：%M2_HOME%\bin
 ```
 ### maven 创建项目
-mvn archetype:generate -DgroupId=com.yunfeigj.devops -DartifactId=devops-cicd -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+```bash
+mvn archetype:generate -DgroupId=site.plyx.yunfeigj -DartifactId=yunfeigj-devops -DarchetypeArtifactId=maven-archetype-quickstart  -DinteractiveMode=false
 -- groupId 组织名
 -- artifactId 项目名
 -- version 版本号
+```
 
 ### maven 常用命令
 |命令|功能|备注|
@@ -38,9 +56,87 @@ mvn archetype:generate -DgroupId=com.yunfeigj.devops -DartifactId=devops-cicd -D
 ### 跟换阿里云源
 ```xml
 <mirror>
-<id>nexus-aliyun</id>
-<mirrorOf>*</mirrorOf>
-<name>Nexus aliyun</name>
-<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+    <id>nexus-aliyun</id>
+    <mirrorOf>*</mirrorOf>
+    <name>Nexus aliyun</name>
+    <url>http://maven.aliyun.com/nexus/content/groups/public</url>
 </mirror>
+
+<mirrors>
+	<mirror>
+        <id>aliyun-public</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun public</name>
+        <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-central</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun central</name>
+        <url>https://maven.aliyun.com/repository/central</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-spring</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun spring</name>
+        <url>https://maven.aliyun.com/repository/spring</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-spring-plugin</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun spring-plugin</name>
+        <url>https://maven.aliyun.com/repository/spring-plugin</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-apache-snapshots</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun apache-snapshots</name>
+        <url>https://maven.aliyun.com/repository/apache-snapshots</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-google</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun google</name>
+        <url>https://maven.aliyun.com/repository/google</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-gradle-plugin</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun gradle-plugin</name>
+        <url>https://maven.aliyun.com/repository/gradle-plugin</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-jcenter</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun jcenter</name>
+        <url>https://maven.aliyun.com/repository/jcenter</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-releases</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun releases</name>
+        <url>https://maven.aliyun.com/repository/releases</url>
+    </mirror>
+
+    <mirror>
+        <id>aliyun-snapshots</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun snapshots</name>
+        <url>https://maven.aliyun.com/repository/snapshots</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-grails-core</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun grails-core</name>
+        <url>https://maven.aliyun.com/repository/grails-core</url>
+    </mirror>
+    <mirror>
+        <id>aliyun-mapr-public</id>
+        <mirrorOf>*</mirrorOf>
+        <name>aliyun mapr-public</name>
+        <url>https://maven.aliyun.com/repository/mapr-public</url>
+    </mirror>
+  </mirrors>
 ```
+### maven 初始化spring boot 项目
+
