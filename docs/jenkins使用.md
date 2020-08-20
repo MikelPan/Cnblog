@@ -78,6 +78,7 @@ docker run --name jenkins \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $(which docker):/bin/docker \
     -v /data/jenkins:/data/jenkins \
+    -v /etc/localtime:/etc/localtime \
     -d auto-jenkins
 ```
 ### 常用插件安装
@@ -91,6 +92,63 @@ Mask Passwords Plugin：密码加密
 Configuration Slicing Plugin：批量修改JOB的配置
 BlueOcean
 Locale
+Zentimestamp plugin
+multibranch-scan-webhook-trigger
+Structs	
+Pipeline: Step API	
+Token Macro	
+Build Timeout	
+Credentials	
+Plain Credentials	
+SSH Credentials	
+Credentials Binding	
+SCM API	
+Pipeline: API	
+Timestamper	
+Pipeline: Supporting APIs	
+Pipeline: Nodes and Processes	
+Snakeyaml API	
+Jackson 2 API	
+ECharts API	
+JUnit	
+Matrix Project	
+Workspace Cleanup	
+Ant	
+Pipeline: SCM Step	
+Pipeline: Groovy	
+Pipeline: Job	
+Pipeline: Basic Steps	
+Gradle	
+Pipeline: Milestone Step	
+Pipeline: Input Step	
+Pipeline: Stage Step	
+Pipeline Graph Analysis	
+Pipeline: REST API	
+Pipeline: Stage View	
+Pipeline: Build Step	
+Pipeline: Model API	
+Pipeline: Declarative Extension Points API	
+JSch dependency	
+Git client	
+GIT server	
+Pipeline: Shared Groovy Libraries	
+Branch API	
+Pipeline: Multibranch	
+Pipeline: Stage Tags Metadata	
+Pipeline: Declarative	
+Lockable Resources	
+Pipeline	
+GitHub API	
+GitHub Branch Source	
+Pipeline: GitHub Groovy Libraries	
+Pipeline: Stage View	
+Git	
+SSH Build Agents	
+Email Extension	
+ECharts API	
+JUnit	
+Matrix Project	
+
 ```
 ### jenkins升级
 ```bash
