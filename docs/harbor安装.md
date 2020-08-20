@@ -85,6 +85,10 @@ cp domain.com.cert /etc/docker/certs.d/domain.com/
 cp domain.com.key /etc/docker/certs.d/domain.com/
 cp ca.crt /etc/docker/certs.d/domain.com/
 ```
+#### 证书加入到系统证书中
+```bash
+cat ca.crt >> /etc/pki/tls/certs/ca-bundle.crt
+```
 #### 修改harbor.yml文件
 https:
   port: 443
@@ -109,4 +113,32 @@ docker-compose up -d
 #### 从Docker客户端登录Harbor
 ```bash
 docker login domain.com:xxxx
+```
+### harbor使用
+#### 推送镜像
+```bash
+docker tag registry-vpc.cn-beijing.aliyuncs.com/acs/pause:3.2 domain.com:5000/member/pause:3.2
+docker login
+docker push domain.com:5000/member/pause:3.2
+```
+#### k8s使用harbor
+```bash
+# 创建harbor secret
+cat ~/.docker/config.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: harbor-registry-secret
+  namespace: kube-system
+data:
+  .dockerconfigjson: cat ~/.docker/config.json |base64 -w 0
+type: kubernetes.io/dockerconfigjson
+# 创建sa
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test
+  namespace: kube-system
+imagePullSecrets:
+- name: harbor-registry-secret
 ```
