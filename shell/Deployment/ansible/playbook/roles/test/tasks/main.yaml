@@ -1,0 +1,4 @@
+---
+
+- name: Test awx
+  shell: curl -v https://www.baidu.com

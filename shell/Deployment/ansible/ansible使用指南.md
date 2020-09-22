@@ -11,12 +11,15 @@ wget https://releases.ansible.com/ansible-tower/setup-bundle/ansible-tower-setup
 tar -zvxf ansible-tower-setup-bundle-3.2.6-1.el7.tar.gz -C /usr/local/src
 mv /usr/local/src/ansible-tower-setup-bundle-3.2.6-1.el7 /usr/local/ansible-tower
 cd /usr/local/ansible-tower
-pwd=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 24`
-sed -i "s#password=''#password='I30Jy41qVYX7TFh5TWMCFWB8'#g" inventory 
+cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 24 |tee /root/pg_pwd.log
+sed -i "s#password=''#password=$(cat /root/pg_pwd.log)#g" inventory 
 sed -i "s#host=''#host='127.0.0.1'#g" inventory
 sed -i "s#port=''#port='5432'#g" inventory
 mkdir -p /var/log/tower
-./setup.sh
+# nginx 修改监听端口
+sed -i 's/80/7777/g' /usr/local/ansible-tower/roles/nginx/defaults/main.yml
+# nginx 关闭https
+./setup.sh -e nginx_disable_https=true
 # 破解
 pip3 install uncompyle6
 cd /var/lib/awx/venv/awx/lib/python3.6/site-packages/tower_license

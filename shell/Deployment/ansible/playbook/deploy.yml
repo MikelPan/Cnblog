@@ -1,0 +1,6 @@
+---
+
+- name: Test awx
+  hosts: all
+  roles:
+    - {role: test }
