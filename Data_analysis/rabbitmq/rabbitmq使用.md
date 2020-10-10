@@ -209,7 +209,6 @@ Listing permissions for user "user_admin" ...
 sudo rabbitmqctl list_permissions -p /vhost1  
 Listing permissions in vhost "/vhost1" ...  
 user_admin<span style="white-space:pre">  </span>.*<span style="whitet-space:pre"> </span>.*<span style="white-space:pre"> </span>.*
-=======
 ### RabbitMQ简介
 RabbitMQ是流行的开源消息队列系统，是AMQP（Advanced Message Queuing Protocol高级消息队列协议）的标准实现，用erlang语言开发。RabbitMQ据说具有良好的性能和时效性，同时还能够非常好的支持集群和负载部署，非常适合在较大规模的分布式系统中使用。
 
@@ -419,4 +418,43 @@ Listing permissions for user "user_admin" ...
 sudo rabbitmqctl list_permissions -p /vhost1  
 Listing permissions in vhost "/vhost1" ...  
 user_admin<span style="white-space:pre">  </span>.*<span style="whitet-space:pre"> </span>.*<span style="white-space:pre"> </span>.*
+```
+### rabbitmqadmin 使用
+#### rabbitmqadmin 安装
+```bash
+# 下载
+wget https://raw.githubusercontent.com/rabbitmq/rabbitmq-management/v3.8.9/bin/rabbitmqadmin -P /usr/local/src
+chmod +x /usr/local/src/rabbitmqadmin && cp /usr/local/src/rabbitmqadmin /usr/bin
+```
+#### rabbitmqadmin 使用
+```bash
+rabbitmqadmin list users                #查看用户列表
+rabbitmqadmin list vhosts               #查看vhosts
+rabbitmqadmin list connections          ###查看 connections
+rabbitmqadmin list exchanges            ##查看 exchanges
+rabbitmqadmin list bindings             ##查看 bindings
+rabbitmqadmin list permissions          ##查看 permissions
+rabbitmqadmin list channels             ##查看 channels
+rabbitmqadmin list parameters           ##查看 parameters
+rabbitmqadmin list consumers            ##查看consumers
+rabbitmqadmin list queues               ##查看queues
+rabbitmqadmin list policies             ##查看policies
+rabbitmqadmin list nodes                ##查看nodes
+rabbitmqadmin show overview             ##查看overview
+使用 -f 可以指定格式
+有如下几种格式 raw_json, long, pretty_json, kvp, tsv, table, bash 默认为 table
+修改 rabbitmqadmin文件 default_options 中的 hostname 为 任意 RabbitMQ 节点 或者 Haproxy 节点 ip 或者 Keepalived vip，若修改了guest 用户，还需要修改 default_options 中用户名和密码配置
+```
+### rabbitmq 安装插件
+插件地址如下：https://www.rabbitmq.com/community-plugins.html 
+![](https://img-blog.csdnimg.cn/20191127171340814.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM2ODUwODEz,size_16,color_FFFFFF,t_70)
+```bash
+# 下载插件
+wget https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/download/v3.8.0/rabbitmq_delayed_message_exchange-3.8.0.ez -P /usr/local/src
+# 放到指定目录下
+mv /usr/local/src/rabbitmq_delayed_message_exchange-3.8.0.ez /usr/lib/rabbitmq/lib/rabbitmq_server-3.8.5/plugins
+# 启用插件
+rabbitmq-plugins enable rabbitmq_delayed_message_exchange
+# 重启服务
+systemctl restart rabitmq-server
 ```
