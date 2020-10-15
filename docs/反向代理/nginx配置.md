@@ -156,7 +156,7 @@ unzip master.zip
 wget http://nginx.org/download/nginx-1.19.2.tar.gz
 tar -zxvf nginx-1.19.2.tar.gz
 cd nginx-1.19.2
-patch -p1 < ../nginx_upstream_check_module-master/check_1.9.2+.patch
+patch -p1 < ../nginx_upstream_check_module-master/check_1.16.1+.patch
 # 编译安装
 ./configure --prefix=/usr/local/nginx \
     --with-http_flv_module \
