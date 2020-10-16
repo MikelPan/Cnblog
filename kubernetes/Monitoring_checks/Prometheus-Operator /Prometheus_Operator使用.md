@@ -18,11 +18,11 @@ kubectl apply -f maifests/*
 cat > alertmanager.yaml <<EOF
 global:
   resolve_timeout: 5m
-  smtp_smarthost: 'smtp-n.global-mail.cn:465'
-  smtp_from: 'qinglongpan@dadi01.com'
-  smtp_auth_username: 'qinglongpan@dadi01.com'
-  smtp_auth_password: '591674Password1'
-  smtp_hello: 'smtp-n.global-mail.cn'
+  smtp_smarthost: 'xxxxxx'
+  smtp_from: 'xxxxxxxx'
+  smtp_auth_username: 'xxxxxxx'
+  smtp_auth_password: 'xxxxxxx'
+  smtp_hello: 'xxxxx'
   smtp_require_tls: false
 route:
   group_by: ['job','alertname','severity']
@@ -40,11 +40,11 @@ route:
 receivers:
 - name: 'default'
   email_configs:
-  - to: 'qinglongpan@dadi01.com'
+  - to: 'xxxxxxx'
     send_resolved: true
 - name: 'webhook'
   webhook_configs:
-  - url: 'https://oapi.dingtalk.com/robot/send?access_token=8512095dcbf2777d5521f556668a1f0c3df62737f6e244c868197f5beb6439af'
+  - url: 'https://oapi.dingtalk.com/robot/send?access_token=8512095dcbf2777d5521f556668a1f0c3df62737f6e244c868197f5bexxxxx'
     send_resolved: true
 EOF 
 ```

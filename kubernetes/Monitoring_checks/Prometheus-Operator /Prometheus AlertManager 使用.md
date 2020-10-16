@@ -23,11 +23,11 @@ ls -al | grep alertmanager
 ```yaml
 global:
   resolve_timeout: 5m
-  smtp_smarthost: 'smtp-n.global-mail.cn:465'
-  smtp_from: 'qinglongpan@dadi01.com'
-  smtp_auth_username: 'qinglongpan@dadi01.com'
-  smtp_auth_password: '591674Password1'
-  smtp_hello: 'smtp-n.global-mail.cn'
+  smtp_smarthost: 'xxxxxx'
+  smtp_from: 'xxxx'
+  smtp_auth_username: 'xxxxxx'
+  smtp_auth_password: 'xxxxxx'
+  smtp_hello: 'xxxxxx'
   smtp_require_tls: false
 route:
   group_by: ['alertname','severity']
@@ -46,7 +46,7 @@ route:
 receivers:
 - name: 'default'
   email_configs:
-  - to: 'qinglongpan@dadi01.com'
+  - to: 'xxxxxxx'
     send_resolved: true
 - name: 'webhook'
   webhook_configs:

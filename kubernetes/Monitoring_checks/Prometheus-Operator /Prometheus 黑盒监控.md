@@ -285,7 +285,7 @@ kubectl apply -f prometheus-cm.yaml
     module: [tcp_connect]  # 使用定义的http模块
   static_configs:
   - targets:
-    - 'rm-wz9z4cdp9zg3d686590130.mysql.rds.aliyuncs.com:3306'
+    - 'xxxxxxx:3306'
     labels:
       group: 'pre 环境数据库'
   relabel_configs:
@@ -308,8 +308,8 @@ kubectl apply -f prometheus-cm.yaml
     module: [tcp_connect]  # 使用定义的http模块
   static_configs:
   - targets:
-    - 'dds-wz90eef7992023f41.mongodb.rds.aliyuncs.com:3717'
-    - 'dds-wz90eef7992023f42.mongodb.rds.aliyuncs.com:3717'
+    - 'xxxxxxx:3717'
+    - 'xxxxxxx:3717'
     labels:
       group: 'pre 环境mongodb'
   relabel_configs:
@@ -332,7 +332,7 @@ kubectl apply -f prometheus-cm.yaml
     module: [tcp_connect]  # 使用定义的http模块
   static_configs:
   - targets:
-    - 'pgm-wz9f4m941zs40u1814830.pg.rds.aliyuncs.com:3433'
+    - 'xxxxxxx:3433'
     labels:
       group: 'pre 环境psql'
   relabel_configs:
@@ -355,7 +355,7 @@ kubectl apply -f prometheus-cm.yaml
     module: [tcp_connect]  # 使用定义的http模块
   static_configs:
   - targets:
-    - '139.198.125.103:5672'
+    - 'xxxxxx:5672'
     labels:
       group: 'pre 环境psql'
   relabel_configs:
