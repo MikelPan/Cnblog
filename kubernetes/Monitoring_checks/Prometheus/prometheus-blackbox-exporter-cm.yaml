@@ -1,0 +1,47 @@
+cat > prometheus-blackbox-exporter-cm.yaml <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: prometheus-blackbox-exporter
+  name: prometheus-blackbox-exporter
+  namespace: monitoring
+data:
+  blackbox.yml: |-
+    modules:
+      http_2xx_member_tenant_system:
+        prober: http
+        timeout: 5s
+        http:
+          valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+          valid_status_codes: [200]
+          method: GET
+          preferred_ip_protocol: "ip4"
+          headers:
+            x-api-secret: 'gcrylzqm7j8cosk9j6ajmlqz57iwdmhm'
+          fail_if_body_not_matches_regexp:
+            - '"message":"ok"'
+      http_2xx:
+        prober: http
+        timeout: 10s
+        http:
+          valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+          valid_status_codes: [200]
+          method: GET
+          preferred_ip_protocol: "ip4"
+      http_post_2xx: # http post 监测模块
+        prober: http
+        timeout: 10s
+        http:
+          valid_http_versions: ["HTTP/1.1", "HTTP/2"]
+          method: POST
+          preferred_ip_protocol: "ip4"
+      tcp_connect:
+        prober: tcp
+        timeout: 10s
+      icmp:
+        prober: icmp
+        timeout: 10s
+        icmp:
+          preferred_ip_protocol: "ip4"
+EOF
