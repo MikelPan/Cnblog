@@ -1,0 +1,71 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: webhook-dingtalk
+  name: webhook-dingtalk
+  namespace: monitoring
+  #需要和alertmanager在同一个namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webhook-dingtalk
+  template:
+    metadata:
+      labels:
+        app: webhook-dingtalk
+    spec:
+      containers:
+      - image: registry.cn-shenzhen.aliyuncs.com/dadi01/webhook-dingtalk:latest
+        name: webhook-dingtalk
+        args:
+        - "https://oapi.dingtalk.com/robot/send?access_token=859fe7562a332ec1d0a1b7385da590baa726axxxxx"
+        #上面创建的钉钉机器人hook
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+          tcpSocket:
+            port: 8080
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+          httpGet:
+            port: 80
+            path: /
+      imagePullSecrets:
+        - name: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webhook-dingtalk
+  name: webhook-dingtalk
+  namespace: monitoring
+  #需要和alertmanager在同一个namespace
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: webhook-dingtalk
+  type: ClusterIP

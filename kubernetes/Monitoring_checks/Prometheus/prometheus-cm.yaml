@@ -1,0 +1,432 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 5s
+      scrape_timeout: 1s
+    scrape_configs:
+    - job_name: 'prometheus'
+      static_configs:
+      - targets: ['localhost:9090']
+
+    - job_name: 'node-exporter'
+      kubernetes_sd_configs:
+      - role: node
+      relabel_configs:
+      - source_labels: [__address__]
+        regex: '(.*):10250'
+        replacement: '${1}:9100'
+        target_label: __address__
+        action: replace
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+
+    - job_name: 'kubelet'
+      kubernetes_sd_configs:
+      - role: node
+      scheme: https
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        insecure_skip_verify: true
+      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      relabel_configs:
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+
+    - job_name: 'kubernetes-cadvisor'
+      kubernetes_sd_configs:
+      - role: node
+      scheme: https
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      relabel_configs:
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+      - target_label: __address__
+        replacement: kubernetes.default.svc:443
+      - source_labels: [__meta_kubernetes_node_name]
+        regex: (.+)
+        target_label: __metrics_path__
+        replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+
+    - job_name: 'apiservers'
+      kubernetes_sd_configs:
+      - role: endpoints
+      scheme: https
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: default;kubernetes;https
+
+    - job_name: 'kube-state-metrics'
+      kubernetes_sd_configs:
+      - role: endpoints
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+        action: replace
+        target_label: __scheme__
+        regex: (https?)
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+        action: replace
+        target_label: __address__
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+      - action: labelmap
+        regex: __meta_kubernetes_service_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_service_name]
+        action: replace
+        target_label: kubernetes_name
+
+    - job_name: 'kubernetes-services'
+      kubernetes_sd_configs:
+      - role: service
+      metrics_path: /probe
+      params:
+        module: [http_2xx]
+      relabel_configs:
+      #- source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probe,__meta_kubernetes_service_annotation_prometheus_io_scrape]
+      #  action: keep
+      #  regex: true;true
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: __address__
+        replacement: prometheus-blackbox-exporter:9115
+      - source_labels: [__param_target]
+        target_label: instance
+      - action: labelmap
+        regex: __meta_kubernetes_service_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_service_name]
+        target_label: kubernetes_name
+      - source_labels: [__meta_kubernetes_service_port_name]
+        target_label: kubernetes_port_name
+      - source_labels: [__meta_kubernetes_service_name]
+        regex: "redis.*"
+        action: drop
+      - source_labels: [instance]
+        regex: ".*22.*"
+        action: drop
+      - source_labels: [instance]
+        regex: "member-api-gateway.*8080.*"
+        action: drop
+      #- source_labels: [__meta_kubernetes_namespace]
+      #  regex: "dadi-saas-member-pre"
+      #  action: keep
+  
+    - job_name: 'kubernetes-Business-redis'
+      metrics_path: /probe
+      params:
+        module: [tcp_connect]  # 使用定义的http模块
+      kubernetes_sd_configs:
+      - role: service  # service 类型的服务发现
+      relabel_configs:
+      #只有service的annotation中配置了 prometheus.io/http_probe=true 的才进行发现
+      #- source_labels: [__meta_kubernetes_service_annotation_prometheus_io_http_probe]
+      #  action: keep
+      #  regex: true
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: __address__
+        replacement: prometheus-blackbox-exporter:9115
+      - source_labels: [__param_target]
+        target_label: instance
+      - action: labelmap
+        regex: __meta_kubernetes_service_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_service_name]
+        target_label: kubernetes_name
+      - source_labels: [instance]
+        regex: ".*6379.*"
+        action: keep
+     
+    #- job_name: 'kubernetes-Business-mysql'
+    #  metrics_path: /probe
+    #  params:
+    #    module: [tcp_connect]  # 使用定义的http模块
+    #  static_configs:
+    #  - targets:
+    #    - 'localhost:3306'
+    #    labels:
+    #      group: 'pre 环境数据库'
+    #  #kubernetes_sd_configs:
+    #  #- role: service  # service 类型的服务发现
+    #  relabel_configs:
+    #  #只有service的annotation中配置了 prometheus.io/http_probe=true 的才进行发现
+    #  #- source_labels: [__meta_kubernetes_service_annotation_prometheus_io_http_probe]
+    #  #  action: keep
+    #  #  regex: true
+    #  - source_labels: [__address__]
+    #    target_label: __param_target
+    #  - source_labels: [__parm_target]
+    #    target_label: instance
+    #  - target_label: __address__
+    #    replacement: prometheus-blackbox-exporter:9115
+ 
+    #- job_name: 'kubernetes-Business-mongodb'
+    #  metrics_path: /probe
+    #  params:
+    #    module: [tcp_connect]  # 使用定义的http模块
+    #  static_configs:
+    #  - targets:
+    #    - 'mongo:3717'
+    #    labels:
+    #      group: 'prod 环境mongodb'
+    #      env: 'prod'
+    #      status: 'master'
+    #  - targets:
+    #    - 'mongo:3717'
+    #    labels:
+    #      group: 'prod 环境mongodb'
+    #      env: 'prod'
+    #      status: 'slave'
+    #  relabel_configs:
+      #只有service的annotation中配置了 prometheus.io/http_probe=true 的才进行发现
+      #- source_labels: [__meta_kubernetes_service_annotation_prometheus_io_http_probe]
+      #  action: keep
+      #  regex: true
+      #- source_labels: [__address__]
+      #  target_label: __param_target
+      #- source_labels: [__param_target]
+      #  target_label: instance
+      #- target_label: __address__
+      #  replacement: prometheus-blackbox-exporter:9115
+    
+    #- job_name: 'kubernetes-Business-psql'
+    #  metrics_path: /probe
+    #  params:
+    #    module: [tcp_connect]  # 使用定义的http模块
+    #  static_configs:
+    #  - targets:
+    #    - 'psql:3433'
+    #    labels:
+    #      group: 'prod 环境psql'
+    #      env: 'prod'
+    #  relabel_configs:
+    #  #只有service的annotation中配置了 prometheus.io/http_probe=true 的才进行发现
+    #  #- source_labels: [__meta_kubernetes_service_annotation_prometheus_io_http_probe]
+    #  #  action: keep
+    #  #  regex: true
+    #  - source_labels: [__address__]
+    #    target_label: __param_target
+    #  - source_labels: [__param_target]
+    #    target_label: instance
+    #  - target_label: __address__
+    #    replacement: prometheus-blackbox-exporter:9115 
+   
+    #- job_name: 'kubernetes-Business-amqp'
+    #  metrics_path: /probe
+    #  params:
+    #    module: [tcp_connect]  # 使用定义的http模块
+    #  static_configs:
+    #  - targets:
+    #    - '139.198.123.203:5672'
+    #    labels:
+    #      group: 'prod 环境amqp'
+    #      env: 'prod'
+    #  relabel_configs:
+    #  #只有service的annotation中配置了 prometheus.io/http_probe=true 的才进行发现
+    #  #- source_labels: [__meta_kubernetes_service_annotation_prometheus_io_http_probe]
+    #  #  action: keep
+    #  #  regex: true
+    #  - source_labels: [__address__]
+    #    target_label: __param_target
+    #  - source_labels: [__param_target]
+    #    target_label: instance
+    #  - target_label: __address__
+    #    replacement: prometheus-blackbox-exporter:9115 
+
+    - job_name: 'kubernetes-pods'
+      kubernetes_sd_configs:
+      - role: pod
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+
+    - job_name: 'kubernetes-Physical-node'
+      metrics_path: /probe
+      params:
+        module: [tcp_connect]  # 使用定义的http模块
+      static_configs:
+      - targets:
+        - 'xxxx:22'
+        - 'xxxx:22'
+        - 'xxxx:22'
+        labels:
+          group: 'prod dist master 节点'
+          env: 'prod-dist-sz'
+      - targets:
+        - 'xxxx:22'
+        - 'xxxx:22'
+        labels:
+          group: 'pre dist node 节点'
+          env: 'prod-dist-sz'
+      relabel_configs:
+      #只有service的annotation中配置了 prometheus.io/http_probe=true 的才进行发现
+      #- source_labels: [__meta_kubernetes_service_annotation_prometheus_io_http_probe]
+      #  action: keep
+      #  regex: true
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: prometheus-blackbox-exporter:9115
+       
+    - job_name: 'kube-scheduler'          #任务名
+      scrape_interval: 5s                   #本任务的抓取间隔，覆盖全局配置
+      static_configs:
+      - targets:
+        - 'xxxxx:10251'
+        - 'xxxxx:10251'
+        - 'xxxxx:10251'
+        labels:
+          group: 'prod scheduler 节点'
+          env: 'prod-dist-sz'
+    
+    - job_name: 'kube-controller-manager'
+      scrape_interval: 5s
+      static_configs:
+      - targets: 
+        - 'xxxx:10252'
+        - 'xxxx:10252'
+        - 'xxxx:10252'
+        labels:
+          group: 'prod controller manager 节点'
+          env: 'prod-dist-sz'
+
+    - job_name: 'etcd-k8s'
+      scheme: https
+      tls_config:
+        ca_file: /etc/prometheus/secrets/etcd-certs/ca.crt
+        cert_file: /etc/prometheus/secrets/etcd-certs/healthcheck-client.crt
+        key_file: /etc/prometheus/secrets/etcd-certs/healthcheck-client.key
+        #insecureSkipVerify: true
+      scrape_interval: 5s
+      static_configs:
+      - targets: 
+        - 'xxxx:2379'
+        - 'xxxx:2379'
+        - 'xxxx:2379'
+        labels:
+          group: 'prod etcd 节点'
+          env: 'prod-dist-sz'
+
+    - job_name: 'traefik-ingress'
+      scrape_interval: 5s
+      static_configs:
+      - targets: 
+        - 'xxxxx:8082'
+        - 'xxxxx:8082'
+        labels:
+          group: 'prod traefik 节点'
+          env: 'prod-dist-sz'
+   
+    #- job_name: 'kubernetes-domain-front'
+    #  metrics_path: /probe
+    #  params:
+    #    module: [http_2xx]  # 使用定义的http模块
+    #  static_configs:
+    #  - targets:
+    #    - 'https://xxxxx'
+    #    - 'https://xxxxx'
+    #    - 'https://xxxxx'
+    #    - 'http://xxxxxx'
+    #    labels:
+    #      group: 'prod cent 前端页面'
+    #      env: 'prod-cent'
+    #  relabel_configs:
+    #  #只有service的annotation中配置了 prometheus.io/http_probe=true 的才进行发现
+    #  #- source_labels: [__meta_kubernetes_service_annotation_prometheus_io_http_probe]
+    #  #  action: keep
+    #  #  regex: true
+    #  - source_labels: [__address__]
+    #    target_label: __param_target
+    #  - source_labels: [__param_target]
+    #    target_label: instance
+    #  - target_label: __address__
+    #    replacement: prometheus-blackbox-exporter:9115
+ 
+    - job_name: 'kubernetes-domain-backend'
+      metrics_path: /probe
+      params:
+        module: [http_2xx]  # 使用定义的http模块
+      static_configs:
+    #  - targets:
+    #    - 'https://xxxxx'
+    #    labels:
+    #      group: 'prod cent 平台系统后端'
+    #      env: 'prod-cent'
+    #  - targets:
+    #    - 'https://xxxxx'
+    #    labels:
+    #      group: 'prod cent 账号中心系统后端'
+    #      env: 'prod-cent'
+    #  - targets:
+    #    - 'https://xxxxx'
+    #    labels:
+    #      group: 'prod cent 租户系统'
+    #      env: 'prod-cent'
+       - targets:
+         - 'https://xxxxx'
+         labels:
+           group: 'prod dist 鉴权系统后端'
+           env: 'pre-dist-sz'
+       - targets:
+         - 'https://xxxxx'
+         labels:
+           group: 'pre dist 地域管理器'
+           env: 'pre-dist-sz'
+    #  - targets:
+    #    - 'https://xxxxx'
+    #    labels:
+    #      group: 'prod　平台系统后端'
+    #      env: 'prod-cent'
+      relabel_configs:
+      #只有service的annotation中配置了 prometheus.io/http_probe=true 的才进行发现
+      #- source_labels: [__meta_kubernetes_service_annotation_prometheus_io_http_probe]
+      #  action: keep
+      #  regex: true
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: prometheus-blackbox-exporter:9115

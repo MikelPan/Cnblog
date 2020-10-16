@@ -1,0 +1,254 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: k8s
+    role: alert-rules
+  name: prometheus-custom-rules
+  namespace: monitoring
+spec:
+  groups:
+  - name: physical-node
+    rules:
+    - alert: KubeMasterDown
+      annotations:
+        message: "{{ $labels.env }} 环境中的k8s集群 master节点　{{ $labels.instance}} 节点已经故障了,请联系管理员处理。"
+      expr: |
+        probe_success{group=~"pre.*cent.*master.*"} == 0
+      for: 1m
+      labels:
+        severity: critical
+    - alert: kubeNodeDown
+      annotations:
+        message: "{{ $labels.env }} 环境中的k8s集群 node节点　{{ $labels.instance}} 节点已经故障了,请联系管理员处理。"
+      expr: |
+        probe_success{group=~"pre.*cent.*master.*"} == 0
+      for: 1m
+    - alert: AliYunMongodbMasterDown
+      annotations:
+        message: "{{ $labels.env }} 环境中使用的阿里云Mongodb master节点　{{ $labels.instance}} 已经无法连接了,请联系管理员处理。"
+      expr: |
+        probe_success{group=~".*mongo.*",status="slave"} == 0
+      for: 1m
+      labels:
+        severity: critical
+    - alert: AliYunMongodbNodeDown
+      annotations:
+        message: "{{ $labels.env }} 环境中使用的阿里云Mongodb master节点　{{ $labels.instance}} 已经无法连接了,请联系管理员处理。"
+      expr: |
+        probe_success{group=~".*mongo.*",status="slave"} == 0
+      for: 1m
+      labels:
+        severity: critical
+    - alert: AliYunPsqlDown
+      annotations:
+        message: "{{ $labels.env }} 环境中使用的阿里云Psql数据库　{{ $labels.instance}} 已经无法连接了,请联系管理员处理。"
+      expr: |
+        probe_success{group=~".*psql.*"} == 0
+      for: 1m
+      labels:
+        severity: critical
+    - alert: QinYunAMQPDown
+      annotations:
+        message: "{{ $labels.env }} 环境中使用的青云的AMQP消息队列　{{ $labels.instance}} 已经无法连接了,请联系管理员处理。"
+      expr: |
+        probe_success{group=~".*amqp.*"} == 0
+      for: 1m
+      labels:
+        severity: critical
+  - name: kubernetes-busness-service
+    rules:
+    - alert: ProjectPHPServiceDown
+      annotations:
+        message: "{{ $labels.env }} 环境中的 {{ $labels.instance }} 服务异常, 请联系管理员"
+      expr: |
+        probe_http_status_code{instance=~".*80",env="pre-cent",instance!~".*account.*|.*ingress.*|.*knowledge.*"} == 0
+      for: 1m
+      labels:
+        severity: critical
+    - alert: ProjectWebServiceDown
+      annotations:
+        message: "{{ $label.env }} 环境中的 {{ $labels.instance }} 服务异常, 请联系管理员"
+      expr: |
+        probe_http_status_code{env="pre-cent",instance!~".*80",instance=~".*console.*|.*knowledge.*|.*account-system-web.*"} == 0
+      for: 1m
+      labels:
+        severity: critical
+    - alert: ProjectGoServiceDown
+      annotations:
+        message: "{{ $label.env }} 环境中的 {{ $labels.instance }} 服务异常, 请联系管理员"
+      expr: |
+        probe_http_status_code{instance=~".*ingress-auth.*|.*zone-manager.*|.*account-center.*"} == 0
+      for: 1m
+      labels:
+        severity: critical
+  - name: domain-front
+    rules:
+    - alert: ProjectWebDomainDown
+      annotations:
+        message: "{{ $label.env }} 环境中的前端访问域名({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+        probe_http_status_code{group=~".*前端页面.*"} == 0
+      for: 30m 
+      labels:
+        severity: critical
+  - name: domain-backend
+    rules:
+    - alert: ProjectBackendDomainDown
+      annotations:
+        message: "{{ $label.env }} 环境中的后端服务请求域名({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+        probe_http_status_code{group=~".*后端.*"} == 0
+      for: 1m
+      labels:
+        severity: critical
+  - name: domain-backend-authservice
+    rules:
+    - alert: ProjectBackendDistAuthServiceDomainDown
+      annotations:
+        message: "{{ $label.env }} 环境中的后端鉴权服务请求域名({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+         probe_http_status_code{instance=~"https.*",instance=~".*ingress-auth-service.*"} == 0
+      for: 5m
+      labels:
+        severity: critical
+  - name: service-dist
+    rules:
+    - alert: ServiceDistMemberPHP
+      annotations:
+        message: "{{ $label.env }} 环境中的svc({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+        probe_http_status_code{sname=~"member.*",instance!~".*gateway.*|.*points.*"} == 0
+      for: 5m
+      labels:
+        severity: critical
+    - alert: ServiceMemberGO
+      annotations:
+        message: "{{ $label.env }} 环境中的svc({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+        probe_http_status_code{sname=~"member-api-gateway.*",instance=~".*8000"} == 0
+      for: 5m
+      labels:
+        severity: critical
+    - alert: ServiceDistPointsCore
+      annotations:
+        message: "{{ $label.env }} 环境中的svc({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+        probe_http_status_code{sname=~"points.*",instance!~".*points-offer.*"} == 0
+      for: 5m
+      labels:
+        severity: critical
+    - alert: ServiceDistPointsOffer
+      annotations:
+        message: "{{ $label.env }} 环境中的svc({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+        probe_success{sname=~".*points-offer.*",instance=~".*9501"} == 0
+      for: 5m
+      labels:
+        serverity: critical
+    - alert: ServiceCentPHP
+      annotations:
+        message: "{{ $label.env }} 环境中的svc({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+        probe_http_status_code{instance=~".*80",kubernetes_namespace="dadi-saas-member-pre",name=~".*service.*|.*system.*",name!~".*ingress.*|.*center.*"} == 0
+      for: 5m
+      labels:
+        severity: critical
+    - alert: ServiceDistGo
+      annotations:
+        message: "{{ $label.env }} 环境中的svc({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+        probe_http_status_code{env!~".*cent.*",instance=~".*ingress.*|.*zone.*",instance!~".*https.*"} == 0
+      for: 5m
+      labels:
+        severity: critical
+  - name: service-cent
+    rules:
+    - alert: ServiceCentGo
+      annotations:
+        message: "{{ $label.env }} 环境中的svc({{ $labels.instance }}) 访问异常,请联系管理员"
+      expr: |
+        probe_http_status_code{env="pre-cent",instance=~".*80",kubernetes_namespace="dadi-saas-member-pre",name=~".*ingress.*|.*center.*"} == 0
+      for: 5m
+      labels:
+        severity: critical
+  - name: traefikservice
+    rules:
+    - alert: TraefikServicePreCent404
+      annotations:
+        message: "{{ $label.env }} 环境中５分钟之内的访问请求出现404的占比已经达到%{{ $value }}了,请联系管理员"
+      expr: |
+        (sum(traefik_entrypoint_requests_total{protocol=~"http|https",group="pre-cent",code="404"}- (traefik_entrypoint_requests_total{protocol=~"http|https",group="pre-cent",code="404"} offset 5m)) / sum(traefik_entrypoint_requests_total{group="pre-cent"}-(traefik_entrypoint_requests_total{group="pre-cent"} offset 5m)) ) * 100 > 30
+      for: 5m
+      labels:
+        severity: critical
+    - alert: TraefikServicePreDist404
+      annotations:
+        message: "{{ $label.env }} 环境中５分钟之内的访问请求出现404的占比已经达到%{{ $value }}了,请联系管理员"
+      expr: |
+        (sum(traefik_entrypoint_requests_total{protocol=~"http|https",group="pre-dist-sz",code="404"}- (traefik_entrypoint_requests_total{protocol=~"http|https",group="pre-dist",code="404"} offset 5m)) / sum(traefik_entrypoint_requests_total{group="pre-dist-sz"}-(traefik_entrypoint_requests_total{group="pre-dist-sz"} offset 5m)) ) * 100 > 30
+      for: 5m
+      labels:
+        severity: critical
+    - alert: TraefikServiceProdCent404
+      annotations:
+        message: "{{ $label.env }} 环境中５分钟之内的访问请求出现404的占比已经达到%{{ $value }}了,请联系管理员"
+      expr: |
+        (sum(traefik_entrypoint_requests_total{protocol=~"http|https",group="prod-cent",code="404"}- (traefik_entrypoint_requests_total{protocol=~"http|https",group="prod-cent",code="404"} offset 5m)) / sum(traefik_entrypoint_requests_total{group="prod-cent"}-(traefik_entrypoint_requests_total{group="prod-cent"} offset 5m)) ) * 100 > 30
+      for: 5m
+      labels:
+        severity: critical
+
+    - alert: TraefikServiceProdDist404
+      annotations:
+        message: "{{ $label.env }} 环境中５分钟之内的访问请求出现404的占比已经达到%{{ $value }}了,请联系管理员"
+      expr: |
+        (sum(traefik_entrypoint_requests_total{protocol=~"http|https",group="prod-dist-sz",code="404"}- (traefik_entrypoint_requests_total{protocol=~"http|https",group="prod-dist-sz",code="404"} offset 5m)) / sum(traefik_entrypoint_requests_total{group="prod-dist-sz"}-(traefik_entrypoint_requests_total{group="prod-dist-sz"} offset 5m)) ) * 100 > 30
+      for: 5m
+      labels:
+        severity: critical
+    - alert: TraefikService403
+      annotations:
+        message: "{{ $label.env }} 环境中５分钟之内的访问请求出现403的占已经达到%{{ $value }}了,请联系管理员"
+      expr: |
+        (sum(traefik_entrypoint_requests_total{protocol=~"http|https",code="403"}- (traefik_entrypoint_requests_total{protocol=~"http|https",code="403"} offset 5m)) / sum(traefik_entrypoint_requests_total-(traefik_entrypoint_requests_total offset 5m)) ) * 100 > 10
+      for: 5m
+      labels:
+        severity: critical
+    - alert: TraefikService5XX
+      annotations:
+        message: "{{ $label.env }} 环境中５分钟之内的访问请求出现5XX的占已经达到%{{ $value }}了,请联系管理员"
+      expr: |
+        (sum(traefik_entrypoint_requests_total{protocol=~"http|https",code=~"5.*"}- (traefik_entrypoint_requests_total{protocol=~"http|https",code=~"5.*"} offset 5m)) / sum(traefik_entrypoint_requests_total-(traefik_entrypoint_requests_total offset 5m)) ) * 100 > 5
+      for: 5m
+      labels:
+        severity: critical
+    - alert: TraefikService5XX
+      annotations:
+        message: "{{ $label.env }} 环境中后端服务{{ $label.service }}的访问请求中状态码为5XX,请联系管理员"
+      expr: |
+        traefik_service_requests_total{group="pre-cent",code=~"5.*"} 
+      for: 5m
+      labels:
+        severity: critical
+  - name: kubepodstatus
+    rules:
+    - alert: KUbePodRestartNumber
+      annotations:
+        message: "{{ $label.group }} 环境中的Pod{{ $label.pod }}五分钟之内已经重启{{ $value }}了,请联系管理员"
+      expr: |
+        kube_pod_container_status_restarts_total- (kube_pod_container_status_restarts_total offset 5m) > 10
+      for: 5m
+      labels:
+        severity: critical
+    - alert: KubePodRestartNumber
+      annotations:
+        message: "{{ $label.group }} 环境中的Pod{{ $label.pod }}运行至今已经重启{{ $value }}了,请联系管理员"
+      expr: |
+        kube_pod_container_status_restarts_total > 100
+      for: 5m
+      labels:
+        severity: critical
+
+
+        
