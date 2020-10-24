@@ -1,6 +1,3 @@
-### 配置变量
-$entrypoints label_values(entrypoint)
-```json
 {
   "annotations": {
     "list": [
@@ -864,4 +861,3 @@ $entrypoints label_values(entrypoint)
   "uid": "lPW0UeAiz",
   "version": 4
 }
-```

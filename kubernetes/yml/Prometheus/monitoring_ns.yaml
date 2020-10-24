@@ -1,6 +1,0 @@
-cat > monitoring_ns.yaml <<EOF
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: monitoring
-EOF
