@@ -167,14 +167,14 @@ rabbitmqctl set_permissions -p my_vhost root ".*" ".*" ".*"
 sudo rabbitmqctl add_user  user_admin  passwd_admin  
 #赋予其administrator角色：
 sudo rabbitmqctl set_user_tags user_admin administrator
-```  
+```
 
 可以创建RabbitMQ监控用户，负责整个MQ的监控，例如：
 ```bash
 sudo rabbitmqctl add_user  user_monitoring  passwd_monitor 
 #赋予其monitoring角色
 sudo rabbitmqctl set_user_tags user_monitoring monitoring
-```  
+```
 
 可以创建某个项目的专用用户，只能访问项目自己的virtual hosts
 ```bash
@@ -358,7 +358,7 @@ rabbitmqctl set_policy ha-all "^" '{"ha-mode":"all"}'
 yum install gcc -y
 yum install haproxy -y
 # 修改配置
-cat > /etc/haproxy/haproxy.cfg <<- 'EOF'
+cat > ./haproxy.cfg <<- 'EOF'
 
 #logging options
 global
@@ -414,8 +414,10 @@ listen stats
     stats refresh 5s
 EOF
 ```
-#### 安装
+#### 源码安装
+
 ```bash
+# 源代码安装
 yum install -y openssl openssl-devel
 yum install -y gcc
 # 创建组
@@ -441,19 +443,7 @@ service haproxy restart #重启
 
 #### 配置haproxy
 ```bash
-mkdir -p /usr/local/haproxy/conf #创建配置文件目录
-mkdir -p /etc/haproxy #创建配置文件目录
-touch /usr/local/haproxy/conf/haproxy.cfg #创建配置文件
-ln -s /usr/local/haproxy/conf/haproxy.cfg /etc/haproxy/haproxy.cfg #添加配置文件软连接
-cp -r /usr/local/src/haproxy-1.6.9/examples/errorfiles /usr/local/haproxy/errorfiles #拷贝错误页面
-ln -s /usr/local/haproxy/errorfiles /etc/haproxy/errorfiles #添加软连接
-mkdir -p /usr/local/haproxy/log #创建日志文件目录
-touch /usr/local/haproxy/log/haproxy.log #创建日志文件
-ln -s /usr/local/haproxy/log/haproxy.log /var/log/haproxy.log #添加软连接
-cp /usr/local/src/haproxy-1.6.9/examples/haproxy.init /etc/rc.d/init.d/haproxy #拷贝开机启动文件
-chmod +x /etc/rc.d/init.d/haproxy #添加脚本执行权限
-chkconfig haproxy on #设置开机启动
-ln -s /usr/local/haproxy/sbin/haproxy /usr/sbin #添加软连接
+
 ```
 
 #### 配置日志轮转(syslog)
