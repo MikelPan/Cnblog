@@ -136,8 +136,66 @@ MongoDB副本集是有故障恢复功能的主从集群，由一个primary节点
 ##### 部署过程如下
 
 ```bash
+# 制作dockerfile 生产机器
+cat > Dockerfile <<- 'EOF'
+FROM centos:7
+RUN yum install wget vim net-tools htop -y \
+    && cp -r /etc/yum.repos.d /etc/yum.repos.d.bak \
+    && rm -f /etc/yum.repos.d/*.repo \
+    && wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo \
+    && wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo \
+    && yum clean all && yum makecache \
+    && yum install -y openssh-server \
+    && mkdir /var/run/sshd \
+    && echo 'root:123456' |chpasswd \
+    && sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
+    && mkdir /root/.ssh \
+    && ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+EOF
+docker build -t mongo_vm:v1 -f Dockerfile .
+# 创建机器
+for i in `seq 1 3`;do docker run --rm -itd --name mongo_vm_$i mongo_vm:v1;done
+# 查询ip地址
+for i in `seq 1 3`;do docker inspect mongo_vm_v1_$i -f {{.NetworkSettings.Networks.bridge.IPAddress}}
 # 服务器信息
-mongo0
+mongo01  172.17.0.3   Primary
+mongo02  172.17.0.4   Secondary
+mongo03  172.17.0.5   Secondary
+# 配置host解析
+cat >> /etc/hosts <<- 'EOF'
+# mongo
+172.17.0.3 mongo01
+172.17.0.4 mongo02
+172.17.0.5 mongo03
+EOF
+# 配置ssh-key
+for i in `seq 3 5`;do ssh-copy-id root@172.17.0.$i;done
+# 安装ansible
+yum install -y ansible
+cat >> /etc/ansible/hosts <<- 'EOF'
+[mongo]
+172.17.0.3
+172.17.0.4
+172.17.0.5
+EOF
+# 编写ansible批量安装脚本
+cat > deploy.yml <<- 'EOF'
+---
+- hosts: mongo
+  remote_user: root
+  gather_facts: false
+  tasks:
+    - name: download mongo
+      shell: wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-4.0.4.tgz -P /usr/local/src
+    
+    - name: 
+      unarchive:
+        src: /usr/local/src/mongodb-linux-x86_64-4.0.4.tgz
+        dest: /usr/local/src
+        mode: 0755
+        copy: no
+EOF
 ```
 
-cfg={ _id:"testrs", members:[ {_id:0,host:'10.10.148.130:27017',priority:2}, {_id:1,host:'10.10.148.131:27017',priority:1},
