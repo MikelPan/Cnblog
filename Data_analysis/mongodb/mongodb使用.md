@@ -150,26 +150,19 @@ RUN yum install wget vim net-tools htop -y \
     && echo 'root:123456' |chpasswd \
     && sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config \
     && mkdir /root/.ssh \
-    && ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+    && ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
 EOF
 docker build -t mongo_vm:v1 -f Dockerfile .
 # 创建机器
-for i in `seq 1 3`;do docker run --rm -itd --name mongo_vm_$i mongo_vm:v1;done
+for i in `seq 1 3`;do docker run --rm -itd --privileged=true  --name mongo_vm_$i mongo_vm:v1 /usr/sbin/init;done
 # 查询ip地址
-for i in `seq 1 3`;do docker inspect mongo_vm_v1_$i -f {{.NetworkSettings.Networks.bridge.IPAddress}}
+for i in `seq 1 3`;do docker inspect mongo_vm_$i -f {{.NetworkSettings.Networks.bridge.IPAddress}}
 # 服务器信息
 mongo01  172.17.0.3   Primary
 mongo02  172.17.0.4   Secondary
 mongo03  172.17.0.5   Secondary
-# 配置host解析
-cat >> /etc/hosts <<- 'EOF'
-# mongo
-172.17.0.3 mongo01
-172.17.0.4 mongo02
-172.17.0.5 mongo03
-EOF
 # 配置ssh-key
 for i in `seq 3 5`;do ssh-copy-id root@172.17.0.$i;done
 # 安装ansible
@@ -187,15 +180,101 @@ cat > deploy.yml <<- 'EOF'
   remote_user: root
   gather_facts: false
   tasks:
+    - name: configure hosts
+      shell: |
+        cat >> /etc/hosts <<- 'EOF'
+        # mongo
+        172.17.0.3 mongo01
+        172.17.0.4 mongo02
+        172.17.0.5 mongo03
+        EOF
+      tags:
+      - install
+
     - name: download mongo
       shell: wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-4.0.4.tgz -P /usr/local/src
+      tags:
+      - install
     
-    - name: 
+    - name: unarchive
       unarchive:
         src: /usr/local/src/mongodb-linux-x86_64-4.0.4.tgz
         dest: /usr/local/src
         mode: 0755
         copy: no
+      tags:
+      - install
+
+    - name: mkdir dir
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+      - "/usr/local/mongo"
+      - "/data/mongo/db"
+      tags:
+      - install
+
+    - name: create log file
+      file:
+        path: "{{ item }}/mongod.log"
+        state: touch
+      with_items:
+      - "/data/mongo"
+      tags:
+      - log
+
+    - name: copy files
+      shell: mv "{{ item }}"/* /usr/local/mongo/
+      with_items:
+      - "/usr/local/src/mongodb-linux-x86_64-4.0.4"
+      tags:
+      - install
+
+    - name: configure env 
+      shell: |
+        echo 'export PATH=/usr/local/mongodb/bin:$PATH' >> /etc/profile
+        source /etc/profile
+      tags:
+      - env
+
+    - name: configure conf file
+      shell: |
+        cat > /data/mongo/mongodb.cnf <<- 'EOF'
+        dbpath=/data/mongo/db
+        logpath=/data/mongo/mongod.log
+        pidfilepath=/data/mongo/mongod.pid
+        logappend=true
+        fork=true
+        port=27017
+        # 副本集
+        replSet=rs0
+        EOF
+      tags:
+      - conf
+
+    - name: reboot to start
+      shell: |
+        cat > /etc/systemd/system/mongod.service <<- 'EOF'
+        [Unit]
+        Description=mongodb
+        After=network.target remote-fs.target nss-lookup.target
+
+        [Service]
+        Type=forking
+        ExecStart=/usr/local/mongo/bin/mongod --config /data/mongo/mongodb.cnf
+        ExecReload=/bin/kill -s HUP $MAINPID
+        ExecStop=/usr/local/mongo/bin/mongod --shutdown --config /data/mongo/mongodb.cnf
+        PrivateTmp=true
+        [Install]
+        WantedBy=multi-user.target
+        EOF
+        systemctl enable mongod.servcie
+        systemctl start mongod
+      tags:
+      - start
 EOF
+#ansible-playbook deploy.yml --tags start
+ansible-playbook deploy.yml
 ```
 
