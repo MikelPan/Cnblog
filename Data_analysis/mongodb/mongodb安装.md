@@ -34,20 +34,22 @@ source /etc/profile
  mkdir -pv /data/mongo/mongodb.cnf
  mkdir -pv /data/mongo/mongo.log
  # 创建启动配置文件
- vim /data/mongo/mongodb.cnf
- ---------------------------------------start-------------------------------------
- dbpath=/data/momgo/db
- logpath=/data/momgo/momgo.log
+ cat > /data/mongo/mongodb.cnf <<- 'EOF'
+ dbpath=/data/mongo/db
+ logpath=/data/mongo/mongod.log
+ pidfilepath=/data/mongo/mongod.pid
  logappend=true
  fork=true
  port=27017
+ # 副本集
+ #replSet=rs0
+ EOF
  # 启动mongo
 mongod --auth -f /data/mongo/mongodb.cnf
  # 进入mongo管理控制台
 mongo
 # 配置开机启动
-vim /etc/systemd/system/mongod.service
-----------------------------------------start----------------------------------------
+cat > /etc/systemd/system/mongod.service <<- 'EOF'
 [Unit]
 Description=mongodb
 After=network.target remote-fs.target nss-lookup.target
@@ -60,7 +62,7 @@ ExecStop=/usr/local/mongodb/bin/mongod --shutdown --config /servers/db/mongo/mon
 PrivateTmp=true
 [Install]
 WantedBy=multi-user.target
-----------------------------------------end-------------------------------------------
+EOF
 systemctl enable mongod.servcie
 systemctl start mongod
 ```
@@ -69,7 +71,7 @@ systemctl start mongod
 # 创建数据库
 use DATABASE_NAME
 # 插入数据
-db.runoob.insert({"name":"你家人来找你了"})
+db.test.insert({"name":"你家人来找你了"})
 # 删除数据库
 use runoob
 db.dropDatabase()
