@@ -21,7 +21,7 @@ Option:
 EOF
 }
 
-while getopts "a:b:h" opts
+while getopts "a:b:h:" opts
 do
   case $opts in
     a)
@@ -46,6 +46,15 @@ done
 
 #可选参数赋值
 
+
+
+# 若无指定任何参数输出帮助文档
+if [ $# = 0 ]
+then
+  helpdoc
+  exit 1
+fi
+
 # 安装filebrowers
 Install_filebrower {
   sed -i 's/local.cluster/${DOMAIN}/g' docker-compose-${SERVICE_NAME}.yml
@@ -55,12 +64,3 @@ Install_filebrower {
 main {
   Install_filebrower
 }
-
-# 若无指定任何参数输出帮助文档
-if [ $# = 0 ]
-then
-  helpdoc
-  exit 1
-fi
-
-main
