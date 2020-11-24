@@ -4,7 +4,7 @@ BASE_DIR=$(cd "$(dirname "$0")";pwd)
 cd $BASE_DIR
 while getopts "a:b:h" opts
 do
-  case $opts
+  case $opts in
     a)
       #DOMAIN:域名
       DOMAIN=$OPTARG
