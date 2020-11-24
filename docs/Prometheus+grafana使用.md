@@ -88,9 +88,9 @@ systemctl start grafana-server
 # 下载
 官方地址　https://github.com/grafana/loki/releases
 ## loki下载
-wget https://github.com/grafana/loki/releases/download/v1.5.0/loki-linux-amd64.zip -P /apps/software
+wget https://github.com/grafana/loki/releases/download/v2.0.0/loki-linux-amd64.zip -P /apps/software
 ## promtail下载
-wget https://github.com/grafana/loki/releases/download/v1.5.0/promtail-linux-amd64.zip -P /apps/software
+wget https://github.com/grafana/loki/releases/download/v2.0.0/promtail-linux-amd64.zip -P /apps/software
 ## loki 配置文件
 wget https://raw.githubusercontent.com/grafana/loki/master/cmd/loki/loki-local-config.yaml
 ## promtail　配置文件
@@ -101,6 +101,63 @@ cd /usr/local/loki && ./promtail-local-config -config.file=promtail-local-config
 # 容器部署
 docker run -d --name grafana-loki -v $(pwd):/mnt/config -p 3100:3100 grafana/loki:1.5.0 -config.file=/mnt/config/loki-local-config.yaml
 docker run -d --name grafana-loki-promtail -v $(pwd):/mnt/config -v /root/data/logs:/data/logs grafana/promtail:1.5.0 -config.file=/mnt/config/promtail-local-config.yaml
+```
+#### promtail 使用systemd管理
+vim promtail.service
+```bash
+cat > /usr/lib/systemd/system/promtail.service <<- 'EOF'
+[Unit]
+Description=promtail daemon
+
+[Service]
+#Type=forking
+Restart=always
+RestartSec=1
+ExecStart=/opt/promtail/promtail --config.file=/opt/promtail/promtail-local-config.yaml
+
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+#### process-exporter
+```bash
+# 下载
+wget https://github.com/ncabatoff/process-exporter/releases/download/v0.7.5/process-exporter-0.7.5.linux-amd64.tar.gz -P /usr/local/src
+# 安装process-exporter
+tar zxvf /usr/local/src/process-exporter-0.7.5.linux-amd64.tar.gz -C /usr/local
+# 添加配置
+cat > cmdlins.yml <<- 'EOF'
+process_names:
+  #- name: "{{.Comm}}:{{.Matches.Jar}}"
+  #- name: "{{ .Matches.Jar}}"
+  - name: "java {{.Matches.Jar}}"
+    comm:
+    - java
+    cmdline:
+    - java\s+(?P<Jar>.+)
+  #- name: "{{ .Comm}}"
+  - name: "{{.Matches}}"
+    cmdline:
+    - '.+'
+EOF
+
+# system管理
+cat > /lib/systemd/system/process-exporter.service <<- 'EOF'
+[Unit]
+Description=Prometheus exporter for processors metrics, written in Go with pluggable metric collectors.
+Documentation=https://github.com/ncabatoff/process-exporter
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+WorkingDirectory=/usr/local/process-exporter/
+ExecStart=/usr/local/process-exporter/process-exporter --config.path=/usr/local/process-exporter/cmdlins.yml
+[Install]
+WantedBy=multi-user.target
+EOF
 ```
 
 #### loki配置
@@ -169,7 +226,7 @@ server:
   grpc_listen_port: 0
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /opt/promtail/positions.yaml
 
 clients:
   - url: http://localhost:port/loki/api/v1/push
@@ -205,3 +262,6 @@ docker run -d \
     -v /data/logs:/data/logs grafana/promtail:1.5.0 \
     -config.file=/mnt/config/promtail-local-config.yaml
 ```
+)
+query_result(request_latency_count
+/.*host_ip="(.*)",instance.*/
