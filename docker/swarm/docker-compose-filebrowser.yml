@@ -14,7 +14,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik-public"
-        - "traefik.http.routers.filebrowser.rule=Host(`local.cluster`)"
+        - "traefik.http.routers.filebrowser.rule=Host(`second.local.cluster`)"
         - "traefik.http.routers.filebrowser.entrypoints=websecure"
         - "traefik.http.routers.filebrowser.tls=true"
         - "traefik.http.routers.filebrowser.tls.certresolver=foo"
