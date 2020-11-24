@@ -19,7 +19,7 @@ Usage:
 Option:
     -a    domain name
     -b    service name
-    -c    second name
+    -c    second domain name
 EOF
 }
 
