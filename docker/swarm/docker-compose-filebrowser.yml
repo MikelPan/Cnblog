@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  filebrowser:
+    image: filebrowser/filebrowser
+    ports:
+      - "9001:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/data/filebrower:/srv"
+    networks:
+      - "tarefik-public"
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-public"
+        - "traefik.http.routers.filebrowser.rule=Host(`local.cluster`)"
+        - "traefik.http.routers.filebrowser.entrypoints=websecure"
+        - "traefik.http.routers.filebrowser.tls=true"
+        - "traefik.http.routers.filebrowser.tls.certresolver=foo"
+        - "traefik.http.routers.filebrowser.tls.domains[0].main=local.cluster"
+        - "traefik.http.routers.filebrowser.tls.domains[0].sans=*.local.cluster" 
+        - "traefik.http.services.filebrowser.loadbalancer.server.port=9001"
+      replicas: 1
+      #placement:
+        #constraints: [node.role == manager]
+networks:
+  traefik-public:
+    external: true
