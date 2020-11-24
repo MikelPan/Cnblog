@@ -2,6 +2,25 @@
 
 BASE_DIR=$(cd "$(dirname "$0")";pwd)
 cd $BASE_DIR
+
+helpdoc(){
+    cat <<EOF
+Description:
+
+    This shellscript is used to run a docker service in docker swarm
+    - Domain replace exmple domain, if enabled, please command to 'curl -v https://Domain:443'
+    - Service is to display to docker swarm, if not docker stack is install to faild
+
+Usage:
+
+    $0 -a <domain name> -b <service name> 
+
+Option:
+    -a    domain name
+    -b    service name
+EOF
+}
+
 while getopts "a:b:h" opts
 do
   case $opts in
@@ -14,11 +33,12 @@ do
       SERVICE_NAME=$OPTARG
       ;;
     h)
-      echo -e "OPTTIONS:\n-a:域名(必选) \n-b:服务名(必选)"
-      exit 1
+      helpdoc
+      exit 0
       ;;
     ?)
       echo "missing options,pls check!"
+      helpdoc
       exit 1
       ;;
   esac
@@ -35,5 +55,12 @@ Install_filebrower {
 main {
   Install_filebrower
 }
+
+# 若无指定任何参数输出帮助文档
+if [ $# = 0 ]
+then
+  helpdoc
+  exit 1
+fi
 
 main
