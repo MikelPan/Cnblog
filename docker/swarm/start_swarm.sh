@@ -64,3 +64,5 @@ Install_filebrower {
 main {
   Install_filebrower
 }
+
+main
