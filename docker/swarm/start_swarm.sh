@@ -29,7 +29,7 @@ done
 # 安装filebrowers
 Install_filebrower {
   sed -i 's/local.cluster/${DOMAIN}/g' docker-compose-${SERVICE_NAME}.yml
-  docker stack deploy -c docker-compose-${SERVICE_NAME}.yaml ${SERVICE_NAME}
+  docker stack deploy -c docker-compose-${SERVICE_NAME}.yml ${SERVICE_NAME}
 }
 
 main {
