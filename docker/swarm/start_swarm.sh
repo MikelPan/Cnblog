@@ -9,7 +9,7 @@ Description:
 
     This shellscript is used to run a docker service in docker swarm
     - Domain Domain replace exmple domain
-    - Second if enabled, please command to 'curl -v https://Domain:443'
+    - Second Domain if enabled, please command to 'curl -v https://Second Domain:443'
     - Service is to display to docker swarm, if not docker stack is install to faild
 
 Usage:
@@ -64,6 +64,7 @@ fi
 # 安装filebrowers
 Install_filebrower {
   sed -i 's/local.cluster/${DOMAIN}/g' docker-compose-${SERVICE_NAME}.yml
+  sed -i 's/second.local.cluster/${SECOND_DOMAIN}/g' docker-compose-${SERVICE_NAME}.yml
   docker stack deploy -c docker-compose-${SERVICE_NAME}.yml ${SERVICE_NAME}
 }
 
