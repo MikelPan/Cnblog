@@ -11,7 +11,7 @@ curl -XDELETE --user user:pwd http://localhost:9200/market_behavior_94e8c881-26d
 
 #### es 监控api
 ```bash
-curl -XGET --user elastic:hkLZfvsvecncyd5b3kkJPdyJ http://10.101.5.51:9200/_cat
+curl -XGET --user user:pwd http://localhost:9200/_cat
 /_cat/allocation
 /_cat/shards
 /_cat/shards/{index}
@@ -40,15 +40,15 @@ curl -XGET --user elastic:hkLZfvsvecncyd5b3kkJPdyJ http://10.101.5.51:9200/_cat
 /_cat/snapshots/{repository}
 /_cat/templates
 # 查看集群
-curl -XGET --user elastic:hkLZfvsvecncyd5b3kkJPdyJ http://10.101.5.51:9200/_cat/master
+curl -XGET --user user:pwd http://localhost:9200/_cat/master
 # 查看节点
-curl -XGET --user elastic:hkLZfvsvecncyd5b3kkJPdyJ http://10.101.5.51:9200/_cat/node
+curl -XGET --user user:pwd http://localhost:9200/_cat/node
 # 查看模板
-curl -XGET --user elastic:hkLZfvsvecncyd5b3kkJPdyJ http://10.101.5.51:9200/_cat/templates
+curl -XGET --user user:pwd http://localhost:9200/_cat/templates
 # 查看副本
-curl -XGET --user elastic:hkLZfvsvecncyd5b3kkJPdyJ http://10.101.5.51:9200/_cat/shards
+curl -XGET --user user:pwd http://localhost:9200/_cat/shards
 # 需改默认分片
-curl -X PUT --user elastic:hkLZfvsvecncyd5b3kkJPdyJ http://10.101.5.51:9200/_template/scrm  -H 'Content-Type: application/json' -d '{
+curl -X PUT --user user:pwd http://localhost:9200/_template/scrm  -H 'Content-Type: application/json' -d '{
   "template": "*",
   "settings": {
     "number_of_shards": 1,
