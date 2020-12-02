@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>vue test</title>
+</head>
+
+<body>
+    <!--这是我们的View-->
+    <div id="app">
+        <h1>{{ msg }}</h1>
+        <h2>计算两个数加减乘除</h2>
+        <p><strong class="data-label">A</strong><input type="text" v-model="a"></p>
+        <p><strong class="data-label">B</strong><input type="text" v-model="b"></p>
+        <p><strong class="data-label">C=A*2+2</strong>{{ c }}</p>
+        <p><strong class="data-label">D=A+B*2</strong>{{ d }}</p>
+        <p><strong class="data-label">E=B/2</strong>{{ e }}</p>
+        <p><strong class="data-label">F=C+D</strong>{{ f }}</p>
+        <p><strong class="data-label">G=D-E</strong>{{ g }}</p>
+    </div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
+<script type="text/javascript">
+    // 创建一个 Vue 实例
+    let vm = new Vue({
+        el: '#app',
+        data() {
+            return {
+                a: 3,
+                b: 4,
+                msg: '简易计算器实现'
+            }
+        },
+        computed: { //计算属性
+            c () {
+                return this.a * 2 +2
+            },
+            d () {
+                return Number(this.a) + this.b * 2
+            },
+            e () {
+                return this.b / 2
+            },
+            f () {
+                return Number(this.c) + Number(this.d)
+            },
+            g () {
+                return this.d - this.e
+            }
+        }
+    })
+</script>
+<style>
+    #app {
+        font-family: Roboto, sans-serif;
+        color: #363e4f;
+    }
+    .data-label {
+        display: inline-block;
+        width: 160px;
+    }
+</style>
+</html>

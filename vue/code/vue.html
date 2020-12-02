@@ -3,13 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>vue test</title>
 </head>
 
 <body>
     <!--这是我们的View-->
     <div id="app">
         <h1>{{ title }}</h1>
+        <button @click="randomTitle()">改变title</button>
+        <button @click="destoryVm()">销毁实例</button>
     </div>
 </body>
 <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
@@ -19,8 +21,40 @@
         el: '#app',
         data() {
             return {
-                title: 'Hello World'
+                title: 'Hello World！'
             }
+        },
+        methods: {
+            randomTitle () {
+                this.title = 'Hello' + ['China','World','Universe'][Math.floor(Math.random() * 2.999)]
+            },
+            destoryVm () {
+                this.$destroy()
+            }
+        },
+        beforCreate () {
+            console.log('before create')
+        },
+        create() {
+            console.log('created')
+        },
+        beforMount () {
+            console.log('before mount')
+        },
+        mounted () {
+            console.log('mounted')
+        },
+        beforeUpdate () {
+            console.log('before update')
+        },
+        updated () {
+            console.log('updated')
+        },
+        beforeDestroy () {
+            console.log('before destory')
+        },
+        destroyed () {
+            console.log('destroyed')
         }
     })
 </script>

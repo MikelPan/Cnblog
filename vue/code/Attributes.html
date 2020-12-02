@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>vue test</title>
+</head>
+
+<body>
+    <!--这是我们的View-->
+    <!-- <div id="app" style="margin-left: 300px;">
+        <h2>文本插值</h2>
+        <p><label class="pro file">变量：</label>{{ num }}</p>
+        <p><label class="pro file">表达式：</label>{{ 5+ 10 }}</p>
+        <p><label class="pro file">三目运算符：</label>{{ true ? 15 : 10 }}</p>
+        <p><label class="pro file">函数：</label>{{ getNum() }}</p>
+        <p><label class="pro file">匿名函数：</label>{{ (() => 5 + 10)() }}</p>
+        <p><label class="pro file">对象：</label>{{ { num: 15 } }}</p>
+        <p><label class="pro file">函数对象：</label>{{ getNum }}</p>
+        <p><label class="pro file">html代码（表达式）：</label>{{ '<span>15</span>' }}</p>
+        <p><label class="pro file">html代码（变量）：</label>{{ html }}</p>
+    </div> -->
+    <!-- 指令绑定 -->
+    <!-- <div id="app" style="margin-left: 300px;">
+        <p :class="className" :title="title">危险误触</p>
+        <button :disabled="10 + 10 === 20">点击有奖</button>
+        <input :type="'text'" :placeholder="true ? '请输入' : '请录入'">
+    </div> -->
+    <!-- 类名绑定 -->
+    <!-- <div id="app">
+        <p class="color-gray size-18 style-italic">《vue2》，你好！</p>
+        <p :class="classStr">《vue2.0》,你好！</p>
+        <p :class="classArr">《vue2.0》,你好！</p>
+        <p :class="classOjb1">《vue2.0》,你好！</p>
+        <p :class="classOjb2">《vue2.0》,你好！</p>
+    </div> -->
+    <!-- 样式绑定 -->
+    <div id="app">
+        <p :style="styleStr">《vue2.0》,你好！</p>
+        <p :style="styleOjb1">《vue2.0》,你好！</p>
+        <p :style="styleOjb2">《vue2.0》,你好！</p>
+    </div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
+<script type="text/javascript">
+    // 创建一个 Vue 实例
+    let vm = new Vue({
+        el: '#app',
+        data () {
+            return {
+                styleStr: 'color: gray;font-size: 18px; font-style: italic;',
+                styleOjb1: { //对象,绑定样式
+                    'color': -1 ? 'gray' : 'black',
+                    'font-size': '18px',
+                    'font-style': 'italic'
+                },
+                styleOjb2: { //对象，未绑定样式
+                    'color': -1 ? 'gray' : 'black',
+                    'font-size': '' ? '18px' : '',
+                    'font-style': null ? 'italic' : ''
+                }
+            }
+        }
+    })
+</script>
+<style>
+    .italic {
+        font-style: italic;
+    }
+    .color-gray {
+        color: gray;
+    }
+    .size-18 {
+        font-size: 20px;
+    }
+    .style-italic {
+        font-style: italic;
+    }
+</style>
+</html>

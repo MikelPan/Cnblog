@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>vue test</title>
+</head>
+
+<body>
+    <!--这是我们的View-->
+    <!-- <div id="app" style="margin-left: 300px;">
+        <h2>文本插值</h2>
+        <p><label class="pro file">变量：</label>{{ num }}</p>
+        <p><label class="pro file">表达式：</label>{{ 5+ 10 }}</p>
+        <p><label class="pro file">三目运算符：</label>{{ true ? 15 : 10 }}</p>
+        <p><label class="pro file">函数：</label>{{ getNum() }}</p>
+        <p><label class="pro file">匿名函数：</label>{{ (() => 5 + 10)() }}</p>
+        <p><label class="pro file">对象：</label>{{ { num: 15 } }}</p>
+        <p><label class="pro file">函数对象：</label>{{ getNum }}</p>
+        <p><label class="pro file">html代码（表达式）：</label>{{ '<span>15</span>' }}</p>
+        <p><label class="pro file">html代码（变量）：</label>{{ html }}</p>
+    </div> -->
+    <div id="app" style="width: 800px;margin: 0 auto;">
+        <div>
+            {{ blog }}
+        </div>
+        <hr>
+        <div v-html="blog">
+        </div>
+    </div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
+<script type="text/javascript">
+    // 创建一个 Vue 实例
+    let vm = new Vue({
+        el: '#app',
+        data() {
+            return {
+                blog: `<h2 class="align-center">一对"兄弟"</h2>
+                    <div class="align-center">
+                        <img src="https://file.tapd.cn/img_dist/official/home-banner-c04cc1135b.png"
+                        </div>
+                    <p>哈哈哈哈!</p>
+                `
+                // num: 15,
+                // html: '<span>15</span>'
+            }
+        }
+        // methods: {
+        //     getNum () {
+        //         return this.num
+        //     }
+        // }
+    })
+</script>
+<style>
+    .pro file {
+        display: inline-block;
+        width: 160px;
+    }
+    .align-center {
+        text-align: center;
+    }
+</style>
+</html>
