@@ -25,3 +25,14 @@ cnpm install
 ```bash
 npm run build
 ```
+#### yarn 使用
+```bash
+# 添加包
+yarn add package
+# 安装依赖
+yarn install
+# 移除包
+yarn remove package
+# 运行
+yarn run
+```

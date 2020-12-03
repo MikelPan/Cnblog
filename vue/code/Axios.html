@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>vue test</title>
+</head>
+
+<body>
+    <!--这是我们的View-->
+    <div id="app">
+        <h1>网站列表</h1>
+        <div
+            v-for="site in info"
+        >
+            {{ site.rate }}
+        </div>
+    </div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
+<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+<script type="text/javascript">
+    // 创建一个 Vue 实例
+    let vm = new Vue({
+        el: '#app',
+        data () {
+            return {
+                info: null
+            }
+        },
+        mounted() {
+            axios
+                .get('https://www.baidu.com')
+                .then(response => (this.info = response.data.bpi))
+                .catch(function (error) { // 请求失败处理
+                    console.log(error);
+                 });
+        }
+    })
+</script>
+<style>
+    .italic {
+        font-style: italic;
+    }
+    .color-gray {
+        color: gray;
+    }
+    .size-18 {
+        font-size: 20px;
+    }
+    .style-italic {
+        font-style: italic;
+    }
+</style>
+</html>
