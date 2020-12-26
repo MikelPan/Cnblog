@@ -29,10 +29,24 @@
             }
         },
         mounted() {
-            axios
-                .get('https://www.baidu.com')
-                .then(response => (this.info = response.data.bpi))
-                .catch(function (error) { // 请求失败处理
+            console.log(this)
+            const request = axios.create({
+                headers: {//请求头设置为表单提交的请求头
+                    'Access-Control-Allow-Origin': "*"
+                },
+                baseURL: "http://localhost/api/",
+                proxy: {
+                    host: "https://www.baidu.com",
+                    port: "9999"
+                }
+            })
+            request({
+                url: '/user',
+                method: 'get',
+            }).then(response => {
+                    console.log(response)
+                })
+                .catch(error => { // 请求失败处理
                     console.log(error);
                  });
         }
