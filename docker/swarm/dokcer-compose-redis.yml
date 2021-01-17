@@ -5,6 +5,8 @@ services:
     image: redis
     networks:
       - swarm_net
+    ports:
+      - 6379:6379
     deploy:
       mode: replicated
       replicas: 2
