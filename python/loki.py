@@ -11,7 +11,7 @@ def loki():
     app = ".*uat-container.*"
     #app = "user-control-service-master-container-provider"
     label="app_kubernetes_io_instance"
-    url="http://47.93.55.89:31000/loki/api/v1/query_range"
+    url="http://localhost:3100/loki/api/v1/query_range"
     st=(datetime.datetime.now()).strftime("%Y-%m-%d")
     times=''
     time=(datetime.datetime.now()-datetime.timedelta(minutes=5)).strftime("%H:%M")
@@ -32,7 +32,7 @@ def loki():
             print(msg)
             #msg = json.dumps(i['values'], sort_keys=True, indent=4)
             for j in i['values'][:][:]:
-                loki_url = "https://grafana-test.01member.com/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bapp_kubernetes_io_instance%3D~%5C%22" + i['stream']['app_kubernetes_io_instance'] + "%5C%22%7D%7C~%5C%22" + st + "%5C%22%7C~%5C%22ERROR%5C%22%7C~%5C%22.*com.dadi01.scrm.*%5C%22%22,%22maxLines%22:5000%7D%5D"
+                loki_url = "https://localhost/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bapp_kubernetes_io_instance%3D~%5C%22" + i['stream']['app_kubernetes_io_instance'] + "%5C%22%7D%7C~%5C%22" + st + "%5C%22%7C~%5C%22ERROR%5C%22%7C~%5C%22.*com.dadi01.scrm.*%5C%22%22,%22maxLines%22:5000%7D%5D"
                 data = {
                     "project": i['stream']['app_kubernetes_io_name'],
                     "instance": i['stream']['app_kubernetes_io_instance'],
@@ -42,7 +42,7 @@ def loki():
                     "url": loki_url
                 }
                 print(data)
-                weixin_url="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=cd3ec070-386c-45c0-be6f-f3f628bf8a51"
+                weixin_url="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=cd3ec070-386c-45c0-be6f-f3f628dsss42"
 
                 msg = "### 错误日志详情如下 \n\n" \
                       "**项目名称:**&emsp; %s \n\n" \
