@@ -20,7 +20,7 @@ deploy_docker(){
     yum-config-manager \
           --add-repo \
             http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-    yum install -y docker-ce-19.03.5.ce 
+    yum install -y docker-ce-19.03.5 
     rm -rf /etc/docker
     mkdir /etc/docker
     cat > /etc/docker/daemon.json <<EOF
