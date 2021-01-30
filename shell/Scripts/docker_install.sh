@@ -20,24 +20,26 @@ deploy_docker(){
     yum-config-manager \
           --add-repo \
             http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-    yum install -y docker-ce
+    yum install -y docker-ce-19.03.5.ce 
     rm -rf /etc/docker
     mkdir /etc/docker
     cat > /etc/docker/daemon.json <<EOF
 {
-  "exec-opts": ["native.cgroupdriver=cgroupfs"],
+  "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
   "data-root":"/var/lib/docker",
   "log-opts": {
     "max-size": "100m",
-    "max-file": "3"
+    "max-file": "10"
    },
   "storage-driver": "overlay2",
   "storage-opts": [
     "overlay2.override_kernel_check=true"
   ],
   "insecure-registries": [],
-  "registry-mirrors": ["https://uyah70su.mirror.aliyuncs.com"]
+  "registry-mirrors": ["https://uyah70su.mirror.aliyuncs.com"],
+  "live-restore": true,
+  "oom-score-adjust": -1000
 }
 EOF
 
