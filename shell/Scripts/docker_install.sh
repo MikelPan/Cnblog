@@ -76,8 +76,8 @@ EOF
     systemctl enable docker
     systemctl start docker
 
-    export DOCKER_COMPOSE_VERSION=1.25.0-rc2
-    curl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+    export DOCKER_COMPOSE_VERSION=1.25.0
+    curl -L https://get.daocloud.io/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
 }
 deploy_docker
