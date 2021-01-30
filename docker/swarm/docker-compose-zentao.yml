@@ -1,13 +1,22 @@
-version: "3.8"
+version: "3.9"
 
 services:
   redis:
-    image: redis
+    image: idoop/zentao:latest
     networks:
       yfgj_net:
         ipv4_address: 10.0.16.2
     ports:
-      - 6379:6379
+      - 9000:80
+      - 9001:3306
+    envrionment:
+      - ADMINER_USER="root"
+      - ADMINER_PASSWD="123456"
+      - BIND_ADDRESS="false"
+    extra_hosts:
+      - "smtp.exmail.qq.com:163.177.90.125"
+    volumes:
+      - /data/zbox:/opt/zbox
     deploy:
       mode: replicated
       replicas: 1
