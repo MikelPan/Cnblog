@@ -2,9 +2,9 @@
 
 docker stop zentao-server
 docker rm zentop-server
-docker run --name zentao-server
-    -p 80:80 \
-    -p 3306:3306 \
+docker run --name zentao-server \
+    -p 9000:80 \
+    -p 9001:3306 \
     -e ADMINER_USER="root" \
     -e ADMINER_PASSWD="password" \
     -e BIND_ADDRESS="false" \
