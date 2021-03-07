@@ -7,5 +7,5 @@ do
 done
 for pkg in mysql-community-client-5.7.33-1.el7.x86_64.rpm mysql-community-libs-5.7.33-1.el7.x86_64.rpm mysql-community-common-5.7.33-1.el7.x86_64.rpm
 do
-    wget ivh /usr/local/src/$pkg
+    rpm -ivh /usr/local/src/$pkg
 done
