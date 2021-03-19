@@ -4,7 +4,7 @@ yum install -y wget
 #2、下载tar包
 wget -c https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz -P /usr/local/src
 #3、解压文件
-#tar zxvf /root/software/Python-3.7.3.tgz -C /usr/local/src
+tar zxvf /usr/local/src/Python-3.7.3.tgz -C /usr/local/src
 mkdir /usr/local/python
 #4、添加环境变量
 echo "export PATH=$PATH:/usr/local/python/bin" >> /etc/profile
