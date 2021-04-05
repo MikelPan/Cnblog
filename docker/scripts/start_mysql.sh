@@ -8,4 +8,4 @@ docker run --name mysql-server \
   -v /var/lib/mysql:/var/lib/mysql \
   -v /root/mysql.cnf:/etc/mysql/conf.d/mysql.cnf \
   --restart always \
-  -d mysql:5.7.33 --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+  -d mysql:5.7.33 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
