@@ -8,7 +8,7 @@ docker run --name rabbitmq-server --restart=alwsys \
   -v /var/lib/rabbitmq:/var/lib/rabbitmq \
   -v /etc/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
   --hostname hostname \
-  -e RABBITMQ_DEFAULT_VHOST=hostname \
+  -e RABBITMQ_DEFAULT_VHOST=rabbitmq-server \
   -e RABBITMQ_DEFAULT_USER=admin \
-  -e RABBITMQ_DEFAULT_PASS=ddddddd \
+  -e RABBITMQ_DEFAULT_PASS=admin \
   -d rabbitmq:3.8.14-management
