@@ -2,7 +2,7 @@
 
 docker stop rabbitmq-server
 docker rm rabbitmq-server
-docker run --name rabbitmq-server --restart=alwsys \
+docker run --name rabbitmq-server --restart=always \
   -p 5672:5672 \
   -p 15672:15672 \
   -v /var/lib/rabbitmq:/var/lib/rabbitmq \
