@@ -18,6 +18,7 @@ services:
       - "--log.level=INFO"
       - "--api.insecure=true"
       - "--providers.docker=true"
+      - "--providers.docker.swarmMode=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
@@ -63,6 +64,14 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.ctq6.cn`)" && Path(`/dashboard`)
+        - "traefik.http.services.traefik_traefik.loadbalancer.server.port=8080"
+        - "traefik.http.routers.traefik.tls=true"
+        - "traefik.http.routers.traefik.tls.certresolver=foo"
+        - "traefik.http.routers.traefik.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.traefik.tls.domains[0].sans=*.ctq6.cn" 
       placement:
         constraints: [node.role == manager]
       restart_policy:
