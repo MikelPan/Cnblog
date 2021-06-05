@@ -11,7 +11,7 @@ services:
     ports:
       - 8088:80
     networks:
-      - swarm_net
+      - yfgj_net
     deploy:
       mode: replicated
       replicas: 2
