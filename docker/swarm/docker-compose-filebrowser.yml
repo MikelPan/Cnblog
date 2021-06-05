@@ -14,7 +14,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=traefik-public"
-        - "traefik.http.routers.filebrowser.rule=Host(`file.local.cluster`)"
+        - "traefik.http.routers.filebrowser.rule=Host(`second.local.cluster`)"
         - "traefik.http.routers.filebrowser.entrypoints=websecure"
         - "traefik.http.routers.filebrowser.tls=true"
         - "traefik.http.routers.filebrowser.tls.certresolver=foo"
@@ -25,5 +25,6 @@ services:
       placement:
         constraints: [node.role == manager]
 networks:
-  traefik-public:
+  yfgj_net:
     external: true
+    name: yfgj_net

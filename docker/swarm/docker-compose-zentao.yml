@@ -9,6 +9,7 @@ services:
     ports:
       - 9000:80
       - 9001:3306
+    environment:
     envrionment:
       - ADMINER_USER="root"
       - ADMINER_PASSWD="123456"
