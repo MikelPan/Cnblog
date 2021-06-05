@@ -15,6 +15,12 @@ services:
     deploy:
       mode: replicated
       replicas: 2
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.routers.nginx-dashboard.rule=Host(`nginx.ctq6.cn`) && Path(`/`)"
+        - "traefik.http.services.nginx_nginx.loadbalancer.server.port=80"
+        - "traefik.http.routers.nginx-dashboard.entrypoints=web"
       resources:
         limits:
           cpus: '0.50'

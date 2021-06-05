@@ -66,12 +66,15 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.ctq6.cn`) && Path(`/`)"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.routers.traefik-ui.rule=Host(`traefik.ctq6.cn`) && Path(`/`)"
         - "traefik.http.services.traefik_traefik.loadbalancer.server.port=8080"
-        - "traefik.http.routers.traefik.tls=true"
-        - "traefik.http.routers.traefik.tls.certresolver=foo"
-        - "traefik.http.routers.traefik.tls.domains[0].main=ctq6.cn"
-        - "traefik.http.routers.traefik.tls.domains[0].sans=*.ctq6.cn" 
+        - "traefik.http.routers.traefik-ui.entrypoints=websecure"
+        - "traefik.http.routers.traefik-ui.middlewares=redirect-https
+        - "traefik.http.routers.traefik-ui.tls=true"
+        - "traefik.http.routers.traefik-ui.tls.certresolver=foo"
+        - "traefik.http.routers.traefik-ui.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.traefik-ui.tls.domains[0].sans=*.ctq6.cn" 
       placement:
         constraints: [node.role == manager]
       restart_policy:
