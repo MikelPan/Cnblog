@@ -16,7 +16,6 @@ services:
         - "traefik.docker.network=yfgj_nat"
         - "traefik.http.routers.filebrowser.rule=Host(`file.ctq6.cn`)"
         - "traefik.http.services.filebrower_filebrower.loadbalancer.server.port=80"
-        - "traefik.http.routers.filebrowser.entrypoints=websecure"
         - "traefik.http.routers.filebrowser.tls=true"
         - "traefik.http.routers.filebrowser.tls.certresolver=foo"
         - "traefik.http.routers.filebrowser.tls.domains[0].main=ctq6.cn"
