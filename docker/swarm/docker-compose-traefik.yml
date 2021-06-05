@@ -67,7 +67,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=yfgj_net"
-        - "traefik.http.routers.traefik-ui.rule=Host(`traefik.ctq6.cn`) && Path(`/`)"
+        - "traefik.http.routers.traefik-ui.rule=Host(`traefik.ctq6.cn`)"
         - "traefik.http.services.traefik_traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik-ui.tls=true"
         - "traefik.http.routers.traefik-ui.tls.certresolver=foo"
