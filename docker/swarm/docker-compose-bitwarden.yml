@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   bitwarden:
-    image: Vaultwarden/server:latest
+    image: vaultwarden/server:latest
     ports:
       - "9002:80"
     volumes:
