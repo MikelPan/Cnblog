@@ -2,11 +2,14 @@ version: "3.8"
 
 secrets:
   aliyun_region_id:
-    file: "/root/ssl/aliyun_region_id"
+    external: true
+    #file: "/root/ssl/aliyun_region_id"
   aliyun_access_key:
-    file: "/root/ssl/aliyun_access_key"
+    external: true
+    #file: "/root/ssl/aliyun_access_key"
   aliyun_secret_key:
-    file: "/root/ssl/aliyun_secret_key"
+    external: true
+    #file: "/root/ssl/aliyun_secret_key"
 
 services:
   traefik:
