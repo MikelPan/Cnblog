@@ -15,7 +15,7 @@ services:
   traefik:
     image: traefik:v2.4
     command:
-      - "--log.level=INFO"
+      - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.swarmMode=true"
