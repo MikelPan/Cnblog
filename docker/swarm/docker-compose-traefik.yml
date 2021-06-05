@@ -58,7 +58,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/letsencrypt:/letsencrypt"
     networks:
-      - "yafgj_net"
+      - "yfgj_net"
     deploy:
       mode: replicated
       replicas: 1
