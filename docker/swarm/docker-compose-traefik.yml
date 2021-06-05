@@ -34,7 +34,7 @@ services:
       - "--certificatesresolvers.foo.acme.dnschallenge.provider=alidns"
       - "--certificatesresolvers.foo.acme.dnschallenge.resolvers=114.114.114.114:53,8.8.8.8:53"
       - "--certificatesresolvers.foo.acme.keytype=EC256" #RSA4096
-      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.foo.acme.email=plyx_46204@126.com"
       - "--certificatesresolvers.foo.acme.storage=/letsencrypt/acme.json"
       - "--metrics.prometheus=true"
@@ -66,7 +66,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.ctq6.cn`) && Path(`/dashboard`)"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.ctq6.cn`) && Path(`/`)"
         - "traefik.http.services.traefik_traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls=true"
         - "traefik.http.routers.traefik.tls.certresolver=foo"
