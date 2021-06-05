@@ -73,7 +73,9 @@ services:
         - "traefik.http.routers.traefik-ui.tls=true"
         - "traefik.http.routers.traefik-ui.tls.certresolver=foo"
         - "traefik.http.routers.traefik-ui.tls.domains[0].main=ctq6.cn"
-        - "traefik.http.routers.traefik-ui.tls.domains[0].sans=*.ctq6.cn" 
+        - "traefik.http.routers.traefik-ui.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.nginx-dashboard.middlewares=redirect-https"
+        - "traefik.http.routers.nginx-dashboard.entrypoints=websecure"
       placement:
         constraints: [node.role == manager]
       restart_policy:

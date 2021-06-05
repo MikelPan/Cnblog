@@ -21,6 +21,8 @@ services:
         - "traefik.http.routers.filebrowser.tls.certresolver=foo"
         - "traefik.http.routers.filebrowser.tls.domains[0].main=ctq6.cn"
         - "traefik.http.routers.filebrowser.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.filebrowser.middlewares=redirect-https"
+        - "traefik.http.routers.filebrowser.entrypoints=websecure"
       replicas: 1
       placement:
         constraints: [node.role == manager]
