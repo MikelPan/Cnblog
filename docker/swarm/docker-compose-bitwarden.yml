@@ -2,9 +2,10 @@ version: "3.8"
 
 services:
   bitwarden:
-    image: vaultwarden/server:latest
+    image: bitwardenrs/server:latest
     ports:
       - "9002:80"
+      - "9003:3012"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/data/bitwarden:/data"
@@ -14,6 +15,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=yfgj_nat"
+        #- "traefik.http.routers.bitwarden.rule=Host(`bitwarden.ctq6.cn`) && Path(`/notifications/hub`)"
         - "traefik.http.routers.bitwarden.rule=Host(`bitwarden.ctq6.cn`)"
         - "traefik.http.services.bitwarden_bitwarden.loadbalancer.server.port=80"
         - "traefik.http.routers.bitwarden.tls=true"
