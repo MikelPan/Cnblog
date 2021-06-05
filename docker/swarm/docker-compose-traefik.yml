@@ -13,7 +13,7 @@ secrets:
 
 services:
   traefik:
-    image: traefik:v2.28
+    image: traefik:v2.2.8
     command:
       - "--log.level=DEBUG"
       - "--api.insecure=true"
