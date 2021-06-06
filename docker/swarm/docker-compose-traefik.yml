@@ -22,6 +22,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.webnossl.address=:8443"
       - "--api=true"
       - "--api.dashboard=true"
       - "--api.debug=true"
@@ -46,6 +47,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8443:8443"
       - "8080:8080"
       - "8020:8020"
     secrets:
@@ -67,14 +69,22 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=yfgj_net"
-        - "traefik.http.routers.traefik-ui.rule=Host(`traefik.ctq6.cn`)"
         - "traefik.http.services.traefik_traefik.loadbalancer.server.port=8080"
-        - "traefik.http.routers.traefik-ui.tls=true"
-        - "traefik.http.routers.traefik-ui.tls.certresolver=foo"
-        - "traefik.http.routers.traefik-ui.tls.domains[0].main=ctq6.cn"
-        - "traefik.http.routers.traefik-ui.tls.domains[0].sans=*.ctq6.cn"
-        - "traefik.http.routers.nginx-dashboard.middlewares=redirect-https"
-        - "traefik.http.routers.nginx-dashboard.entrypoints=websecure"
+        # http 80
+        - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
+        - "traefik.http.routers.traefik-ui-80.entrypoints=web-nossl"
+        # http 8443
+        - "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
+        - "traefik.http.routers.traefik-ui-8443.entrypoints=web-nossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.traefik-ui-443.rule=Host(`traefik-443.ctq6.cn`)"
+        - "traefik.http.routers.traefik-ui-443.tls=true"
+        - "traefik.http.routers.traefik-ui-443.tls.certresolver=foo"
+        - "traefik.http.routers.traefik-ui-443.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.traefik-ui-443.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.traefik-ui-443.middlewares=redirect-https"
+        - "traefik.http.routers.traefik-ui-443.entrypoints=websecure"
       placement:
         constraints: [node.role == manager]
       restart_policy:
