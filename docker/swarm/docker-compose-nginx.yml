@@ -29,7 +29,7 @@ services:
         - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
         - "traefik.http.routers.nginx-dashboard-443.middlewares=redirect-https"
         - "traefik.http.routers.nginx-dashboard-443.rule=Host(`nginx-443.ctq6.cn`) && Path(`/`)" 
-        - "traefik.http.routers.nginx-dashboard-443.entrypoints=webnossl"
+        - "traefik.http.routers.nginx-dashboard-443.entrypoints=websecure"
         - "traefik.http.routers.nginx-dashboard-433.tls=true"
         - "traefik.http.routers.nginx-dashboard-443.tls.certresolver=foo"
         - "traefik.http.routers.nginx-dashboard-443.tls.domains[0].main=ctq6.cn"
