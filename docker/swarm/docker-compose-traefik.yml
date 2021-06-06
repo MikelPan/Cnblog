@@ -46,8 +46,7 @@ services:
       - "--metrics.prometheus.entryPoint=metrics"
     ports:
       - "80:80"
-      - "443:443"
-      - "8443:8443"
+      - "8443:443"
       - "8080:8080"
       - "8020:8020"
     secrets:
@@ -74,11 +73,11 @@ services:
         - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
         - "traefik.http.routers.traefik-ui-80.entrypoints=web"
         # http 8443
-        - "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
-        - "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
         # https 443
         - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
-        - "traefik.http.routers.traefik-ui-443.rule=Host(`traefik-443.ctq6.cn`)"
+        - "traefik.http.routers.traefik-ui-443.rule=Host(`traefik.ctq6.cn`)"
         - "traefik.http.routers.traefik-ui-443.tls=true"
         - "traefik.http.routers.traefik-ui-443.tls.certresolver=foo"
         - "traefik.http.routers.traefik-ui-443.tls.domains[0].main=ctq6.cn"

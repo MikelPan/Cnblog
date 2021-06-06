@@ -1,11 +1,29 @@
 version: "3.8"
 
+
+secrets:
+  smtppasswd:
+    external: true
+
 services:
   bitwarden:
     image: bitwardenrs/server:latest
+    #image: vaultwarden/server:latest
     ports:
       - "9002:80"
       - "9003:3012"
+    secrets:
+      - "smtppasswd"
+    environment:
+      #- "SMTP_PASSWORD_FILE=/run/secrets/smtppasswd"
+      #- "SMTP_HOST="
+      #- "SMTP_FROM="
+      #- "SMTP_PORT"
+      #- "SMTP_SSL=true"
+      #- "SMTP_USERNAME="
+      #- "SIGNUPS_ALLOWED=false"
+      - "WEBSOCKET_ENABLED=true"
+      - "LOG_FILE=/data/bitwarden.log"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/data/bitwarden:/data"
