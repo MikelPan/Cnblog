@@ -72,7 +72,7 @@ services:
         - "traefik.http.services.traefik_traefik.loadbalancer.server.port=8080"
         # http 80
         - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
-        - "traefik.http.routers.traefik-ui-80.entrypoints=web-nossl"
+        - "traefik.http.routers.traefik-ui-80.entrypoints=web"
         # http 8443
         - "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
         - "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
