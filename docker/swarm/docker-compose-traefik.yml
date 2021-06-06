@@ -77,7 +77,7 @@ services:
         #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
         # https 443
         - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
-        - "traefik.http.routers.traefik-ui-443.rule=Host(`traefik.ctq6.cn`)"
+        - "traefik.http.routers.traefik-ui-443.rule=Host(`traefik-8443.ctq6.cn`)"
         - "traefik.http.routers.traefik-ui-443.tls=true"
         - "traefik.http.routers.traefik-ui-443.tls.certresolver=foo"
         - "traefik.http.routers.traefik-ui-443.tls.domains[0].main=ctq6.cn"
