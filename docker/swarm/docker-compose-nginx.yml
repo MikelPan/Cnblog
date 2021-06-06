@@ -8,13 +8,16 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/usr/share/nginx/html/blog/yunfeiguoji:/usr/share/nginx/html"
     ports:
       - 8088:80
     networks:
       - yfgj_net
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=yfgj_net"
@@ -28,7 +31,7 @@ services:
         # http 443
         - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
         - "traefik.http.routers.nginx-dashboard-443.middlewares=redirect-https"
-        - "traefik.http.routers.nginx-dashboard-443.rule=Host(`nginx.ctq6.cn`) && Path(`/`)" 
+        - "traefik.http.routers.nginx-dashboard-443.rule=Host(`www.ctq6.cn`) && Path(`/`)" 
         - "traefik.http.routers.nginx-dashboard-443.entrypoints=websecure"
         - "traefik.http.routers.nginx-dashboard-433.tls=true"
         - "traefik.http.routers.nginx-dashboard-443.tls.certresolver=foo"
@@ -41,8 +44,8 @@ services:
         reservations:
           cpus: '0.25'
           memory: 20M
-      # placement:
-      #   constraints: [node.role == manager]
+      placement:
+        constraints: [node.role == manager]
       restart_policy:
         condition: on-failure
         delay: 5s
