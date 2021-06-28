@@ -29,7 +29,7 @@ services:
         window: 120s
 
 networks:
-  yfgj_net:
+  swarm_net:
     external: true
-    name: yfgj_net
+    name: swarm_net
 

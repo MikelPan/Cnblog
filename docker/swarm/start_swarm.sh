@@ -52,6 +52,8 @@ done
 
 #可选参数赋值
 
+
+
 # 若无指定任何参数输出帮助文档
 if [ $# = 0 ]
 then
@@ -59,9 +61,15 @@ then
   exit 1
 fi
 
-# 安装服务
-main {
-  . scripts/main.sh
+# 安装filebrowers
+Install_filebrower {
+  sed -i "s/local.cluster/${DOMAIN}/g" docker-compose-${SERVICE_NAME}.yml
+  sed -i "s/`second.local.cluster`/`${SECOND_DOMAIN}`/g" docker-compose-${SERVICE_NAME}.yml
+  docker stack deploy -c docker-compose-${SERVICE_NAME}.yml ${SERVICE_NAME}
 }
 
-main "$@"
+main {
+  Install_filebrower
+}
+
+main
