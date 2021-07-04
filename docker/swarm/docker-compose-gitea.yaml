@@ -1,11 +1,20 @@
 version: "3.8"
 
+secrets:
+  db_passwd:
+    #external: true
+    file: "/root/.secret/db_passwd"
 services:
   gitea:
     image: gitea/gitea:1.14.3
     environment:
       - USER_UID=1000
       - USER_GID=1000
+      - "DB_PASSWD_FILE=/run/secrets/db_passwd"
+      - DB_TYPE=mysql
+      - DB_HOST=172.18.77.102:3306
+      - DB_NAME=gitea
+      - DB_USER=gitea
     networks:
       - yfgj_net
     volumes:
