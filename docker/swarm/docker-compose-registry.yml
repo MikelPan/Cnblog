@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  filebrowser:
+  registry:
     image: registry:2.5
     ports:
       - "5000:5000"
