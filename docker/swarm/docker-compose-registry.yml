@@ -1,0 +1,67 @@
+
+docker run -d -p 5000:5000 --restart=always --name registry \
+  -v /registry:/var/lib/registry \
+  -v `pwd`/auth:/auth \
+  -e "REGISTRY_AUTH=htpasswd" \
+  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+  -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+  -v `pwd`/cert:/certs \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/ca.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/ca.key \
+  -e REGISTRY_STORAGE_DELETE_ENABLED=true \
+  registry:2
+
+version: "3.8"
+
+services:
+  filebrowser:
+    image: registry:2
+    ports:
+      - "5000:5000"
+    volumes:
+      - "/data/registry:/var/lib/registry"
+      # docker run --entrypoint htpasswd registry:2 -Bbn testuser testpassword > auth/htpasswd
+      - "/data/registry/auth:/auth"
+      #- "/data/registry/cert:/certs"
+    environment:
+      - REGISTRY_AUTH=htpasswd
+      - "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm"
+      - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
+      #- REGISTRY_HTTP_TLS_CERTIFICATE=/certs/ca.crt
+      #- REGISTRY_HTTP_TLS_KEY=/certs/ca.key
+      - REGISTRY_STORAGE_DELETE_ENABLED=true
+    networks:
+      - "yfgj_net"
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.registry_registry.loadbalancer.server.port=5000"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.01member.com`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.01member.com`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.registry-ui-443.rule=Host(`registry.ctq6.cn`)"
+        - "traefik.http.routers.registry-ui-443.tls=true"
+        - "traefik.http.routers.registry-ui-443.tls.certresolver=foo"
+        - "traefik.http.routers.registry-ui-443.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.registry-ui-443.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.registry-ui-443.middlewares=redirect-https"
+        - "traefik.http.routers.registry-ui-443.entrypoints=websecure"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
