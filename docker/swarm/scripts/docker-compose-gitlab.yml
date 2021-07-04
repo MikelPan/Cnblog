@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    ports:
+      - "2224:22"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /tencent-cfs/gitlab/data:/var/opt/gitlab
+      - /tencent-cfs/gitlab/logs:/var/log/gitlab
+      - /tencent-cfs/gitlab/config:/etc/gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.zhimember.cn'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+        letsencrypt['enable'] = true
+        letsencrypt['contact_emails'] = ['ddyw-devops@300.cn']
+      #GITLAB_OMNIBUS_CONFIG: "from_file('/omnibus_config.rb')"
+    #configs:
+    #  - source: gitlab
+    #    target: /omnibus_config.rb
+    secrets:
+      - gitlab_root_password
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine
+    deploy:
+      mode: replicated
+      replicas: 4
+#configs:
+#  gitlab:
+#    file: /tencent-cfs/gitlab/gitlab.rb
+secrets:
+  gitlab_root_password:
+    file: /root/.secret/gitlab_root_password.txt

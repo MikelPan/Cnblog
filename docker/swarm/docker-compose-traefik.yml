@@ -2,14 +2,14 @@ version: "3.8"
 
 secrets:
   aliyun_region_id:
-    external: true
-    #file: "/root/ssl/aliyun_region_id"
+    #external: true
+    file: "/root/.ssl/aliyun_region_id"
   aliyun_access_key:
-    external: true
-    #file: "/root/ssl/aliyun_access_key"
+    #external: true
+    file: "/root/.ssl/aliyun_access_key"
   aliyun_secret_key:
-    external: true
-    #file: "/root/ssl/aliyun_secret_key"
+    #external: true
+    file: "/root/.ssl/aliyun_secret_key"
 
 services:
   traefik:
@@ -30,13 +30,13 @@ services:
       - "--log=true"
       - "--log.filepath=/tmp/traefik.err.log"
       - "--accesslog.filepath=/tmp/traefik.access.log"
-      - "--providers.docker.network=yfgj_net"
+      - "--providers.docker.network=ddyw_net"
       - "--certificatesresolvers.foo.acme.dnschallenge=true"
       - "--certificatesresolvers.foo.acme.dnschallenge.provider=alidns"
       - "--certificatesresolvers.foo.acme.dnschallenge.resolvers=114.114.114.114:53,8.8.8.8:53"
       - "--certificatesresolvers.foo.acme.keytype=EC256" #RSA4096
       #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.foo.acme.email=plyx_46204@126.com"
+      - "--certificatesresolvers.foo.acme.email=ddyw-devops@300.cn"
       - "--certificatesresolvers.foo.acme.storage=/letsencrypt/acme.json"
       - "--metrics.prometheus=true"
       - "--metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000"
@@ -70,18 +70,18 @@ services:
         - "traefik.docker.network=yfgj_net"
         - "traefik.http.services.traefik_traefik.loadbalancer.server.port=8080"
         # http 80
-        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.01member.com`)" 
         # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
         # http 8443
-        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.01member.com`)" 
         #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
         # https 443
         - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
-        - "traefik.http.routers.traefik-ui-443.rule=Host(`traefik.ctq6.cn`)"
+        - "traefik.http.routers.traefik-ui-443.rule=Host(`traefik.01member.com`)"
         - "traefik.http.routers.traefik-ui-443.tls=true"
         - "traefik.http.routers.traefik-ui-443.tls.certresolver=foo"
-        - "traefik.http.routers.traefik-ui-443.tls.domains[0].main=ctq6.cn"
-        - "traefik.http.routers.traefik-ui-443.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.traefik-ui-443.tls.domains[0].main=01member.com"
+        - "traefik.http.routers.traefik-ui-443.tls.domains[0].sans=*.01member.com"
         - "traefik.http.routers.traefik-ui-443.middlewares=redirect-https"
         - "traefik.http.routers.traefik-ui-443.entrypoints=websecure"
       placement:
@@ -94,4 +94,4 @@ services:
 networks:
   yfgj_net:
     external: true
-    name: yfgj_net
+    name: yfgi_net

@@ -44,10 +44,10 @@ docker service scale web1=2
 ```bash
 docker network create \
   --driver overlay \
-  --gateway 10.1.5.1 \
-  --subnet 10.1.0.0/16 \
-  --ip-range 10.1.5.0/24 \
-  --attachable yfgj_net
+  --gateway 10.0.1.1 \
+  --subnet 10.0.4.0/22 \
+  --ip-range 10.0.1.0/24 \
+  --attachable ddyw_net
 ```
 #### 创建服务
 ```bash
