@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  goproxy:
+    image: 172.18.77.102:5000/yfgj/goproxy:v1.0
+    ports:
+      - "6000:8080"
+    networks:
+      - "yfgj_net"
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.goproxy_goproxy.loadbalancer.server.port=8080"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.01member.com`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.01member.com`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.registry-ui-443.rule=Host(`goproxy.ctq6.cn`)"
+        - "traefik.http.routers.registry-ui-443.tls=true"
+        - "traefik.http.routers.registry-ui-443.tls.certresolver=foo"
+        - "traefik.http.routers.registry-ui-443.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.registry-ui-443.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.registry-ui-443.middlewares=redirect-https"
+        - "traefik.http.routers.registry-ui-443.entrypoints=websecure"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
