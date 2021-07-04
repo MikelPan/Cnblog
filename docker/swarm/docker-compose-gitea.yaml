@@ -15,6 +15,7 @@ services:
       - DB_HOST=172.18.77.102:3306
       - DB_NAME=gitea
       - DB_USER=gitea
+      - SSH_PORT=2224
     networks:
       - yfgj_net
     volumes:
