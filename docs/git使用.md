@@ -88,6 +88,10 @@ git push origin dev
 git rev-parse --short HEAD
 # 输出信息
 git log --pretty=format:“%an” b29b8b608b4d00f85b5d08663120b286ea657b4a -1
+git log --pretty=format:"%b" 
+# 获取commit 多个
+git log --reverse --oneline
+
 
 其中--pretty=format:“%xx”可以指定需要的信息，其常用的选项有：
 %H 提交对象（commit）的完整哈希字串 
