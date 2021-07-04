@@ -152,3 +152,14 @@ git log --pretty=format:“%an” b29b8b608b4d00f85b5d08663120b286ea657b4a -1
 %w([[,[,]]]): switch line wrapping, like the -w option of git-shortlog(1).
 ```
 
+
+#### 远程仓库迁移
+
+1、克隆github仓库
+```bash
+git clone --bare http://域名/分组/仓库名称.git
+```
+2、推动到新仓库
+```bash
+git push --mirror http://新域名/新分组/新仓库名称.git
+```

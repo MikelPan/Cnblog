@@ -8,35 +8,13 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/usr/share/nginx/html/blog/yunfeiguoji:/usr/share/nginx/html"
     ports:
       - 8088:80
     networks:
-      - yfgj_net
+      - swarm_net
     deploy:
       mode: replicated
-      replicas: 1
-      labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=yfgj_net"
-        - "traefik.http.services.nginx_nginx.loadbalancer.server.port=80"
-        # http 80
-        - "traefik.http.routers.nginx-dashboard-80.rule=Host(`nginx.ctq6.cn`) && Path(`/`)"
-        - "traefik.http.routers.nginx-dashboard-80.entrypoints=web"
-        # http 8443
-        #- "traefik.http.routers.nginx-dashboard-8443.rule=Host(`nginx-8443.ctq6.cn`) && Path(`/`)"
-        #- "traefik.http.routers.nginx-dashboard-8443.entrypoints=webnossl"
-        # http 443
-        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
-        - "traefik.http.routers.nginx-dashboard-443.middlewares=redirect-https"
-        - "traefik.http.routers.nginx-dashboard-443.rule=Host(`www.ctq6.cn`) && Path(`/`)" 
-        - "traefik.http.routers.nginx-dashboard-443.entrypoints=websecure"
-        - "traefik.http.routers.nginx-dashboard-433.tls=true"
-        - "traefik.http.routers.nginx-dashboard-443.tls.certresolver=foo"
-        - "traefik.http.routers.nginx-dashboard-443.tls.domains[0].main=ctq6.cn"
-        - "traefik.http.routers.nginx-dashboard-443.tls.domains[0].sans=*.ctq6.cn"
+      replicas: 2
       resources:
         limits:
           cpus: '0.50'
@@ -44,15 +22,14 @@ services:
         reservations:
           cpus: '0.25'
           memory: 20M
-      placement:
-        constraints: [node.role == manager]
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
         window: 120s
+
 networks:
-  yfgj_net:
+  swarm_net:
     external: true
-    name: yfgj_net
+    name: swarm_net
 
