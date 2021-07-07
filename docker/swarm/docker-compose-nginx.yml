@@ -13,7 +13,8 @@ services:
     networks:
       - yfgj_net
     volumes:
-      #- /data/blog:/usr/share/nginx/html
+      - /usr/share/nginx/html/blog/yunfeiguoji:/usr/share/nginx/html/blog/yunfeiguoji:rw
+      - ./default.conf:/etc/nginx/conf.d/default.conf:rw
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     deploy:
