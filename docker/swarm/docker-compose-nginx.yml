@@ -18,7 +18,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=yfgj_net"
@@ -51,7 +51,7 @@ services:
         max_attempts: 3
         window: 120s
 networks:
-  swarm_net:
+  yfgj_net:
     external: true
     name: yfgj_net
 
