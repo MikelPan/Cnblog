@@ -11,10 +11,33 @@ services:
     ports:
       - 8088:80
     networks:
-      - swarm_net
+      - yfgj_net
+    volumes:
+      #- /data/blog:/usr/share/nginx/html
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
     deploy:
       mode: replicated
       replicas: 2
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.nginx_nginx.loadbalancer.server.port=80"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.01member.com`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.01member.com`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.nginx-ui-443.rule=Host(`www.ctq6.cn`)"
+        - "traefik.http.routers.nginx-ui-443.tls=true"
+        - "traefik.http.routers.nginx-ui-443.tls.certresolver=foo"
+        - "traefik.http.routers.nginx-ui-443.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.nginx-ui-443.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.nginx-ui-443.middlewares=redirect-https"
+        - "traefik.http.routers.nginx-ui-443.entrypoints=websecure"
       resources:
         limits:
           cpus: '0.50'
@@ -27,9 +50,8 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-
 networks:
   swarm_net:
     external: true
-    name: swarm_net
+    name: yfgj_net
 
