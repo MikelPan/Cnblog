@@ -38,6 +38,8 @@ services:
         - "traefik.http.routers.nginx-ui-443.tls.domains[0].sans=*.ctq6.cn"
         - "traefik.http.routers.nginx-ui-443.middlewares=redirect-https"
         - "traefik.http.routers.nginx-ui-443.entrypoints=websecure"
+      placement:
+        constraints: [node.role == manager]
       resources:
         limits:
           cpus: '0.50'
