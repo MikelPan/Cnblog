@@ -10,8 +10,8 @@ services:
     environment: 
       - WEBSOCKET_ENABLED=true
       - LOG_FILE=/data/bitwarden/bitwarden.log
-      - SIGNUPS_ALLOWED=true
-      - INVITATIONS_ALLOWED=true
+      - SIGNUPS_ALLOWED=false
+      - INVITATIONS_ALLOWED=false
       - ADMIN_TOKEN=nNHZwQcw/ixEJKL6680NE3hO5+FeUmC+tBj7bLtnzJX72Vl+DKLGgMItxZhvuKwE
       - DOMAIN=https://bitwarden.ctq6.cn
       - SMTP_HOST=smtp.126.com
