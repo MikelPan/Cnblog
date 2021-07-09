@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  goproxy:
+    image: vaultwarden/server:latest
+    ports:
+      - "6000:80"
+    networks:
+      - "yfgj_net"
+    environment: 
+      - WEBSOCKET_ENABLED=true
+      - LOG_FILE=/data/bitwarden/bitwarden.log
+      - SIGNUPS_ALLOWED=false
+      - INVITATIONS_ALLOWED=false
+      - ADMIN_TOKEN=nNHZwQcw/ixEJKL6680NE3hO5+FeUmC+tBj7bLtnzJX72Vl+DKLGgMItxZhvuKwE
+      - DOMAIN=https://bitwarden.ctq6.cn
+      - SMTP_HOST=smtp.126.com
+      - SMTP_FROM=<plyx_46204@126.com>
+      - SMTP_PORT=465
+      - SMTP_SSL=true
+      - SMTP_USERNAME=plyx_46204@126.com
+      - SMTP_PASSWORD=UYTKPYKCPHUPRJYV
+      - WEB_VAULT_ENABLED=true
+    volumes:
+      - /data/bitwarden/bw-data:/data
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.bitwarden_bitwarden.loadbalancer.server.port=80"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.01member.com`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.01member.com`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.bitwarden-ui-443.rule=Host(`bitwarden.ctq6.cn`)"
+        - "traefik.http.routers.bitwarden-ui-443.tls=true"
+        - "traefik.http.routers.bitwarden-ui-443.tls.certresolver=foo"
+        - "traefik.http.routers.bitwarden-ui-443.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.bitwarden-ui-443.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.bitwarden-ui-443.middlewares=redirect-https"
+        - "traefik.http.routers.bitwarden-ui-443.entrypoints=websecure"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
