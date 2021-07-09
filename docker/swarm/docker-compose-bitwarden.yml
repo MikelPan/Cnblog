@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  goproxy:
+  bitwarden:
     image: vaultwarden/server:latest
     ports:
       - "6000:80"
