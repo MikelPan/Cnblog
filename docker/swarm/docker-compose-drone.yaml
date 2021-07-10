@@ -17,7 +17,7 @@ services:
     environment:
       - "DB_PASSWD_FILE=/run/secrets/db_passwd"
       - DRONE_DEBUG=true
-      - DRONE_DATABASE_DATASOURCE=drone:${DB_PASSWD}@tcp(172.18.77.102:3306)/drone?parseTime=true #mysql配置，要与上边mysql容器中的配置一致
+      - DRONE_DATABASE_DATASOURCE=drone:{{ DB_PASSWD }}@tcp(172.18.77.102:3306)/drone?parseTime=true #mysql配置，要与上边mysql容器中的配置一致
       - DRONE_DATABASE_DRIVER=mysql
       - DRONE_GITEA_SKIP_VERIFY=false
       - DRONE_GITEA_CLIENT_ID=dcbc7f5c-9f85-4000-98d2-7485f959911b
