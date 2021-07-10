@@ -37,7 +37,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=yfgj_net"
-        - "traefik.http.services.drone_drone.loadbalancer.server.port=3000"
+        - "traefik.http.services.drone_drone.loadbalancer.server.port=80"
         # http 80
         # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.01member.com`)" 
         # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
