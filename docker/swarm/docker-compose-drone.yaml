@@ -8,7 +8,7 @@ services:
   drone:
     image: drone/drone #不要用latest,latest并非稳定版本
     ports:
-      - "3000:80"
+      - "7000:80"
     networks:
       - yfgj_net
     volumes:
