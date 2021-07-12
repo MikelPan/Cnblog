@@ -69,7 +69,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
     environment:
-      - DRONE_RPC_HOST=https://drone.ctq6.cn
+      - DRONE_RPC_HOST=drone.ctq6.cn
       - DRONE_RPC_SECRET=48f11fe546a25099cde4a05ce35a4815
       - DRONE_RPC_PROTO=https
       - DRONE_RUNNER_CAPACITY=1
