@@ -6,7 +6,7 @@ version: "3.8"
 #     file: "/root/.secret/drone_db_passwd"
 services:
   drone:
-    image: drone/drone #不要用latest,latest并非稳定版本
+    image: drone/drone:1.0.0-rc.6 #不要用latest,latest并非稳定版本
     ports:
       - "7000:80"
     networks:
@@ -61,7 +61,7 @@ services:
         max_attempts: 3
         window: 120s
   drone-runner:
-    image: drone/drone-runner-docker
+    image: drone/drone-runner-docker:1.0.0-rc.6
     networks:
       - yfgj_net
     depends_on:
