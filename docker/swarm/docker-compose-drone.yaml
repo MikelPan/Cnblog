@@ -6,7 +6,7 @@ version: "3.8"
 #     file: "/root/.secret/drone_db_passwd"
 services:
   drone:
-    image: drone/drone:2.0.4 #不要用latest,latest并非稳定版本
+    image: drone/drone:2.0 #不要用latest,latest并非稳定版本
     ports:
       - "7000:80"
     networks:
