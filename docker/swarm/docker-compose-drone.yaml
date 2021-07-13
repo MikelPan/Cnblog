@@ -74,7 +74,7 @@ services:
       - DRONE_RPC_PROTO=https
       - DRONE_RUNNER_CAPACITY=1
       - DRONE_RUNNER_NAME=runner
-      - DRONE_RUNNER_LABELS=machine1:runner1
+      #- DRONE_RUNNER_LABELS=machine1:runner1
       - DRONE_RUNNER_NETWORKS=yegj_net
       - DRONE_DEBUG=true
       - DRONE_LOGS_DEBUG=true
