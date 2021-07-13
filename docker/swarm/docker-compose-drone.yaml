@@ -75,7 +75,7 @@ services:
       - DRONE_RUNNER_CAPACITY=1
       - DRONE_RUNNER_NAME=runner
       #- DRONE_RUNNER_LABELS=machine1:runner1
-      - DRONE_RUNNER_NETWORKS=yegj_net
+      - DRONE_RUNNER_NETWORKS=yfgj_net
       - DRONE_DEBUG=true
       - DRONE_LOGS_DEBUG=true
       - DRONE_LOGS_PRETTY=true
