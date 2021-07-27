@@ -1,21 +1,21 @@
 version: "3.8"
 
-secrets:
-  db_passwd:
-    #external: true
-    file: "/root/.secret/drone_db_passwd"
+# secrets:
+#   db_passwd:
+#     #external: true
+#     file: "/root/.secret/drone_db_passwd"
 services:
   drone:
-    image: drone/drone #不要用latest,latest并非稳定版本
+    image: drone/drone:2.0.0 #不要用latest,latest并非稳定版本
     ports:
-      - "3000:80"
+      - "7000:80"
     networks:
       - yfgj_net
     volumes:
       - /data/drone/:/var/lib/drone/:rw
       - /var/run/docker.sock:/var/run/docker.sock:rw
     environment:
-      - "DB_PASSWD_FILE=/run/secrets/db_passwd"
+      #- "DB_PASSWD_FILE=/run/secrets/db_passwd"
       - DRONE_DEBUG=true
       - DRONE_DATABASE_DATASOURCE=drone:${DB_PASSWD}@tcp(172.18.77.102:3306)/drone?parseTime=true #mysql配置，要与上边mysql容器中的配置一致
       - DRONE_DATABASE_DRIVER=mysql
@@ -37,7 +37,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=yfgj_net"
-        - "traefik.http.services.drone_drone.loadbalancer.server.port=3000"
+        - "traefik.http.services.drone_drone.loadbalancer.server.port=80"
         # http 80
         # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.01member.com`)" 
         # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
@@ -61,7 +61,7 @@ services:
         max_attempts: 3
         window: 120s
   drone-runner:
-    image: drone/drone-runner-docker
+    image: drone/drone-runner-docker:1.6.3
     networks:
       - yfgj_net
     depends_on:
@@ -69,13 +69,13 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
     environment:
-      - DRONE_RPC_HOST=https://drone.ctq6.cn
+      - DRONE_RPC_HOST=drone.ctq6.cn
       - DRONE_RPC_SECRET=48f11fe546a25099cde4a05ce35a4815
       - DRONE_RPC_PROTO=https
       - DRONE_RUNNER_CAPACITY=1
       - DRONE_RUNNER_NAME=runner
-      - DRONE_RUNNER_LABELS=machine1:runner1
-      - DRONE_RUNNER_NETWORKS=yegj_net
+      #- DRONE_RUNNER_LABELS=machine1:runner1
+      - DRONE_RUNNER_NETWORKS=yfgj_net
       - DRONE_DEBUG=true
       - DRONE_LOGS_DEBUG=true
       - DRONE_LOGS_PRETTY=true

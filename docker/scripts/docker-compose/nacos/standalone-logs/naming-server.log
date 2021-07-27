@@ -1,0 +1,56 @@
+2021-04-09 10:44:00,874 INFO open empty service auto clean job, initialDelay : 50000 ms, period : 30000 ms
+
+2021-04-09 10:44:00,882 INFO listen for service meta change
+
+2021-04-09 10:44:05,254 INFO [NACOS-DISTRO] healthy server list changed, old: [40124e8e91a6:8848], new: [40124e8e91a6:8848]
+
+2021-04-09 10:44:05,254 INFO member change, new members [Member{ip='40124e8e91a6', port=8848, state=UP, extendInfo={lastRefreshTime=1617936245236, raftPort=7848, version=2.0.0}}]
+
+2021-04-09 10:56:22,963 INFO open empty service auto clean job, initialDelay : 50000 ms, period : 30000 ms
+
+2021-04-09 10:56:22,968 INFO listen for service meta change
+
+2021-04-09 10:56:27,690 INFO [NACOS-DISTRO] healthy server list changed, old: [40124e8e91a6:8848], new: [40124e8e91a6:8848]
+
+2021-04-09 10:56:27,690 INFO member change, new members [Member{ip='40124e8e91a6', port=8848, state=UP, extendInfo={lastRefreshTime=1617936987682, raftPort=7848, version=2.0.0}}]
+
+2021-04-09 11:06:40,713 INFO GlobalConfig{taskDispatchPeriod=200, batchSyncKeyCount=1000, syncRetryDelay=5000, dataWarmup=true, expireInstance=true, loadDataRetryDelayMillis=30000}
+
+2021-04-09 11:06:43,785 INFO [NACOS-DISTRO] healthy server list changed, old: [5bbc274d7e45:8848], new: [5bbc274d7e45:8848]
+
+2021-04-09 11:06:45,608 INFO open empty service auto clean job, initialDelay : 50000 ms, period : 30000 ms
+
+2021-04-09 11:06:45,612 INFO listen for service meta change
+
+2021-04-09 11:12:18,526 INFO GlobalConfig{taskDispatchPeriod=200, batchSyncKeyCount=1000, syncRetryDelay=5000, dataWarmup=true, expireInstance=true, loadDataRetryDelayMillis=30000}
+
+2021-04-09 11:12:20,874 INFO [NACOS-DISTRO] healthy server list changed, old: [5444fe7bd4d7:8848], new: [5444fe7bd4d7:8848]
+
+2021-04-09 11:12:22,317 INFO open empty service auto clean job, initialDelay : 50000 ms, period : 30000 ms
+
+2021-04-09 11:12:22,321 INFO listen for service meta change
+
+2021-04-09 11:25:43,134 INFO GlobalConfig{taskDispatchPeriod=200, batchSyncKeyCount=1000, syncRetryDelay=5000, dataWarmup=true, expireInstance=true, loadDataRetryDelayMillis=30000}
+
+2021-04-09 11:25:45,673 INFO [NACOS-DISTRO] healthy server list changed, old: [5124de1906f9:8848], new: [5124de1906f9:8848]
+
+2021-04-09 11:25:47,219 INFO open empty service auto clean job, initialDelay : 50000 ms, period : 30000 ms
+
+2021-04-09 11:25:47,222 INFO listen for service meta change
+
+2021-04-09 11:27:24,868 INFO GlobalConfig{taskDispatchPeriod=200, batchSyncKeyCount=1000, syncRetryDelay=5000, dataWarmup=true, expireInstance=true, loadDataRetryDelayMillis=30000}
+
+2021-04-09 11:27:26,960 INFO [NACOS-DISTRO] healthy server list changed, old: [a595195dfd31:8848], new: [a595195dfd31:8848]
+
+2021-04-09 11:27:28,388 INFO open empty service auto clean job, initialDelay : 50000 ms, period : 30000 ms
+
+2021-04-09 11:27:28,394 INFO listen for service meta change
+
+2021-04-09 11:28:56,649 INFO GlobalConfig{taskDispatchPeriod=200, batchSyncKeyCount=1000, syncRetryDelay=5000, dataWarmup=true, expireInstance=true, loadDataRetryDelayMillis=30000}
+
+2021-04-09 11:28:58,913 INFO [NACOS-DISTRO] healthy server list changed, old: [0f1699fa2881:8848], new: [0f1699fa2881:8848]
+
+2021-04-09 11:29:00,344 INFO open empty service auto clean job, initialDelay : 50000 ms, period : 30000 ms
+
+2021-04-09 11:29:00,349 INFO listen for service meta change
+
