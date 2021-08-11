@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  consul-node1:
+    image: bitnami/consul
+    environment:
+      - CONSUL_BOOTSTRAP_EXPECT=3
+      - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
+      - CONSUL_DISABLE_KEYRING_FILE=true
+      - CONSUL_RETRY_JOIN_ADDRESS=consul-node1
+    ports:
+      - '8300:8300'
+      - '8301:8301'
+      - '8301:8301/udp'
+      - '8500:8500'
+      - '8600:8600'
+      - '8600:8600/udp'
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.consul_consul-node1.loadbalancer.server.port=8500"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.01member.com`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.01member.com`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.consul-ui-443.rule=Host(`consul.ctq6.cn`)"
+        - "traefik.http.routers.consul-ui-443.tls=true"
+        - "traefik.http.routers.consul-ui-443.tls.certresolver=foo"
+        - "traefik.http.routers.consul-ui-443.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.consul-ui-443.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.consul-ui-443.middlewares=redirect-https"
+        - "traefik.http.routers.consul-ui-443.entrypoints=websecure"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - 'consul-node1_data:/bitnami'
+
+  consul-node2:
+    image: bitnami/consul
+    environment:
+      - CONSUL_BOOTSTRAP_EXPECT=3
+      - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
+      - CONSUL_DISABLE_KEYRING_FILE=true
+      - CONSUL_RETRY_JOIN_ADDRESS=consul-node1
+      - CONSUL_ENABLE_UI=false
+    volumes:
+      - 'consul-node2_data:/bitnami'
+
+  consul-node3:
+    image: bitnami/consul
+    environment:
+      - CONSUL_BOOTSTRAP_EXPECT=3
+      - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
+      - CONSUL_DISABLE_KEYRING_FILE=true
+      - CONSUL_RETRY_JOIN_ADDRESS=consul-node1
+      - CONSUL_ENABLE_UI=false
+    volumes:
+      - 'consul-node3_data:/bitnami'
+
+volumes:
+  consul-node1_data:
+    driver: local
+  consul-node2_data:
+    driver: local
+  consul-node3_data:
+    driver: local
