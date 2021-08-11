@@ -15,6 +15,8 @@ services:
       - '8500:8500'
       - '8600:8600'
       - '8600:8600/udp'
+    networks:
+      - yfgj_net
     deploy:
       mode: replicated
       replicas: 1
@@ -55,6 +57,8 @@ services:
       - CONSUL_DISABLE_KEYRING_FILE=true
       - CONSUL_RETRY_JOIN_ADDRESS=consul-node1
       - CONSUL_ENABLE_UI=false
+    networks:
+      - yfgj_net
     volumes:
       - 'consul-node2_data:/bitnami'
 
@@ -66,8 +70,15 @@ services:
       - CONSUL_DISABLE_KEYRING_FILE=true
       - CONSUL_RETRY_JOIN_ADDRESS=consul-node1
       - CONSUL_ENABLE_UI=false
+    networks:
+      - yfgj_net
     volumes:
       - 'consul-node3_data:/bitnami'
+
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
 
 volumes:
   consul-node1_data:
