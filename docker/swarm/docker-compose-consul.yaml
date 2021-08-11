@@ -61,6 +61,16 @@ services:
       - CONSUL_BIND_INTERFACE=eth0
     networks:
       - yfgj_net
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     volumes:
       - 'consul-node2_data:/bitnami'
 
@@ -75,6 +85,16 @@ services:
       - CONSUL_BIND_INTERFACE=eth0
     networks:
       - yfgj_net
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     volumes:
       - 'consul-node3_data:/bitnami'
 
