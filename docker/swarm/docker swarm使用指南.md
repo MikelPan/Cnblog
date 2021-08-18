@@ -44,10 +44,10 @@ docker service scale web1=2
 ```bash
 docker network create \
   --driver overlay \
-  --gateway 10.0.1.1 \
+  --gateway 10.0.4.1 \
   --subnet 10.0.4.0/22 \
-  --ip-range 10.0.1.0/24 \
-  --attachable ddyw_net
+  --ip-range 10.0.4.0/24 \
+  --attachable yfgj_net
 ```
 #### 创建服务
 ```bash
@@ -78,7 +78,7 @@ http://traefik.ctq6.cn
 https://traefik-443.ctq6.cn
 http://traefik-8443.ctq6.cn:8443
 ```
-#### 安装nginx服务
+#### 安装traefik服务
 ```bash
 docker stack deploy -c docker-compose-traefik.yml traefik
 ```

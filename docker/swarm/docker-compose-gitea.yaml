@@ -25,8 +25,6 @@ services:
     ports:
       - "3000:3000"
       - "2224:2224"
-    networks:
-      - "yfgj_net"
     deploy:
       mode: replicated
       replicas: 1
@@ -35,10 +33,10 @@ services:
         - "traefik.docker.network=yfgj_net"
         - "traefik.http.services.gitea_gitea.loadbalancer.server.port=3000"
         # http 80
-        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.01member.com`)" 
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
         # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
         # http 8443
-        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.01member.com`)" 
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
         #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
         # https 443
         - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
