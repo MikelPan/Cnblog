@@ -392,6 +392,43 @@ service {
 }
 ```
 
+#### nginx 配置https
+
+```bash
+# 配置https
+server {
+        listen              443 ssl;
+        server_name         dev.01member.com;
+        
+        #设置长连接
+        keepalive_timeout   70;
+        
+        ssl_session_timeout 5m;
+        
+        #HSTS策略
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+        
+        #证书文件
+        ssl_certificate     /etc/nginx/conf.d/ssl/key.pem;
+        #私钥文件
+        ssl_certificate_key /etc/nginx/conf.d/ssl/cert.pem; 
+        
+        #优先采取服务器算法
+        ssl_prefer_server_ciphers on;
+        #使用DH文件
+        ssl_dhparam /etc/ssl/certs/dhparam.pem;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        #定义算法
+        ssl_ciphers "EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH+aRSA+RC4 EECDH EDH+aRSA !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS !RC4";
+        #减少点击劫持
+        add_header X-Frame-Options DENY;
+        #禁止服务器自动解析资源类型
+        add_header X-Content-Type-Options nosniff;
+        #防XSS攻擊
+        add_header X-Xss-Protection 
+        }
+```
+
 
 
 

@@ -13,7 +13,7 @@ curl -s https://gitee.com/YunFeiGuoJi/Cnblog/raw/master/shell/Scripts/docker_ins
 docker swarm init --advertise-addr xxxx
 # 加入node结点
 docker swarm join --token SWMTKN-1-6a8e0gwfplo0oj5d2ogsixa4daxbydn43bkhpj1nngbr9kx18i-51vg8oazna6j5g9weghwvg4tn xxxx:2377 node1上执行
-docker swarm join --token SWMTKN-1-6a8e0gwfplo0oj5d2ogsixa4daxbydn43bkhpj1nngbr9kx18i-51vg8oazna6j5g9weghwvg4tn xxxx:2377 node2上执行
+docker swarm join --token SWMTKN-1-6a8e0gwfplo0oj5d2ogsixa4daxbydn43bkhpj1nngbr9kx18i-51vg8oazna6j5g9weghwvg4tn 120.79.77.84:2377 node2上执行
 ```
 #### 配置docker swarm
 ```bash

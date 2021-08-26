@@ -7,7 +7,7 @@ tar harbor-offline-installer-v2.0.2.tgz -C /usr/local
 #### 安装docker-compose
 ```bash
 curl -L https://github.com/docker/compose/releases/download/1.26.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-chmod +x /usr/local/docker-compose
+chmod +x /usr/local/bin/docker-compose
 ```
 #### 安装harbor
 ```bash

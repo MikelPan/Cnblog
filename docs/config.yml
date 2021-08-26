@@ -1,6 +1,0 @@
-uat:
-    skywalking:
-      weixin_url: ''
-prod:
-    skywalking:
-      weixin_url: ''

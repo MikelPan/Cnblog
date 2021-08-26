@@ -1,5 +1,7 @@
 ### jenkins简介
+
 Jenkins是一个自包含的开源自动化服务器，可用于自动化与构建，测试以及交付或部署软件有关的各种任务。
+
 Jenkins可以通过本机系统软件包Docker安装，甚至可以由安装了Java Runtime Environment（JRE）的任何计算机独立运行。
 
 ### jenkins安装
@@ -80,6 +82,15 @@ docker run --name jenkins \
     -v /data/jenkins:/data/jenkins \
     -v /etc/localtime:/etc/localtime \
     -d auto-jenkins
+## 启动jenkins
+docker run --restart=always --name=jenkins-master \
+  -p 8080:8080 -p 50000:50000 \
+  -v /data/jenkins:/data/jenkins \
+  -v /var/run/docker.sock:/var/run/docker.sock 
+  -v /usr/bin/docker:/usr/bin/docker \
+  -v /etc/localtime:/etc/localtime \
+  --env JENKINS_OPTS='--prefix=/jenkins' \
+-d jenkins/jenkins:lts
 ```
 ### 常用插件安装
 ```bash
@@ -148,11 +159,6 @@ Email Extension
 ECharts API	
 JUnit	
 Matrix Project	
-
-```
-### jenkins升级
-```bash
-
 ```
 ### jenkinsfile脱离代码仓库
 #### 安装插件
@@ -213,7 +219,14 @@ node() {
 # 点击进入展示“用户列表”；
 # 点击右侧进入修改密码页面，修改后即可重新登录
 ```
+### jenkins 动态slave
+#### 安装Docker插件
 
+#### 配置Cloud
+
+#### 配置Docker Agent Template
+
+#### 
 
 
 

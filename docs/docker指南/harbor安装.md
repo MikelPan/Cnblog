@@ -90,10 +90,13 @@ cp ca.crt /etc/docker/certs.d/domain.com/
 cat ca.crt >> /etc/pki/tls/certs/ca-bundle.crt
 ```
 #### 修改harbor.yml文件
+
+```yaml
 https:
   port: 443
   certificate: /data/cert/domain.com.crt
   private_key: /data/cert/domain.com.key
+```
 
 #### 运行prepare脚本以启用HTTPS
 ```bash

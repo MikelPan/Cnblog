@@ -47,7 +47,10 @@ openssl x509 -req -sha512 -days 3650 \
 ## 自动续期
 ### 安装证书安装脚本
 ```shell
+# 直接下载
 curl https://get.acme.sh | sh
+# clone 仓库
+git clone https://github.com/acmesh-official/acme.sh.git
 alias acme.sh=~/.acme.sh/acme.sh
 ```
 ### 证书签发
@@ -58,7 +61,6 @@ acme.sh --issue -d plyx.site -d *.plyx.site -w /var/www/html/plyx.site
 acme.sh --issue -d *.plyx.site -d plyx.site --dns --yes-I-know-dns-manual-mode-enough-go-ahead-please # 添加A记录
 dig -t txt  _acme-challenge.clsn.io @8.8.8.8 # 验证证书
 acme.sh --renew  -d *.plyx.site -d plyx.site --dns --yes-I-know-dns-manual-mode-enough-go-ahead-please # 生成证书
-
 # 使用dns api方式
 api 参考文档 https://github.com/Neilpang/acme.sh/tree/master/dnsapi
 export Ali_Key=""
@@ -82,8 +84,8 @@ acme.sh --remove -d plyx.site [--ecc]
 ### 安装证书
 生成的证书放在了/root/.acme.sh/plyx.site目录，因为这是 acme.sh 脚本的内部使用目录，而且目录结构可能会变化，所以我们不能让 Nginx 的配置文件直接读取该目录下的证书文件。
 ```shell
-acme.sh  --install-cert -d plyx.site \
-         --key-file /usr/local/nginx/conf.d/ssl/key.pem \
+/root/.acme/acme.sh  --install-cert -d ctq6.cn \
+         --key-file /etc/nginx/conf.d/ssl/key.pem \
          --fullchain-file /etc/nginx/conf.d/ssl/cert.pem \
          --reloadcmd "service nginx force-reload"
 ```
@@ -121,3 +123,4 @@ acme.sh  --upgrade  --auto-upgrade 0
 ```shell
 55 0 * * * "/root/.acme.sh"/acme.sh --cron --home "/root/.acme.sh" > /dev/null
 ```
+
