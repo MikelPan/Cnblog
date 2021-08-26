@@ -26,3 +26,107 @@ helm upgrade --install consul stable/consul --set service.replicas=1 -n kube-sys
 ```
 
 #### consul使用
+
+1、服务注册
+> 通过配置文件静态注册
+创建文件夹/etc/consul.d
+```bash
+mkdir -pv /etc/consul.d
+```
+创建服务写入文件中
+```bash
+cat > /etc/consul.d <<- 'EOF'
+{
+    "service: {
+        "name": "",
+        "tags": "",
+        "port": 80,
+    }
+}
+EOF
+```
+注册服务
+```bash
+consul agent -dev -config-dir /etc/consul.d/
+```
+> 通过HTTP API接口注册
+```bash
+cat > register.json <<- 'EOF'
+{
+    "ID": "falsk-1",
+    "Name": "flask",
+    "Address": "172.31.49.221",
+    "Port": 5000,
+    "Tags": [
+        "v1",
+        "web"
+    ],
+    "EnableTagOverride": false,
+    "Check": {
+        "DeregisterCriticalServiceAfter": "12h",
+        "HTTP": "http://172.31.49.221:5000/health",
+        "Interval": "10s"
+    }
+}
+EOF
+# 注册
+curl -XPUT -d @register.json https://consul.01member.com/v1/agent/service/register
+```
+2、服务查询
+> HTTP APi 方式
+
+查询单个服务
+```bash
+curl -v https://consul.01member.com/v1/catalog/service/flask
+```
+列出服务
+```bash
+curl -v https://consul.01member.com/v1/agent/members
+```
+查询健康状态为passing的节点
+```bash
+curl -v https://consul.01member.com/v1/health/service/flask?passing
+```
+
+查询异常的服务
+```bash
+curl -v https://consul.01member.com/v1/health/state/critical
+```
+
+> DNS API 查询
+
+服务的 DNS 名是 NAME.service.consul。默认情况下，所有 DNS 名都在 consul 命名空间，也可以配置。service 子域告诉 Consul 我们要查询的是服务，NAME 则是服务的名字
+
+```bash
+dig @127.0.0.1 -p 8600 flask.service.consul
+```
+
+用标签来筛选服务，格式是 TAG.NAME.service.consul。例子如下，我们查询“v1”标签，就会得到以该标签注册的服务
+
+```bash
+dig @127.0.0.1 -p 8600 v1.flask.service.consul 
+```
+
+### consul与监控结合使用
+
+### k8s服务自动注册到consul集群中
+修改无状态服务，添加env
+```bash
+          env:
+          - name: POD_IP
+            valueFrom:
+              filedRef:
+                filedPath: status.podIP
+          - name: POD_NAME
+            valueFrom:
+              filedRef:
+                filedPath: metadata.name
+          - name: POD_NAME
+            valueFrom:
+              filedRef:
+                filedPath: metadata.namespace
+          - name: CONSUL_ADDR
+            value: "consul-consul-server.kube-system.svc.cluster.local"
+          - name: CONSUL_PORT
+            value: "8500"
+``` 
