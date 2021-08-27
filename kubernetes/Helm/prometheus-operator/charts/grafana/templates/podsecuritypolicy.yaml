@@ -5,7 +5,10 @@ metadata:
   name: {{ template "grafana.fullname" . }}
   namespace: {{ template "grafana.namespace" . }}
   labels:
-    {{- include "grafana.labels" . | nindent 4 }}
+    app: {{ template "grafana.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
   annotations:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
     seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'

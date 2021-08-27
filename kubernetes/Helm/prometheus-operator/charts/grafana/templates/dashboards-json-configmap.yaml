@@ -7,7 +7,10 @@ metadata:
   name: {{ template "grafana.fullname" $ }}-dashboards-{{ $provider }}
   namespace: {{ template "grafana.namespace" $ }}
   labels:
-    {{- include "grafana.labels" $ | nindent 4 }}
+    app: {{ template "grafana.name" $ }}
+    chart: {{ template "grafana.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
     dashboard-provider: {{ $provider }}
 {{- if $dashboards }}
 data:

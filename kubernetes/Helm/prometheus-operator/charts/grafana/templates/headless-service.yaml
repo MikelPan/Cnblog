@@ -5,7 +5,10 @@ metadata:
   name: {{ template "grafana.fullname" . }}-headless
   namespace: {{ template "grafana.namespace" . }}
   labels:
-    {{- include "grafana.labels" . | nindent 4 }}
+    app: {{ template "grafana.name" . }}
+    chart: {{ template "grafana.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 {{- with .Values.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
@@ -13,6 +16,7 @@ metadata:
 spec:
   clusterIP: None
   selector:
-    {{- include "grafana.selectorLabels" . | nindent 4 }}
+    app: {{ template "grafana.name" . }}
+    release: {{ .Release.Name }}
   type: ClusterIP
 {{- end }}

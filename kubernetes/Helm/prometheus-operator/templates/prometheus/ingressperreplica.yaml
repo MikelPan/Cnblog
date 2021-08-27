@@ -1,23 +1,19 @@
 {{- if and .Values.prometheus.enabled .Values.prometheus.servicePerReplica.enabled .Values.prometheus.ingressPerReplica.enabled }}
 {{- $count := .Values.prometheus.prometheusSpec.replicas | int -}}
-{{- $servicePort := .Values.prometheus.servicePerReplica.port -}}
+{{- $servicePort := .Values.prometheus.service.port -}}
 {{- $ingressValues := .Values.prometheus.ingressPerReplica -}}
-apiVersion: v1
-kind: List
+apiVersion: extensions/v1beta1
+kind: IngressList
 metadata:
   name: {{ include "prometheus-operator.fullname" $ }}-prometheus-ingressperreplica
-  namespace: {{ template "prometheus-operator.namespace" $ }}
+  namespace: {{ $.Release.Namespace }}
 items:
 {{ range $i, $e := until $count }}
-  - kind: Ingress
-    {{- if $.Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }}
-    apiVersion: networking.k8s.io/v1beta1
-    {{ else }}
-    apiVersion: extensions/v1beta1
-    {{ end -}}
+  - apiVersion: extensions/v1beta1
+    kind: Ingress
     metadata:
       name: {{ include "prometheus-operator.fullname" $ }}-prometheus-{{ $i }}
-      namespace: {{ template "prometheus-operator.namespace" $ }}
+      namespace: {{ $.Release.Namespace }}
       labels:
         app: {{ include "prometheus-operator.name" $ }}-prometheus
 {{ include "prometheus-operator.labels" $ | indent 8 }}
@@ -39,15 +35,11 @@ items:
                   serviceName: {{ include "prometheus-operator.fullname" $ }}-prometheus-{{ $i }}
                   servicePort: {{ $servicePort }}
       {{- end -}}
-      {{- if or $ingressValues.tlsSecretName $ingressValues.tlsSecretPerReplica.enabled }}
+      {{- if $ingressValues.tlsSecretName }}
       tls:
         - hosts:
             - {{ $ingressValues.hostPrefix }}-{{ $i }}.{{ $ingressValues.hostDomain }}
-          {{- if $ingressValues.tlsSecretPerReplica.enabled }}
-          secretName: {{ $ingressValues.tlsSecretPerReplica.prefix }}-{{ $i }}
-          {{- else }}
           secretName: {{ $ingressValues.tlsSecretName }}
-          {{- end }}
       {{- end }}
 {{- end -}}
 {{- end -}}

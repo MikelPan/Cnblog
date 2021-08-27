@@ -16,9 +16,6 @@ spec:
   privileged: false
   volumes:
     - 'secret'
-{{- if .Values.podSecurityPolicy.additionalVolumes }}
-{{ toYaml .Values.podSecurityPolicy.additionalVolumes | indent 4 }}
-{{- end }}
   hostNetwork: false
   hostIPC: false
   hostPID: false
