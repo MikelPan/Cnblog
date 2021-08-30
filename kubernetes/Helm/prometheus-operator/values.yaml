@@ -1935,6 +1935,7 @@ prometheus:
       - action: labelmap
         regex: __meta_consul_service_metadata_(.+)
     - job_name: 'prometheus-consul-flask'
+      metrics_path: /health
       consul_sd_configs:
       - server: 'consul-consul-server.kube-system.svc.cluster.local:8500'
         services: []
