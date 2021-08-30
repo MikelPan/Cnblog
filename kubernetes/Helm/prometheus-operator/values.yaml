@@ -1934,7 +1934,8 @@ prometheus:
         action: keep
       - action: labelmap
         regex: __meta_consul_service_metadata_(.+)
-    
+
+
     # - job_name: kube-etcd
     #   kubernetes_sd_configs:
     #     - role: node
