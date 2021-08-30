@@ -1934,6 +1934,16 @@ prometheus:
         action: keep
       - action: labelmap
         regex: __meta_consul_service_metadata_(.+)
+    - job_name: 'prometheus-consul-flask'
+      consul_sd_configs:
+      - server: 'consul-consul-server.kube-system.svc.cluster.local:8500'
+        services: []
+      relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*flask.*
+        action: keep
+      - action: labelmap
+        regex: __meta_consul_service_metadata_(.+)
 
 
     # - job_name: kube-etcd
