@@ -1,0 +1,34 @@
+{{- if .Values.prometheus.ingressRoute.enabled -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ template "prometheus-operator.name" . }}-prometheus
+  annotations:
+    helm.sh/hook: "post-install,post-upgrade"
+  labels:
+    app.kubernetes.io/name: {{ template "prometheus-operator.name" . }}-prometheus
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ template "prometheus-operator.name" . }}-prometheus
+    {{- with .Values.prometheus.ingressRoute.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  entryPoints:
+    - websecure
+  tls:
+  {{- with .Values.prometheus.ingressRoute.tls }}
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  routes:
+  - match: "Host(`{{ .Values.prometheus.ingressRoute.domain }}`) && PathPrefix(`{{ .Values.prometheus.ingressRoute.path }}`)"
+    {{- if .Values.prometheus.ingressRoute.middlewares.regex.enable }}
+    middlewares:
+    - name: replace-path-regex-mid
+    {{- end }}
+    kind: Rule
+    services:
+    - name: {{ template "prometheus-operator.fullname" . }}-prometheus
+    {{- with .Values.prometheus.ingressRoute.ports }}
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+{{- end -}}

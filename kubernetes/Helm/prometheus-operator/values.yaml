@@ -526,6 +526,34 @@ grafana:
     #   hosts:
     #   - grafana.example.com
 
+  ingressRoute:
+    enabled: true
+    domain: grafana-hk.01member.com
+    middlewares:
+      regex:
+        enabled: false
+    path: /
+    annotations: {}
+    ports:
+      port: 80
+  # NOTE: Can't use 'false' due to https://github.com/jetstack/kube-lego/issues/173.
+  # kubernetes.io/ingress.allow-http: true
+  # kubernetes.io/ingress.class: gce
+  # kubernetes.io/ingress.global-static-ip-name: ""
+  # kubernetes.io/tls-acme: true
+    labels: {}
+    tls:
+      certResolver: foo
+      domains:
+      - main: 01member.com
+        sans:
+        - '*.01member.com'
+      options:
+        name: ddyw-tlsoption
+      passthrough: false
+
+  
+
   sidecar:
     dashboards:
       enabled: true
@@ -1504,6 +1532,32 @@ prometheus:
       # - secretName: prometheus-general-tls
       #   hosts:
       #     - prometheus.example.com
+
+  ingressRoute:
+    enabled: true
+    domain: prometheus-hk.01member.com
+    middlewares:
+      regex:
+        enabled: false
+    path: /
+    annotations: {}
+    ports:
+      port: 9090
+  # NOTE: Can't use 'false' due to https://github.com/jetstack/kube-lego/issues/173.
+  # kubernetes.io/ingress.allow-http: true
+  # kubernetes.io/ingress.class: gce
+  # kubernetes.io/ingress.global-static-ip-name: ""
+  # kubernetes.io/tls-acme: true
+    labels: {}
+    tls:
+      certResolver: foo
+      domains:
+      - main: 01member.com
+        sans:
+        - '*.01member.com'
+      options:
+        name: ddyw-tlsoption
+      passthrough: false
 
   ## Configuration for creating an Ingress that will map to each Prometheus replica service
   ## prometheus.servicePerReplica must be enabled
