@@ -1923,7 +1923,18 @@ prometheus:
     ## The scrape configuraiton example below will find master nodes, provided they have the name .*mst.*, relabel the
     ## port to 2379 and allow etcd scraping provided it is running on all Kubernetes master nodes
     ##
-    additionalScrapeConfigs: []
+    additionalScrapeConfigs:
+    - job_name: 'prometheus-consul-bigdata'
+      consul_sd_configs:
+      - server: 'consul-consul-server.kube-system.svc.cluster.local:8500'
+        services: []
+      relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*
+        action: keep
+      - action: labelmap
+        regex: __meta_consul_service_metadata_(.+)
+    
     # - job_name: kube-etcd
     #   kubernetes_sd_configs:
     #     - role: node
