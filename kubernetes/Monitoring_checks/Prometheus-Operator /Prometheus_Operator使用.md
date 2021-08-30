@@ -436,9 +436,9 @@ cat > prometheus-additional.yaml <<EOF
 
   static_configs:
   - targets:
-    - '39.108.192.138:32501'
+    - '39.108.192.100:32501'
     labels:
-      group: 'dist-sz-pre'
+      group: 'sz-pre'
 EOF
 ```
 由于prometheus 提供自动发现服务机制,所以只需要将联邦的配置放到自动发现配置中即可, 配置自动发现集群中的 Service，就需要在 Service 的annotation区域添加prometheus.io/scrape=true的声明，将上面文件直接保存为 prometheus-additional.yaml，然后通过这个文件创建一个对应的 Secret 对象：
@@ -498,7 +498,7 @@ kubectl apply -f prometheus-prometheus.yaml
 
 也可以将prometheus配置文件加入到addtional文件中,使prometheus-operator像prometheus配置一致,例如配置黑盒监控,配置文件如下:
 ```yaml
-- job_name: 'dist-sz-pre-monitoring/kube-state-metrics'
+- job_name: 'pre-monitoring/kube-state-metrics'
   scrape_interval: 15s
 
   honor_labels: true
@@ -523,7 +523,7 @@ kubectl apply -f prometheus-prometheus.yaml
 
   static_configs:
   - targets:
-    - '39.108.192.138:32501'
+    - '39.108.192.100:32501'
     labels:
       group: 'dist-sz-pre'
 

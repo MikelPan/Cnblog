@@ -1,0 +1,212 @@
+def createVersion() {
+    // 定义一个版本号作为当次构建的版本，输出结果 20191210175842_69
+    return new Date().format('yyyyMMddHHmmss') + "_${env.BUILD_ID}"
+}
+pipeline {
+//    agent any
+   agent {
+       node {
+           label 'master'
+       }
+   }
+   environment {
+           PROVIDER_DIR = "admin-web"
+           PROVIDER_PKG_NAME = "admin-web"
+           DOCKERFILE_DIR = "/data/jenkins/workspace/CICD//Deployment/kubernetes/Dockerfile"
+           HARBOR_REGISTRY = "localhost:8000"
+           PORT_TO_ZK_PROVIDER = "20886"
+           PORT = "8083"
+           NS="test"
+           NS_UAT="uat"
+        //    DOCKERFILE_DUBBO_WEB="Dockerfile-dubbo-web"
+        //    ENTRYPOINT_SCRIPT="docker-entrypoint.sh"
+           DOCKERFILE="Dockerfile"
+           IMAGE_NAME = "open-admin-web"
+           PKG_WEB = "web"
+           RELEASE_NAME = "open-admin"
+           PROJECT_NAME = "service-open-admin"
+           RELEASE_DIR = "/data/jenkins/workspace/CICD/Deployment/kubernetes/Helm"
+           PATH = "/usr/local/python-3.8.5/bin:$PATH"
+           HARBOR_USER = "admin"
+           HARBOR_PWD = credentials('harbor_pwd')
+           _version = createVersion()
+   }
+   options{
+    buildDiscarder(logRotator(numToKeepStr:'10'))    
+   }
+   stages {
+        stage('Check out & Build ') {
+            agent { 
+                docker {
+                    image "localhost:8000/maven:3.6.3-jdk-8-slim-k8s-bj-v1.1"
+                    args "-v /root/.m2:/root/.m2 \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -v /usr/local/git/bin/git:/usr/bin/git"
+                } 
+            }
+            options{
+                retry(50)
+                timeout(time:5, unit:'MINUTES')
+            }
+            steps {
+                echo 'checkout code'
+                checkout scm 
+                echo '拉取代码到jenkins服务器'
+                echo '拉取代码完成'
+                echo '查看commit'
+                script {
+                    commit = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                }
+                script {
+                    if ("${env.BRANCH_NAME}" ==~ /(test-container)/) {
+                        def ENV="test"
+                        sh """ 
+                            echo 'package web'
+                            echo '打包web jar包'
+                            cd ${PROVIDER_DIR}
+                            mvn clean package -P${ENV} -Dmaven.test.skip=true
+                            echo "打成的jar如下"
+                            ls -al target/*.jar
+                            cd ../
+                        """
+                    }
+                }
+                script {
+                    if ("${env.BRANCH_NAME}" ==~ /(uat-container)/) {
+                        def ENV="uat"
+                        sh """ 
+                            echo 'package web'
+                            echo '打包web jar包'
+                            cd ${PROVIDER_DIR}
+                            mvn clean package -P${ENV} -Dmaven.test.skip=true
+                            echo "打成的jar如下"
+                            ls -al target/*.jar
+                            cd ../
+                        """
+                    }
+                }
+                echo 'jar包打成docker镜像'
+                sh """
+                    echo 'build provider jar'
+                    cd ${PROVIDER_DIR}
+                    cp ${DOCKERFILE_DIR}/${DOCKERFILE} ./
+                    docker build -t ${HARBOR_REGISTRY}/${env.BRANCH_NAME}/${IMAGE_NAME}:${commit}-${_version}  -f ${DOCKERFILE} --no-cache .
+                """
+                echo '打包完成'
+                echo 'push到镜像仓库'
+                //docker login -u $HARBOR_USER -p $HARBOR_PWD $HARBOR_REGISTRY
+                sh """
+                    docker push ${HARBOR_REGISTRY}/${env.BRANCH_NAME}/${IMAGE_NAME}:${commit}
+                    cd ../
+                """
+                echo 'push完成'
+                echo '删除构建服务器上的镜像'
+                sh """
+                    docker image rmi ${HARBOR_REGISTRY}/${env.BRANCH_NAME}/${IMAGE_NAME}:${commit}
+                """
+                echo '删除完成'
+            }
+        }
+        stage('Deploy to test k8s'){
+            when {
+                anyOf {
+                    branch 'test2-container';
+                }
+            }
+            environment {
+                PATH = "/usr/local/python/bin:$PATH"
+            }
+            agent { 
+                docker {
+                    image "localhost:8000/helm-kubectl:v1.1"
+                    args "-v /root/.kube/config-test:/root/.kube/config"
+                } 
+            }
+            steps {
+                echo "deploy ${PROVIDER_PKG_NAME}-${env.BRANCH_NAME} to k8s namespaces ${NS}"
+                sh """
+                    helm upgrade --install ${RELEASE_NAME}-${env.BRANCH_NAME}-${PKG_WEB} ${RELEASE_DIR}/${PROJECT_NAME}/ --set image.branch=${env.BRANCH_NAME},image.pkg_name=${IMAGE_NAME},image.tag=${commit},service.rpc.port=${PORT_TO_ZK_PROVIDER},service.http.port=${PORT},skywalking.service_name=${RELEASE_NAME}-${PKG_WEB} -f ${RELEASE_DIR}/${PROJECT_NAME}/values-test.yaml -n ${NS} --debug
+                """
+                script {
+                    timeout(5) {
+                        echo '查看部署状态-------'
+                        sh """
+                            while true
+                            do
+                                kubectl rollout status deployment/${RELEASE_NAME}-${env.BRANCH_NAME}-${PKG_WEB} -n ${NS}
+                                if [ \$? != 0 ]
+                                then
+                                    continue
+                                else
+                                    kubectl get pods -l app.kubernetes.io/instance=${RELEASE_NAME}-${env.BRANCH_NAME}-${PKG_WEB} -n ${NS}
+                                    sleep 5
+                                    break
+                                fi
+                            done
+                        """
+                        echo "${env.BRANCH_NAME}分支下${PROVIDER_PKG_NAME} deploy is sucessful"
+                        echo '部署完成'
+                    }
+                }
+            }
+            post { 
+                always {
+                    withCredentials([usernamePassword(credentialsId: 'jenkins_api_users', passwordVariable: 'jenkins_pwd', usernameVariable: 'jenkins_user')]) {
+                        sh """
+                            python3 /data/jenkins/workspace/CICD/Deployment/python/notify_jenkins.py ${jenkins_user} ${jenkins_pwd} ${env.JOB_NAME} ${env.BRANCH_NAME}
+                        """
+                    }
+                }
+            }
+        }
+        stage('Deploy to uat k8s'){
+            when {
+                anyOf {
+                    branch 'uat-container';
+                }
+            }
+            agent { 
+                docker {
+                    image "localhost:8000/helm-kubectl:v1.1"
+                    args "-v /root/.kube/config-test:/root/.kube/config"
+                } 
+            }
+            steps {
+                echo "deploy ${PROVIDER_PKG_NAME}-${env.BRANCH_NAME} to k8s namespaces ${NS_UAT}"
+                sh """
+                    helm upgrade --install ${RELEASE_NAME}-${env.BRANCH_NAME}-${PKG_WEB} ${RELEASE_DIR}/${PROJECT_NAME}/ --set image.branch=${env.BRANCH_NAME},image.pkg_name=${IMAGE_NAME},image.tag=${commit},service.rpc.port=${PORT_TO_ZK_PROVIDER},service.http.port=${PORT},skywalking.service_name=${RELEASE_NAME}-${PKG_WEB} -f ${RELEASE_DIR}/${PROJECT_NAME}/values-uat.yaml -n ${NS_UAT} --debug
+                """
+                script {
+                    timeout(10) {
+                        echo '查看部署状态-------'
+                        sh """
+                            while true
+                            do
+                                kubectl rollout status deployment/${RELEASE_NAME}-${env.BRANCH_NAME}-${PKG_WEB} -n ${NS_UAT}
+                                if [ \$? != 0 ]
+                                then
+                                    continue
+                                else
+                                    kubectl get pods -l app.kubernetes.io/instance=${RELEASE_NAME}-${env.BRANCH_NAME}-${PKG_WEB} -n ${NS_UAT}
+                                    sleep 5
+                                    break
+                                fi
+                            done
+                        """
+                        echo "${env.BRANCH_NAME}分支下${PROVIDER_PKG_NAME} deploy is sucessful"
+                        echo '部署完成'
+                    }
+                }
+            }
+            post { 
+                always {
+                    withCredentials([usernamePassword(credentialsId: 'jenkins_api_users', passwordVariable: 'jenkins_pwd', usernameVariable: 'jenkins_user')]) {
+                        sh """
+                            python3 /data/jenkins/workspace/CICD/Deployment/python/notify_jenkins.py ${jenkins_user} ${jenkins_pwd} ${env.JOB_NAME} ${env.BRANCH_NAME}
+                        """
+                    }
+                }
+            }
+        }
+   }
+}
