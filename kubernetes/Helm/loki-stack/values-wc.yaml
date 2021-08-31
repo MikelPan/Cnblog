@@ -3,10 +3,7 @@ loki:
   config:
     table_manager:
       retention_deletes_enabled: true
-      retention_period: 0s
-  service:
-    type: NodePort
-    nodePort: 31000
+      retention_period: 168h
 
 
 promtail:
