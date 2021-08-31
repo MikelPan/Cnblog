@@ -379,7 +379,15 @@ alertmanager:
     ## Storage is the definition of how storage will be used by the Alertmanager instances.
     ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
     ##
-    storage: {}
+    storage:
+      volumeClaimTemplate:
+       spec:
+         storageClassName: 'nfs-client'
+         accessModes: ["ReadWriteOnce"]
+         resources:
+           requests:
+             storage: 10Gi
+
     # volumeClaimTemplate:
     #   spec:
     #     storageClassName: gluster
@@ -435,7 +443,7 @@ alertmanager:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: kubernetes.io/e2e-az-name
+            - key: kubernetes.io/hostname
               operator: In
               values:
               - k8s-prod-worker-4
@@ -503,12 +511,21 @@ grafana:
 
   adminPassword: prom-operator
 
+  persistence:
+    enabled: true
+    storageClassName: 'nfs-client'
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    subPath: "grafana"
+  # existingClaim:
+
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: kubernetes.io/e2e-az-name
+          - key: kubernetes.io/hostname
             operator: In
             values:
             - k8s-prod-worker-4
@@ -634,7 +651,7 @@ kube-state-metrics:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: kubernetes.io/e2e-az-name
+            - key: kubernetes.io/hostname
               operator: In
               values:
               - k8s-prod-worker-4
@@ -1357,7 +1374,7 @@ prometheusOperator:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: kubernetes.io/e2e-az-name
+            - key: kubernetes.io/hostname
               operator: In
               values:
               - k8s-prod-worker-4
@@ -1861,7 +1878,7 @@ prometheus:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: kubernetes.io/e2e-az-name
+            - key: kubernetes.io/hostname
               operator: In
               values:
               - k8s-prod-worker-4

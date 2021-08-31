@@ -80,7 +80,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/e2e-az-name
+        - key: kubernetes.io/hostname
           operator: In
           values:
           - k8s-prod-worker-4

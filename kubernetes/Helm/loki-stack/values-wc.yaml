@@ -4,7 +4,10 @@ loki:
     table_manager:
       retention_deletes_enabled: true
       retention_period: 168h
-
+  persistence:
+    enabled: true
+    storageClassName: 'nfs-client'
+    subPath: 'loki'
 
 promtail:
   enabled: true
