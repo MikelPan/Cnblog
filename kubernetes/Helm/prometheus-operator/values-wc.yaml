@@ -1937,7 +1937,6 @@ prometheus:
          resources:
            requests:
              storage: 10Gi
-       selector: {}
 
     # Additional volumes on the output StatefulSet definition.
     volumes: []
