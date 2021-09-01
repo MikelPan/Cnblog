@@ -1568,6 +1568,9 @@ prometheus:
       #   hosts:
       #     - prometheus.example.com
 
+  ingressRoute:
+    enabled: false
+
   ## Configuration for creating an Ingress that will map to each Prometheus replica service
   ## prometheus.servicePerReplica must be enabled
   ##
