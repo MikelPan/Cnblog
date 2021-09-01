@@ -530,6 +530,9 @@ grafana:
             values:
             - k8s-prod-worker-4
 
+  ingressRoute:
+    enabled: false
+
   ingress:
     ## If true, Grafana Ingress will be created
     ##

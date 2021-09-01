@@ -1,0 +1,34 @@
+{{- if .Values.ingressRoute.enabled -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ template "grafana.fullname" . }}
+  annotations:
+    helm.sh/hook: "post-install,post-upgrade"
+  labels:
+    app.kubernetes.io/name: {{ template "grafana.fullname" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ template "grafana.fullname" . }}
+    {{- with .Values.ingressRoute.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  entryPoints:
+    - websecure
+  tls:
+  {{- with .Values.ingressRoute.tls }}
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  routes:
+  - match: "Host(`{{ .Values.ingressRoute.domain }}`) && PathPrefix(`{{ .Values.ingressRoute.path }}`)"
+    {{- if .Values.ingressRoute.middlewares.regex.enable }}
+    middlewares:
+    - name: replace-path-regex-mid
+    {{- end }}
+    kind: Rule
+    services:
+    - name: {{ template "grafana.fullname" . }}
+    {{- with .Values.ingressRoute.ports }}
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+{{- end -}}
