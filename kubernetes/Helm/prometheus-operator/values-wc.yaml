@@ -1130,6 +1130,15 @@ kube-state-metrics:
     create: true
   podSecurityPolicy:
     enabled: true
+  affinity:
+    nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - k8s-prod-worker-4
 
 ## Deploy node exporter as a daemonset to all nodes
 ##
