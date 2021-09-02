@@ -18,14 +18,14 @@ serviceAccount:
 
 image:
   repository: prom/consul-exporter
-  tag: v0.4.0
+  tag: v0.7.1
   pullPolicy: IfNotPresent
 
 nameOverride: ""
 fullnameOverride: ""
 
 # Add your consul server details here
-consulServer: host:port
+consulServer: consul-consul-server.kube-system.svc.cluster.local:8500
 
 # Flags - for a list visit https://github.com/prometheus/consul_exporter#flags
 options: {}
