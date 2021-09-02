@@ -53,7 +53,7 @@ release: prometheus-operator
 {{/*
 Allow the release namespace to be overridden for multi-namespace deployments in combined charts
 */}}
-{{- define "prometheus-operator.namespace" -}}
+{{- define "prometheus-consul-exporter.namespace" -}}
   {{- if .Values.namespaceOverride -}}
     {{- .Values.namespaceOverride -}}
   {{- else -}}
