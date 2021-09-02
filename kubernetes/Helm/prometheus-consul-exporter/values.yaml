@@ -68,10 +68,10 @@ tolerations: []
 
 affinity: {}
 
-servicemonitor:
+serviceMonitor:
   enabled: true
   interval: ""
   metricRelabelings: []
-  relabelings: []
+  relabelings: [M
 
 
