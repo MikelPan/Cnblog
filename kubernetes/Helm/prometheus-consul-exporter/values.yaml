@@ -70,4 +70,8 @@ affinity: {}
 
 servicemonitor:
   enabled: true
-  
+  interval: ""
+  metricRelabelings: []
+  relabelings: []
+
+
