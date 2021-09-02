@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ template "prometheus-consul-exporter.name" . }}
     chart: {{ template "prometheus-consul-exporter.chart" . }}
-    release: {{ .Release.Name }}
+    {{ include "prometheus-consul-exporter.labels" . | indent 4 }}
     heritage: {{ .Release.Service }}
   annotations:
 {{ toYaml .Values.service.annotations | indent 4 }}

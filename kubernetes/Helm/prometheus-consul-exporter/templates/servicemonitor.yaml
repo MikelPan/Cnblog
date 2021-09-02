@@ -11,7 +11,7 @@ spec:
   selector:
     matchLabels:
       app: {{ template "prometheus-consul-exporter.name" . }}
-      release: {{ .Release.Name }}
+      {{ include "prometheus-consul-exporter.labels" . | indent 4 }}
   namespaceSelector:
     matchNames:
       - {{ printf "%s" (include "prometheus-consul-exporter.namespace" .) | quote }}
