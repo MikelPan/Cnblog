@@ -16,7 +16,7 @@ spec:
     matchNames:
       - {{ printf "%s" (include "prometheus-consul-exporter.namespace" .) | quote }}
   endpoints:
-  - port: {{ .Values..service.port }}
+  - port: {{ .Values.service.port }}
     {{- if .Values.serviceMonitor.interval }}
     interval: {{ .Values.serviceMonitor.interval }}
     {{- end }}
