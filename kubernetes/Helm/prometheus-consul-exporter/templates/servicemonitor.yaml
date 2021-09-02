@@ -5,7 +5,7 @@ metadata:
   name: {{ template "prometheus-consul-exporter.fullname" . }}
   namespace: {{ template "prometheus-consul-exporter.namespace" . }}
   labels:
-    app: {{ template "prometheus-consul-exporter.name" . }}-grafana
+    app: {{ template "prometheus-consul-exporter.name" . }}
 {{ include "prometheus-consul-exporter.labels" . | indent 4 }}
 spec:
   selector:
