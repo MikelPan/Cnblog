@@ -67,3 +67,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+servicemonitor:
+  enabled: true
+  

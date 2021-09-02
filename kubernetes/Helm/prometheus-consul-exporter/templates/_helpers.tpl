@@ -41,3 +41,11 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/* Generate basic labels */}}
+{{- define "prometheus-consul-exporter.labels" }}
+release: prometheus-operator
+{{- if .Values.commonLabels}}
+{{ toYaml .Values.commonLabels }}
+{{- end }}
+{{- end }}

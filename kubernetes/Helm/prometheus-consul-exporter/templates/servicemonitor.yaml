@@ -1,0 +1,32 @@
+{{- if and .Values.servicemonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "prometheus-consul-exporter.fullname" . }}
+  namespace: {{ template "prometheus-consul-exporter.namespace" . }}
+  labels:
+    app: {{ template "prometheus-consul-exporter.name" . }}-grafana
+{{ include "prometheus-consul-exporter.labels" . | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "prometheus-consul-exporter.name" . }}
+      release: {{ .Release.Name }}
+  namespaceSelector:
+    matchNames:
+      - {{ printf "%s" (include "prometheus-consul-exporter.namespace" .) | quote }}
+  endpoints:
+  - port: {{ .Values..service.port }}
+    {{- if .Values.serviceMonitor.interval }}
+    interval: {{ .Values.serviceMonitor.interval }}
+    {{- end }}
+    path: "/metrics"
+{{- if .Values.serviceMonitor.metricRelabelings }}
+    metricRelabelings:
+{{ tpl (toYaml .Values.serviceMonitor.metricRelabelings | indent 6) . }}
+{{- end }}
+{{- if .Values.serviceMonitor.relabelings }}
+    relabelings:
+{{ toYaml .Values.serviceMonitor.relabelings | indent 6 }}
+{{- end }}
+{{- end }}
