@@ -72,6 +72,6 @@ serviceMonitor:
   enabled: true
   interval: ""
   metricRelabelings: []
-  relabelings: [M
+  relabelings: []
 
 
