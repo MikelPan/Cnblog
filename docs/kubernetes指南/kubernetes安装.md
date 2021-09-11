@@ -22,12 +22,14 @@ kubectl completion bash >/etc/bash_completion.d/kubectl
 ```bash
 # 安装
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-install minikube-linux-arm64 /usr/local/bin/minikube
+install minikube-linux-amd64 /usr/local/bin/minikube
 # 启动集群
 yum install -y conntrack socat
 echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
 minikube start --driver=none
 minikube start --driver=none --network-plugin=cni --extra-config=kubeadm.ignore-preflight-errors=NumCPU --force --cpus 1
+## 国内启动
+minikube start --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --driver=none --network-plugin=cni --image-mirror-country=cn
 # 初始化
 mv /root/.kube /root/.minikube $HOME
 chown -R $USER $HOME/.kube $HOME/.minikube
