@@ -196,6 +196,39 @@ function getAutoStartStatus(){
     report_SelfInitiatedProgram="$(echo $conf | wc -l)" #自启动程序数量
 }
 
+function getNetworkStatus(){
+    echo ""
+    echo "\033[33m############################ 网络检查 ################################\033[0m"
+    if [[ $centosVersion < 7 ]]
+    then
+        /sbin/ifconfig -a | grep -v packets | grep -v collisions | grep -v inet6
+    else
+    #ip a
+        for i in $(ip link | grep BROADCAST | awk -F: '{print $2}');do ip add show $i | grep -E "BROADCAST|global"| awk '{print $2}' | tr '\n' ' ' ;echo "" ;done
+    fi
+    GATEWAY=$(ip route | grep default | awk '{print $3}')
+    DNS=$(grep nameserver /etc/resolv.conf| grep -v "#" | awk '{print $2}' | tr '\n' ',' | sed 's/,$//')
+    echo ""
+    echo "网关：$GATEWAY "
+    echo " DNS：$DNS"
+    #报表信息
+    IP=$(ip -f inet addr | grep -v 127.0.0.1 | grep inet | awk '{print $NF,$2}' | tr '\n' ',' | sed 's/,$//')
+    MAC=$(ip link | grep -v "LOOPBACK\|loopback" | awk '{print $2}' | sed 'N;s/\n//' | tr '\n' ',' | sed 's/,$//')
+    report_IP="$IP" #IP地址
+    report_MAC=$MAC #MAC地址
+    report_Gateway="$GATEWAY" #默认网关
+    report_DNS="$DNS" #DNS
+}
+
+function getListenStatus(){
+    echo ""
+    echo "\033[33m############################ 监听检查 ##############################################\033[0m"
+    TCPListen=$(ss -ntul | column -t)
+    echo "$TCPListen"
+    #报表信息
+    report_Listen="$(echo "$TCPListen"| sed '1d' | awk '/tcp/ {print $5}' | awk -F: '{print $NF}' | sort | uniq | wc -l)"
+}
+
 
 function check(){
     version
@@ -205,6 +238,8 @@ function check(){
     getDiskStatus
     getServiceStatus
     getAutoStartStatus
+    getNetworkStatus
+    getListenStatus 
 }
 
 
