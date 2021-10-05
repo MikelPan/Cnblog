@@ -204,12 +204,15 @@ function getNetworkStatus(){
         /sbin/ifconfig -a | grep -v packets | grep -v collisions | grep -v inet6
     else
     #ip a
-        for i in $(ip link | grep BROADCAST | awk -F: '{print $2}');do ip add show $i | grep -E "BROADCAST|global"| awk '{print $2}' | tr '\n' ' ' ;echo "" ;done
+        for i in $(ip link | grep BROADCAST | awk -F: '{print $2}')
+            do ip add show $i | grep -E "BROADCAST|global"| awk '{print $2}' | tr '\n' ' '
+                echo "+++++"
+            done
     fi
     GATEWAY=$(ip route | grep default | awk '{print $3}')
     DNS=$(grep nameserver /etc/resolv.conf| grep -v "#" | awk '{print $2}' | tr '\n' ',' | sed 's/,$//')
     echo ""
-    echo "网关：$GATEWAY "
+    echo " 网关：$GATEWAY "
     echo " DNS：$DNS"
     #报表信息
     IP=$(ip -f inet addr | grep -v 127.0.0.1 | grep inet | awk '{print $NF,$2}' | tr '\n' ',' | sed 's/,$//')
