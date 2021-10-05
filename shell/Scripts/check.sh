@@ -95,6 +95,7 @@ function getMemStatus(){
     let MemUsed=MemTotal-MemFree
     MemPercent="$(awk "begin {if($MemTotal==0){printf 100}else{printf \"%.2f\",$MemUsed*100/$MemTotal}}")""%"
 }    
+
 function getDiskStatus(){
     echo ""
     echo -e "\033[33m****************************************磁盘检查***************************************\033[0m"
@@ -111,5 +112,99 @@ function getDiskStatus(){
     inodetotal=$(echo "$inodedata" |awk '{total+=$3}END{print total}')
     inodeused=$(echo "$inodedata" |awk '{total+=$4}END{print total}')
     inodefree=$((inodetotal-inodeused))
-    inodeusedercent=$
+    inodeusedercent=$(echo $inodetotal $inodeused | awk '{if($1==0){printf 100}else{printf "%.2f",$2*100/$1}}')
+    report_DiskTotal=$((disktotal/1024/1024))"GB" #硬盘总容量(GB)
+    report_DiskFree=$((diskfree/1024/1024))"GB" #硬盘剩余(GB)
+    report_DiskUsedPercent="$diskusedpercent""%" #硬盘使用率%
+    report_InodeTotal=$((inodetotal/1000))"K" #Inode总量
+    report_InodeFree=$((inodefree/1000))"K" #Inode剩余
+    report_InodeUsedPercent="$inodeusedpercent""%" #Inode使用率%
 }
+
+function getSystemStatus(){
+echo ""
+echo -e "\033[33m############################ 系统检查 ############################\033[0m"
+if [ -e /etc/sysconfig/i18n ];then
+default_LANG="$(grep "LANG=" /etc/sysconfig/i18n | grep -v "^#" | awk -F '"' '{print $2}')"
+else
+default_LANG=$LANG
+fi
+export LANG="en_US.UTF-8"
+Release=$(cat /etc/redhat-release 2>/dev/null)
+Kernel=$(uname -r)
+OS=$(uname -o)
+Hostname=$(uname -n)
+SELinux=$(/usr/sbin/sestatus | grep "SELinux status: " | awk '{print $3}')
+LastReboot=$(who -b | awk '{print $3,$4}')
+uptime=$(uptime | sed 's/.*up \([^,]*\), .*/\1/')
+echo " 系统：$OS"
+echo " 发行版本：$Release"
+echo " 内核：$Kernel"
+echo " 主机名：$Hostname"
+echo " SELinux：$SELinux"
+echo "语言/编码：$default_LANG"
+echo " 当前时间：$(date +'%F %T')"
+echo " 最后启动：$LastReboot"
+echo " 运行时间：$uptime"
+#报表信息
+report_DateTime=$(date +"%F %T") #日期
+report_Hostname="$Hostname" #主机名
+report_OSRelease="$Release" #发行版本
+report_Kernel="$Kernel" #内核
+report_Language="$default_LANG" #语言/编码
+report_LastReboot="$LastReboot" #最近启动时间
+report_Uptime="$uptime" #运行时间（天）
+report_Selinux="$SELinux"
+export LANG="$default_LANG"
+}
+
+function getServiceStatus(){
+echo ""
+echo "\033[33m############################ 服务检查 ############################\033[0m"
+echo ""
+if [[ $centosVersion > 7 ]];then
+conf=$(systemctl list-unit-files --type=service --state=enabled --no-pager | grep "enabled")
+process=$(systemctl list-units --type=service --state=running --no-pager | grep ".service")
+#报表信息
+report_SelfInitiatedService="$(echo "$conf" | wc -l)" #自启动服务数量
+report_RuningService="$(echo "$process" | wc -l)" #运行中服务数量
+else
+conf=$(/sbin/chkconfig | grep -E ":on|:启用")
+process=$(/sbin/service --status-all 2>/dev/null | grep -E "is running|正在运行")
+#报表信息
+report_SelfInitiatedService="$(echo "$conf" | wc -l)" #自启动服务数量
+report_RuningService="$(echo "$process" | wc -l)" #运行中服务数量
+fi
+echo "服务配置"
+echo "--------"
+echo "$conf" | column -t
+echo ""
+echo "正在运行的服务"
+echo "--------------"
+echo "$process"
+}
+
+function getAutoStartStatus(){
+echo ""
+echo -e "\033[33m############################ 自启动检查 ##########################\033[0m"
+conf=$(grep -v "^#" /etc/rc.d/rc.local| sed '/^$/d')
+echo "$conf"
+#报表信息
+report_SelfInitiatedProgram="$(echo $conf | wc -l)" #自启动程序数量
+}
+
+
+function check(){
+version
+getSystemStatus
+getCpuStatus
+getMemStatus
+getDiskStatus
+getServiceStatus
+}
+
+
+#执行检查并保存检查结果
+check > $RESULTFILE
+
+echo "检查结果：$RESULTFILE"
