@@ -162,7 +162,7 @@ function getSystemStatus(){
 
 function getServiceStatus(){
     echo ""
-    echo "\033[33m############################ 服务检查 ############################\033[0m"
+    echo -e "\033[33m############################ 服务检查 ############################\033[0m"
     echo ""
     if [[ $centosVersion > 7 ]]
     then
@@ -178,7 +178,7 @@ function getServiceStatus(){
         report_SelfInitiatedService="$(echo "$conf" | wc -l)" #自启动服务数量
         report_RuningService="$(echo "$process" | wc -l)" #运行中服务数量
     fi
-    echo "服务配置"
+    echo "systemctl:服务配置"
     echo "--------"
     echo "$conf" | column -t
     echo ""
