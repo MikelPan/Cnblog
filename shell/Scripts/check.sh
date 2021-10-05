@@ -94,7 +94,7 @@ function getMemStatus(){
     MemTotal=$(grep MemTotal /proc/meminfo |awk '{print $2}')
     MemFree=$(grep MemFree /proc/meminfo | awk '{print $2}')
     let MemUsed=MemTotal-MemFree
-    MemPercent="$(awk "begin {if($MemTotal==0){printf 100}else{printf \"%.2f\",$MemUsed*100/$MemTotal}}")""%"
+    MemPercent="$(awk "BEGIN {if($MemTotal==0){printf 100}else{printf \"%.2f\",$MemUsed*100/$MemTotal}}")""%"
 }    
 
 function getDiskStatus(){
