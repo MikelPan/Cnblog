@@ -234,7 +234,7 @@ function getNetworkStatus(){
 
 function getListenStatus(){
     echo ""
-    $WARNING
+    $SUCCESS
     echo "############################ 监听检查 ##############################################"
     $NORMAL
     TCPListen=$(ss -ntul | column -t)
