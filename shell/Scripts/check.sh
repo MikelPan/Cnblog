@@ -198,7 +198,7 @@ function getAutoStartStatus(){
 
 function getNetworkStatus(){
     echo ""
-    echo "\033[33m############################ 网络检查 ################################\033[0m"
+    echo -e "\033[33m############################ 网络检查 ################################\033[0m"
     if [[ $centosVersion < 7 ]]
     then
         /sbin/ifconfig -a | grep -v packets | grep -v collisions | grep -v inet6
@@ -222,7 +222,7 @@ function getNetworkStatus(){
 
 function getListenStatus(){
     echo ""
-    echo "\033[33m############################ 监听检查 ##############################################\033[0m"
+    echo -e "\033[33m############################ 监听检查 ##############################################\033[0m"
     TCPListen=$(ss -ntul | column -t)
     echo "$TCPListen"
     #报表信息
