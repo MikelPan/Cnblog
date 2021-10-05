@@ -204,6 +204,7 @@ function check(){
     getMemStatus
     getDiskStatus
     getServiceStatus
+    getAutoStartStatus
 }
 
 
