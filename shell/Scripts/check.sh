@@ -205,8 +205,8 @@ function getNetworkStatus(){
     else
     #ip a
         for i in $(ip link | grep BROADCAST | awk -F: '{print $2}')
-            do ip add show $i | grep -E "BROADCAST|global"| awk '{print $2}' | tr '\n' ' '
-                # echo "+++++"
+            do ip add show $i | grep -E "BROADCAST|global"| awk '{print $2}' | tr '\n' ''
+                echo ""
             done
     fi
     GATEWAY=$(ip route | grep default | awk '{print $3}')
