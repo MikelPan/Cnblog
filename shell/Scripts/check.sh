@@ -16,6 +16,15 @@ PROGPATH=`echo $0 | sed -e 's,[\\\\/][^\\\\/][^\\\\/]*$,,'`
 LOGPATH="$PROGPATH/log"
 [ -e $LOGPATH ] || mkdir $LOGPATH
 RESULTFILE="$LOGPATH/HostDailyCheck-`hostname`-`date +%Y%m%d`.txt"
+#定义日志级别
+# 绿色
+SUCCESS="echo -en \033[32m"
+# 红色
+FAILURE="echo -en \033[31m"
+# 黄色
+WARNING="echo -en \033[33m"
+# 黑色
+NORMAL="echo -en \033[0m"
 #定义报表的全局变量
 report_DateTime=" "
 report_Hostname=" "
@@ -225,13 +234,14 @@ function getNetworkStatus(){
 
 function getListenStatus(){
     echo ""
-    echo -e "\033[33m############################ 监听检查 ##############################################\033[0m"
+    $WARNING
+    echo "############################ 监听检查 ##############################################"
+    $NORMAL
     TCPListen=$(ss -ntul | column -t)
     echo "$TCPListen"
     #报表信息
     report_Listen="$(echo "$TCPListen"| sed '1d' | awk '/tcp/ {print $5}' | awk -F: '{print $NF}' | sort | uniq | wc -l)"
 }
-
 
 function check(){
     version
