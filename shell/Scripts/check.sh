@@ -8,7 +8,7 @@
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
 source /etc/profile
 [ $(id-u) -gt 0 ] && echo "请用root用户执行此脚本!" && exit 1
-centosVersion=$(awk '{print $(NF-1)}' /etc/redht-release)
+centosVersion=$(awk '{print $(NF-1)}' /etc/redhat-release)
 VERSION=`date +%F`
 #日志相关
 PROGPATH=`echo $0 | sed -e 's,[\\\\/][^\\\\/][^\\\\/]*$,,'`
