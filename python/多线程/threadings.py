@@ -4,7 +4,7 @@ import time
 
 
 def thread_func():  # 线程函数
-    time.sleep(1)
+    # time.sleep(1)
     i = 0
     while(1):
         print(datetime.now())
