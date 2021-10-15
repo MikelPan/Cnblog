@@ -6,5 +6,5 @@ do
     printf "%2d %5d %s\n" \
         "$(cat $proc/oom_score)" \
         "$(basename $proc)" \
-        "$(cat $proc/cmdline |head -c 50)"
+        "$(cat $proc/cmdline |tr '\0' ' '|head -c 100)"
 done 2>/dev/null| sort -rn | head -n 10
