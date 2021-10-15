@@ -7,4 +7,4 @@ do
         "$(cat $proc/oom_sorce)" \
         "$(basename $proc)" \
         "$(cat $proc/cmdline |head -c 50)"
-done 2>/dev/null | sort -rn | head -n 10
+done | sort -rn | head -n 10
