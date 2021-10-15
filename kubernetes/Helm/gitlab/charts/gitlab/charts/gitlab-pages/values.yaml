@@ -1,0 +1,124 @@
+# Default values for gitlab-pages.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  pages:
+    enabled: false
+  # hosts:
+    # pages:
+      # name: pages.example.com
+  # imagePullPolicy: IfNotPresent
+hpa:
+  maxReplicas: 10
+  minReplicas: 1
+  targetAverageValue: 100m
+  customMetrics: []
+
+image:
+  repository: registry.gitlab.com/gitlab-org/build/cng/gitlab-pages
+  # tag: master
+
+service:
+  type: ClusterIP
+  externalPort: 8090
+  internalPort: 8090
+  customDomains:
+    type: LoadBalancer
+    internalHttpsPort: 8091
+    nodePort: {}
+      # http
+      # https
+
+init:
+  image: {}
+    # repository:
+    # tag:
+  resources:
+    requests:
+      cpu: 50m
+
+deployment:
+  strategy: {}
+
+ingress:
+  annotations: {}
+  tls: {}
+  path: # /
+
+# Tolerations for pod scheduling
+tolerations: []
+
+cluster: true
+queueSelector: false
+
+annotations: {}
+podLabels: {}
+common:
+  labels: {}
+
+serviceLabels: {}
+## Additional environment variables to set
+extraEnv: {}
+# extraEnv:
+#   SOMEKEY: SOMEVALUE
+#   SOMEKEY2: SOMEVALUE2
+
+maxUnavailable: 1
+
+podLabels: {}
+resources:
+  requests:
+    cpu: 900m
+    memory: 2G
+
+## Allow to overwrite under which User and Group we're running.
+securityContext:
+  runAsUser: 1000
+  fsGroup: 1000
+
+## Enable deployment to use a serviceAccount
+serviceAccount:
+  enabled: false
+  create: false
+  annotations: {}
+  ## Name to be used for serviceAccount, otherwise defaults to chart fullname
+  # name:
+
+## Allow configuring pods' priorityClassName. This is used to control pod priority in case of eviction:
+#  https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+priorityClassName: ""
+
+artifactsServerTimeout: 10
+artifactsServerUrl:
+domainConfigSource: 'gitlab'
+gitlabClientHttpTimeout:
+gitlabClientJwtExpiry:
+gitlabServer:
+headers: []
+insecureCiphers: false
+internalGitlabServer:
+logFormat: 'json'
+logVerbose: false
+maxConnections:
+redirectHttp: false
+sentry:
+  enabled: false
+  dsn:
+  environment:
+statusUri:
+tls:
+  minVersion:
+  maxVersion:
+useHttp2: true
+
+metrics:
+  enabled: true
+  port: 9235
+  annotations: {}
+
+workhorse: {}
+  # by default, Workhorse is a part of the Webservice Pods / Service
+  # host: '0.0.0.0'
+  # serviceName: 'webservice'
+  # port: 8181
