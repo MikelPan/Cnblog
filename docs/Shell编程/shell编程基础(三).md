@@ -45,9 +45,9 @@ done
 ### shell中while语法
 ```bash
 while 条件
-  do
-    命令
-done
+    do
+        命令
+    done
 ```
 sleep 单位 秒  sleep 1 休息1秒
 usleep 单位 微秒 usleep 1000000 休息1s

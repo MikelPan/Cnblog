@@ -80,3 +80,4 @@ wait   #等待所有后台子进程结束
 echo "over"
 rm tmp
 ```
+
