@@ -1,7 +1,9 @@
 ### kafka 创建topic
-./kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic mot_node_filter_label_topic
-./kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic mot_click_target_label_topic
-./kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic mot_click_delay_push_topic
+```bash
+./kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic xxx
+./kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic xxxx
+./kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic xxx
+```
 
 ### 查看topic内容
 ```bash
