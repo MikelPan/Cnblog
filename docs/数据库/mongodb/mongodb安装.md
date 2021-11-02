@@ -66,22 +66,3 @@ EOF
 systemctl enable mongod.servcie
 systemctl start mongod
 ```
-#### mongodb使用
-```bash
-# 创建数据库
-use DATABASE_NAME
-# 插入数据
-db.test.insert({"name":"你家人来找你了"})
-# 删除数据库
-use runoob
-db.dropDatabase()
-# 删除集合
-db.createCollection("runoob") 
-show tables 
-db.collection.drop()
-db.runoob.drop()
-show tables
-# 创建固定集合
-db.createCollection("mycol", { capped : true, autoIndexId : true, size : 
-   6142800, max : 10000 } )
-```

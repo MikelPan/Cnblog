@@ -34,32 +34,112 @@ sourceforge.net，资源网站查找，创建和发布开源软件免费，使�
 
 ### mongodb账户权限管理
 
-**系统默认角色**
+#### 系统默认角色
+
+**数据库访问角色**
+
 ```bash
 Read：允许用户读取指定数据库
 readWrite：允许用户读写指定数据库
+```
+
+**数据库管理角色**
+
+```bash
 dbAdmin：允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile
 userAdmin：允许用户向system.users集合写入，可以找指定数据库里创建、删除和管理用户
+dbOwner: 数据库拥有者（最高）, 集合了dbAdmin/userAdmin/readWrite角色的权限
+```
+
+**集群管理角色**
+
+```bash
 clusterAdmin：只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限。
+clusterManager: 集群管理角色，允许对分片和副本集集群执行管理操作，如addShard，resync等
+clusterMonitor：集群监控角色，允许度分片和副本集集群监控，如查看serverStatus
+hostManager：节点管理角色，允许监控和管理节点，比如killOp，shutdown等
+```
+
+**备份恢复**
+
+```bash
+backup: 备份权限，允许执行mongodump操作
+restore：恢复权限，允许执行mongorestore操作
+```
+
+**通用角色**
+
+```bash
 readAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的读权限
 readWriteAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的读写权限
 userAdminAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的userAdmin权限
 dbAdminAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限。
-root：只在admin数据库中可用。超级账号，超级权限
 ```
+
+**特殊角色**
+
+```bash
+root：只在admin数据库中可用。超级账号，超级权限
+——system：内部角色，用于集群节点通讯
+```
+
+#### 创建自定义角色
+
+使用createRole命令可以创建自定义角色，每一个角色都需要被绑定到指定的库中。普通的业务库中的角色对象只允许访问当前库的资源对象，而位于admin库的角色则没有此限制。我们定义了一个特殊的角色，用来对分散在多个业务库中的数据进行ETL处理，代码如下
+
+```bash
+# 创建角色权限
+use admin
+db.createRole(
+	{
+		role: "etlRole",
+		privileges: [
+			{
+				resource: {
+					db: "tracedb", collection: "etlLogs"
+				},
+				actions: [
+					"find",
+					"update",
+					"insert",
+					"remote"
+				]
+			}
+		],
+		roles: [
+			{ role: "read", db: "orderdb"},
+			{ role: "read", db: "goodsdb"},
+			{ role: "read", db: "userdb"}
+		]
+	},
+	{ w: "majority", wtimeout: 5000}
+)
+# 授权
+use somedb
+db.grantRolesToUser("bus",[{role: "readWrite",db: "dimension"}])
+```
+
+#### 常见权限添加
 
 ```bash
 # 创建管理员角色
 db.createUser({
   user : 'testadm',
-  pwd : 'cLAE7MbgAsW0w13FmqSXaUbm',
+  pwd : 'xxxxxx',
   roles : [
     'clusterAdmin',
     'dbAdminAnyDatabase',
     'userAdminAnyDatabase',
-    'readWriteAnyDatabase'
+    'readWriteAnyDatabase',
+    {
+    	role: "readWrite", db: "xxxxx"
+    }
   ]
 })
+
+# 新增权限
+db.grantRolesToUser("admin", [ { role:"dbAdminAnyDatabase", db:"admin"} ])
+db.grantRolesToUser("test", [ { role:"readWrite", db:"apiplatform"} ])
 
 # 针对库创建角色
 db.createUser({
@@ -67,7 +147,7 @@ db.createUser({
   pwd : 'localhost',
   roles : [
     {
-    role: "readWrite",db: "autocd-apiplatform"
+    role: "readWrite",db: "apiplatform"
     }
   ]
 })
@@ -75,49 +155,116 @@ db.createUser({
 # 删除用户
 use api-platform
 db.system.users.remove({user: "admin"})
-# admin库上创建权限
-db.grantRolesToUser("admin", [ { role:"dbAdminAnyDatabase", db:"admin"} ])
-db.grantRolesToUser("testadm", [ { role:"readWrite", db:"autocd-apiplatform"} ])
-# 针对库创建角色
-db.createUser({
-  user : 'admin',
-  pwd : '123456',
-  roles : [
-    {
-    role: "dbOwner",db: "api-platform"
-    }
-  ]
-})
+```
 
+### mongo 数据管理
+
+#### 数据新增
+
+```bash
 # 创建数据库
-use DATABASE_NAME
-# 插入数据
-db.runoob.insert({"name":"你家人来找你了"})
-# 删除数据
-use runoob
-db.dropDatabase()
-# 删除集合
-db.createCollection("runoob") 
-show tables 
-db.collection.drop()
-db.runoob.drop()
-show tables
-# 创建固定集合
+use db_name
+# 创建集合
 db.createCollection("mycol", { capped : true, autoIndexId : true, size : 
    6142800, max : 10000 } )
+# 文档插入
+db.mycol.insert({title: 'MongoDB 教程', 
+    description: 'MongoDB 是一个 Nosql 数据库',
+    by: '官网',
+    url: 'http://www.runoob.com',
+    tags: ['mongodb', 'database', 'NoSQL'],
+    likes: 100
+})
+# 查询所有数据
+db.mycol.find()
+# 文档查询
+db.mycol.find().pretty()
+{
+        "_id" : ObjectId("56063f17ade2f21f36b03133"),
+        "title" : "MongoDB 教程",
+        "description" : "MongoDB 是一个 Nosql 数据库",
+        "by" : "菜鸟教程",
+        "url" : "http://www.runoob.com",
+        "tags" : [
+                "mongodb",
+                "database",
+                "NoSQL"
+        ],
+        "likes" : 100
+}
+# 条件查询
+db.mycol.find({"title":"MongoDB 教程"}).pretty()
+{
+        "_id" : ObjectId("56063f17ade2f21f36b03133"),
+        "title" : "MongoDB 教程",
+        "description" : "MongoDB 是一个 Nosql 数据库",
+        "by" : "菜鸟教程",
+        "url" : "http://www.runoob.com",
+        "tags" : [
+                "mongodb",
+                "database",
+                "NoSQL"
+        ],
+        "likes" : 100
+}
+# 条件查询（or）
+db.mycol.find({$or:[{"by":"官网"},{"title": "MongoDB 教程"}]}).pretty()
+{
+        "_id" : ObjectId("56063f17ade2f21f36b03133"),
+        "title" : "MongoDB 教程",
+        "description" : "MongoDB 是一个 Nosql 数据库",
+        "by" : "菜鸟教程",
+        "url" : "http://www.runoob.com",
+        "tags" : [
+                "mongodb",
+                "database",
+                "NoSQL"
+        ],
+        "likes" : 100
+}
 ```
-### mongo 数据插入
-```bash
-db.testCase.insert(
-  [
 
-  ]
-)
+#### 数据更新
+
+```bash
+# 更新一条
+db.mycol.find({$or:[{"by":"官网"},{"title": "MongoDB 教程"}]}).pretty()
+{
+        "_id" : ObjectId("56063f17ade2f21f36b03133"),
+        "title" : "MongoDB 教程",
+        "description" : "MongoDB 是一个 Nosql 数据库",
+        "by" : "菜鸟教程",
+        "url" : "http://www.runoob.com",
+        "tags" : [
+                "mongodb",
+                "database",
+                "NoSQL"
+        ],
+        "likes" : 100
+}
+# 更新第一条
+db.mycol.update({},{})
+# 全部更新
+db.mycol.update({},{}, false, true)
+# 添加一条
+db.mycol.update({},{}, true, false)
 ```
+
+#### 数据删除
+```bash
+# 删除数据
+db.mycol.delete()
+# 批量删除
+db.mycol.deleteMany({})
+```
+
 ### mongosh 使用
 
 ```bash
 # 下载
+## mac版
+wget https://downloads.mongodb.com/compass/mongosh-1.0.5-darwin-x64.zip
+## linux
 wget https://downloads.mongodb.com/compass/mongosh-0.1.0-linux.tgz
 # 连接
 主节点: mongo mongodb://mongodb0.example.com.local:27017
@@ -126,27 +273,26 @@ wget https://downloads.mongodb.com/compass/mongosh-0.1.0-linux.tgz
 ```
 
 ### mongo数据导入导出
+
+##### 下载mongo-tools工具
+
 ```bash
-# 安装mongo-tools工具包
-# 下载地址: https://repo.mongodb.org/yum/redhat/7Server/mongodb-org/4.4/x86_64/RPMS/
 wget https://repo.mongodb.org/yum/redhat/7Server/mongodb-org/4.4/x86_64/RPMS/mongodb-database-tools-100.3.1.x86_64.rpm -P /usr/local/src
 wget https://repo.mongodb.org/yum/redhat/7Server/mongodb-org/4.4/x86_64/RPMS/mongodb-org-tools-4.4.6-1.el7.x86_64.rpm -P /usr/local/src
 yum localinstall -y mongodb-database-tools-100.3.1.x86_64.rpm
 yum localinstall -y mongodb-org-tools-4.4.6-1.el7.x86_64.rpm
-# 导出集合数据 csv
-mongoexport --host 10.101.5.192 --port 27017 --authenticationDatabase admin -u pankuibo@300.cn -p 123456 --db api-platform-db --collection testCase --type=csv --fields "_id,checkResponseBody,checkResponseNumber,dataInitializes,headers,isClearCookie,isDeleted,isJsonArray,lastManualResult,service,requestBody,sequence,setGlobalVars,status,testStatus,name,requestMethod,route,description,createUser,testSuiteId,projectId,testCaseType,createAt,checkResponseCode,lastUpdateTime,lastUpdateUser,parameterType" --out /tmp/testCase.json
-# 导出集合数据 json
-mongoexport --host 10.101.5.192 --port 27017 --authenticationDatabase admin -u pankuibo@300.cn -p 123456 --db api-platform-db --collection testCase --type=json --out /tmp/testCase.json
-mongoexport --host 10.101.5.192 --port 27017 --authenticationDatabase admin -u pankuibo@300.cn -p 123456 --db api-platform-db --collection project --type=json --out /tmp/project.json
-# 导入集合数据
-db.testCase.find({"name" : "APP登录发送短信"})
-db.testCase.deleteMany({})
-mongoimport --host dds-2ze79bb2ebe6a3a42226-pub.mongodb.rds.aliyuncs.com --port 3717 -u testadm -p cLAE7MbgAsW0w13FmqSXaUbm -d autocd-apiplatform -c testCase --type=json --file testCase.json
-mongoimport --host dds-2ze79bb2ebe6a3a42226-pub.mongodb.rds.aliyuncs.com --port 3717 -u testadm -p cLAE7MbgAsW0w13FmqSXaUbm -d autocd-apiplatform -c project --type=json --file project.json
-# 查询mongo文档
-mongo mongodb://10.101.5.192:27017/api-platform-db --authenticationDatabase admin -u pankuibo@300.cn -p 123456
-mongo mongodb://dds-2ze79bb2ebe6a3a42226-pub.mongodb.rds.aliyuncs.com:3717/autocd-apiplatform --authenticationDatabase admin -u  testadm  -p cLAE7MbgAsW0w13FmqSXaUbm
-db.testCase.find({"name" : "APP登录发送短信"}).pretty()
+```
+
+##### 导出集合数据
+
+```bash
+mongoexport --host xxx --port 3717 --authenticationDatabase admin -u admin -p xxxx --db scrm_dimension --collection xxx --type=json --out scrm_dimension.json
+```
+
+##### 导入集合数据
+
+```bash
+mongoimport --host xxxx --port 3717 --authenticationDatabase admin -u admin -p xxxx  --db scrm_dimension --collection xxxx --type=json --out scrm_dimension.json
 ```
 
 ### mongo故障恢复
