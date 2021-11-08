@@ -84,9 +84,9 @@ make -j 3 && make install
 # 查询消息
 kcat -b server_addr -C -t production -o s@1634659200000 -o e@1634745599000 -f 'Topic %t [%p] at offset %o key %k value %s\n'
 # 查询消息
-kcat -b server_addr -C -t production -o s@1634486400000 -o e@1635091199000 -f 'Topic %t [%p] at offset %o key %k time %T value %s\n' |awk '/topic/ {print $0}' > /apps/kafka_data/toptic
+kcat -b server_addr -C -t production -o s@1636214400000 -o e@1636300799000 -f 'Topic %t [%p] at offset %o key %k time %T value %s\n' |awk '/submit_order_db/ {print $0}' > /apps/kafka_data/toptic
 # topic
 awk '/topic/ {print $0}' /apps/kafka_data/kfk_18_24.log > /apps/kafka_data/toptic
-# topic
-awk '/topic/ {print $0}' /apps/kafka_data/kfk_18_24.log > /apps/kafka_data/toptic
+# 获取数据
+kcat -b server_addr -C -t production -o s@`date -d "2021-11-07 00:00:00.000" +%s%3N` -o e@`date -d "2021-11-07 00:30:00.000" +%s%3N` -f 'Topic %t [%p] at offset %o key %k time %T value %s\n' |awk '/submit_order_db/ {print $0}' |tail -2 > /apps/kafka_data/toptic
 ```
