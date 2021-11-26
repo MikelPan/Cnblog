@@ -25,7 +25,7 @@ services:
     ports:
       - "8086:8086"
     secrets:
-      - influxdb_influxdb_pwd 
+      - influxdb_pwd 
     deploy:
       mode: replicated
       replicas: 1
