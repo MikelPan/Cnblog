@@ -24,6 +24,8 @@ services:
       - /data/influxdb/config:/etc/influxdb2
     ports:
       - "8086:8086"
+    secrets:
+      - influxdb_influxdb_pwd 
     deploy:
       mode: replicated
       replicas: 1
