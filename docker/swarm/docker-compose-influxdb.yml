@@ -1,0 +1,59 @@
+version: "3.8"
+
+secrets:
+  infludb_pwd:
+    #external: true
+    file: "/root/.secret/influxdb_pwd"
+services:
+  gitea:
+    image: influxdb:2.1.1-alpine
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=infludb
+      - "DOCKER_INFLUXDB_INIT_PASSWORD_FILE=/run/secrets/infludb_pwd"
+      - DOCKER_INFLUXDB_INIT_ORG=yfgj_org
+      - DOCKER_INFLUXDB_INIT_BUCKET=yfgj_bucket
+      - DOCKER_INFLUXDB_INIT_RETENTION=2w
+      # echo $(cat /proc/sys/kernel/random/uuid |sed 's/-//g') | tr '[a-z]' '[A-Z]'
+      # head -c 500 /dev/urandom | tr -dc [:alnum:]| head -c64
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=I35Q0uOkbc89ezBLA6kHfvZcTyNBshZk5mCDz5A1CgEQjPX88yyFhRLIOrStLhdx
+    networks:
+      - yfgj_net
+    volumes:
+      - /data/influxdb/data:/var/lib/influxdb2
+      - /data/influxdb/config:/etc/influxdb2
+    ports:
+      - "8086:8086"
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.influxdb_influxdb.loadbalancer.server.port=8086"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.influxdb.rule=Host(`influxdb.ctq6.cn`)"
+        - "traefik.http.routers.influxdb.tls=true"
+        - "traefik.http.routers.influxdb.tls.certresolver=foo"
+        - "traefik.http.routers.influxdb.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.influxdb.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.influxdb.middlewares=redirect-https"
+        - "traefik.http.routers.influxdb.entrypoints=websecure"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
