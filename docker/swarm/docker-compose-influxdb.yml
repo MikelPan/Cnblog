@@ -22,6 +22,7 @@ services:
     volumes:
       - /data/influxdb/data:/var/lib/influxdb2
       - /data/influxdb/config:/etc/influxdb2
+      - /data/influxdb/config.yml:/etc/influxdb2/config.yml
     ports:
       - "8086:8086"
     secrets:
