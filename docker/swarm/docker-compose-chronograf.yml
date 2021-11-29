@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  chronograf:
+    image: chronograf:1.9.1
+    networks:
+      - yfgj_net
+    volumes:
+      - /data/chronograf:/var/lib/chronograf
+    ports:
+      - "8888:8888"
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.chronograf_chronograf.loadbalancer.server.port=8888"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.chronograf.rule=Host(`chronograf.ctq6.cn`)"
+        - "traefik.http.routers.chronograf.tls=true"
+        - "traefik.http.routers.chronograf.tls.certresolver=foo"
+        - "traefik.http.routers.chronograf.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.chronograf.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.chronograf.middlewares=redirect-https"
+        - "traefik.http.routers.chronograf.entrypoints=websecure"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
