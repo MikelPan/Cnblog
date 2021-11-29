@@ -6,6 +6,7 @@ services:
       - yfgj_net
     volumes:
       - /data/kapacitor:/var/lib/kapacitor
+      - /data/kapacitor/kapacitor.conf:/etc/kapacitor/kapacitor.conf:ro
     ports:
       - "9092:9092"
     deploy:
