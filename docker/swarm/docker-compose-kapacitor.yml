@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  kapacitor:
+    image: kapacitor:1.6.2
+    networks:
+      - yfgj_net
+    volumes:
+      - /data/kapacitor:/var/lib/kapacitor
+    ports:
+      - "9092:9092"
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.kapacitor_kapacitor.loadbalancer.server.port=9092"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.kapacitor.rule=Host(`kapacitor.ctq6.cn`)"
+        - "traefik.http.routers.kapacitor.tls=true"
+        - "traefik.http.routers.kapacitor.tls.certresolver=foo"
+        - "traefik.http.routers.kapacitor.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.kapacitor.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.kapacitor.middlewares=redirect-https"
+        - "traefik.http.routers.kapacitor.entrypoints=websecure"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
