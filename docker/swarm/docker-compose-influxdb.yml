@@ -1,16 +1,16 @@
 version: "3.8"
 
-secrets:
-  influxdb_pwd:
-    #external: true
-    file: "/root/.secret/influxdb_pwd"
+# secrets:
+#   influxdb_pwd:
+#     #external: true
+#     file: "/root/.secret/influxdb_pwd"
 services:
   influxdb:
     image: influxdb:2.0.9
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=infludb
-      - DOCKER_INFLUXDB_INIT_PASSWORD_FILE=/run/secrets/influxdb_pwd
+      # - DOCKER_INFLUXDB_INIT_PASSWORD_FILE=/run/secrets/influxdb_pwd
       - DOCKER_INFLUXDB_INIT_ORG=yfgj_org
       - DOCKER_INFLUXDB_INIT_BUCKET=yfgj_bucket
       - DOCKER_INFLUXDB_INIT_RETENTION=2w
@@ -26,8 +26,10 @@ services:
       #- /data/influxdb/config.yml:/etc/influxdb2/config.yml
     ports:
       - "8086:8086"
-    secrets:
-      - influxdb_pwd 
+    # secrets:
+    #   - influxdb_pwd 
+    env_file:
+      - /root/.secret/influxdb_pwd
     deploy:
       mode: replicated
       replicas: 1
