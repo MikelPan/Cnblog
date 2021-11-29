@@ -7,16 +7,17 @@ secrets:
 services:
   influxdb:
     image: influxdb:2.0.9
-    # environment:
-      # - DOCKER_INFLUXDB_INIT_MODE=setup
-      # - DOCKER_INFLUXDB_INIT_USERNAME=infludb
-      # - DOCKER_INFLUXDB_INIT_PASSWORD="/run/secrets/influxdb_influxdb_pwd"
-      # - DOCKER_INFLUXDB_INIT_ORG=yfgj_org
-      # - DOCKER_INFLUXDB_INIT_BUCKET=yfgj_bucket
-      # - DOCKER_INFLUXDB_INIT_RETENTION=2w
-      # echo $(cat /proc/sys/kernel/random/uuid |sed 's/-//g') | tr '[a-z]' '[A-Z]'
-      # head -c 500 /dev/urandom | tr -dc [:alnum:]| head -c64
-      # - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=I35Q0uOkbc89ezBLA6kHfvZcTyNBshZk5mCDz5A1CgEQjPX88yyFhRLIOrStLhdx
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=infludb
+      - DOCKER_INFLUXDB_INIT_PASSWORD="/run/secrets/influxdb_influxdb_pwd"
+      - DOCKER_INFLUXDB_INIT_ORG=yfgj_org
+      - DOCKER_INFLUXDB_INIT_BUCKET=yfgj_bucket
+      - DOCKER_INFLUXDB_INIT_RETENTION=2w
+      #echo $(cat /proc/sys/kernel/random/uuid |sed 's/-//g') | tr '[a-z]' '[A-Z]'
+      #head -c 500 /dev/urandom | tr -dc [:alnum:]| head -c64
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=I35Q0uOkbc89ezBLA6kHfvZcTyNBshZk5mCDz5A1CgEQjPX88yyFhRLIOrStLhdx
+      - INFLUXDB_URL="https://influxdb.ctq6.cn"
     networks:
       - yfgj_net
     volumes:
