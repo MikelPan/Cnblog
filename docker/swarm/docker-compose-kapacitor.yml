@@ -7,6 +7,8 @@ services:
     volumes:
       - /data/kapacitor:/var/lib/kapacitor
       - /data/kapacitor/kapacitor.conf:/etc/kapacitor/kapacitor.conf:ro
+    environment:
+      - KAPACITOR_INFLUXDB_0_URLS_0=http://influxdb:8086
     ports:
       - "9092:9092"
     deploy:
