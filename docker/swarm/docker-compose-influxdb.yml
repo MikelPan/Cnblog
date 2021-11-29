@@ -1,4 +1,4 @@
-# version: "3.9"
+version: "3.9"
 
 # secrets:
 #   influxdb_pwd:
@@ -16,8 +16,8 @@ services:
       #echo $(cat /proc/sys/kernel/random/uuid |sed 's/-//g') | tr '[a-z]' '[A-Z]'
       #head -c 500 /dev/urandom | tr -dc [:alnum:]| head -c64
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=I35Q0uOkbc89ezBLA6kHfvZcTyNBshZk5mCDz5A1CgEQjPX88yyFhRLIOrStLhdx
-    # networks:
-    #   - yfgj_net
+    networks:
+      - yfgj_net
     volumes:
       - /data/influxdb/data:/var/lib/influxdb2
       - /data/influxdb/config:/etc/influxdb2
@@ -57,7 +57,7 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-# networks:
-#   yfgj_net:
-#     external: true
-#     name: yfgj_net
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
