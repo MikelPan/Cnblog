@@ -1,0 +1,53 @@
+ version: "3.8"
+
+# secrets:
+#   influxdb_pwd:
+#     #external: true
+#     file: "/root/.secret/influxdb_pwd"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    # environment:
+    networks:
+      - yfgj_net
+    volumes:
+      - /data/rabbitmq:/var/lib/rabbitmq
+      #- /data/influxdb/config.yml:/etc/influxdb2/config.yml
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    # secrets:
+    #   - influxdb_pwd 
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.rabbitmq_rabbitmq.loadbalancer.server.port=15672"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.ctq6.cn`)"
+        - "traefik.http.routers.rabbitmq.tls=true"
+        - "traefik.http.routers.rabbitmq.tls.certresolver=foo"
+        - "traefik.http.routers.rabbitmq.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.rabbitmq.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.rabbitmq.middlewares=redirect-https"
+        - "traefik.http.routers.rabbitmq.entrypoints=websecure"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
