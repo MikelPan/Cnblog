@@ -9,7 +9,7 @@
 
 其中Zookeeper是Kafka用来负责元数据的管理、控制器的选举。Producer将消息发送到Broker，Broker负责将消息存储到磁盘中，而Consumer负责从Broker订阅并消费消息。
 
-![kafka架构](/Users/admin/Downloads/kafka架构.jpg)
+![kafka架构](https://tc.ctq6.cn/tc/kafka%E6%9E%B6%E6%9E%84.jpg)
 
 （1）Producer：生产者负责创建消息，将其投递到Kafka中。
 
@@ -29,7 +29,7 @@
 
 
 
-![kafka架构 (1)](/Users/admin/Downloads/kafka架构 (2).jpg)
+![kafka架构 (1)](https://tc.ctq6.cn/tc/kafka%E6%9E%B6%E6%9E%84%20(2).jpg)
 
 
 
@@ -49,13 +49,13 @@ leader副本负责维护和跟踪ISR集合中所有的follower副本滞后状态
 
 第一条消息的offset为0，最后一条消息offset为8，offset为9的消息用虚线框表示，代表下一条待写入的消息。日志文件的HW为6，表示消费者只能拉取到offset在0至5之间的消息，offset为6的消息对消费者是不可见的，LEO标识当前日志文件中下一条待写入消息的offset，LEO大小相当于当前日志分区中最后一条消息的offset值加1。分区ISR集合中的每个副本都会维护自己的LEO，而ISR集合中最小的LEO即为分区的HW，对消费者而言，只能消费HW之前的消息。
 
-![kafka架构 (4)](/Users/admin/Downloads/kafka架构 (4).jpg)
+![kafka架构 (4)](https://tc.ctq6.cn/tc/kafka%E6%9E%B6%E6%9E%84%20(4).jpg)
 
 
 
 #### 分区副本同步过程
 
-![](/Users/admin/Downloads/kafka架构 (3).jpg)
+![](https://tc.ctq6.cn/tc/kafka%E6%9E%B6%E6%9E%84%20(3).jpg)
 
 分区中的ISR集合含有三个副本，即一个leader副本和2个follower副本，此时分区的LEO和HW都为3，消息3和消息4从是生产者发出后被先存入leader副本，在消息写入leader副本后，follower副本会发送拉取请求来拉取消息3和消息4以进行消息同步。
 
@@ -75,7 +75,7 @@ Kafka 的复制机制既不是完全的同步复制，也不是单纯的异步�
 
 #### 日志文件布局
 
-![kafka架构 (5)](/Users/admin/Downloads/kafka架构 (5).jpg)
+![kafka架构 (5)](https://tc.ctq6.cn/tc/kafka%E6%9E%B6%E6%9E%84%20(5).jpg)
 
 
 
