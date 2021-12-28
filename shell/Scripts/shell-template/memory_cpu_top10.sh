@@ -52,7 +52,7 @@ cpu() {
             split(i,b,"#")
             print b[1]"\t",b[2]"\t",b[3]
         }
-    }' |sort -k 2 -n -r
+    }' |sort -k 2 -n -r|head -n 10
     rm -rf $CPUTEMFILE
 }
 
