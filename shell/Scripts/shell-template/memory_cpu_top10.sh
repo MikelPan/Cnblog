@@ -25,7 +25,7 @@ memory() {
     local TEMFILE=`mktemp memory.XXX`
     top -b -n 1 > $TEMFILE
     
-    awk 'BEGIN {print "PID\tRES\tCOMMAND"}' 
+    awk 'BEGIN {print "PID RES COMMAND"}' 
     tail -n +8 $TEMFILE | awk '{arrary[$NF]+=$6}END{for (i in arrary) print $1,arrary[i],i}' |sort -k 1 -n -r|head -n 10
     rm -rf $TEMFILE
 }
