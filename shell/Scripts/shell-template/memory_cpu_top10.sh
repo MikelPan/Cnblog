@@ -28,14 +28,12 @@ memory() {
     awk 'BEGIN {print "PID\tRES\tCOMMAND"}' 
     tail -n +8 $TEMFILE | awk '
     {
-        a[$1]++
-        b[$1"_"$6"-"$NF]++
+        a[$1"-"$6"-"$NF]++
     }
     END{
-        for (i in b) {
-            split(i,c,"_")
-            split(i,d,"-")
-            print c[1]"\t",d[2]"\t",d[2]
+        for (i in a) {
+            split(i,b,"-")
+            print c[1]"\t",c[2]"\t",c[3]
         }
     }' |sort -k 1 -n -r|head -n 10
     rm -rf $TEMFILE
