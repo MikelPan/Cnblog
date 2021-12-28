@@ -23,7 +23,7 @@ CYAN='\033[38;5;6m'
 #########################
 
 main() {
-    local TEMFILE=`mktemp port_status.xxxx`
+    local TEMFILE=`mktemp port_status.xxxxxxx`
     local IP=${1:?missing hostIP}
     local PORT=${2:?missing port}
     [[ ! -x /usr/bin/telnet ]] && echo -e "${YELLOW} [WARNING] telnet: not found command${RESET}" && exit 1
