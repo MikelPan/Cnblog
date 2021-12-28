@@ -25,17 +25,17 @@ memory() {
     local MEMTEMFILE=`mktemp memory.XXX`
     top -b -n 1 > $MEMTEMFILE
     
-    awk 'BEGIN {print "PID\tRES\tCOMMAND"}' 
+    awk 'BEGIN {print "PID\tRES\t%MEM\tCOMMAND"}' 
     tail -n +8 $MEMTEMFILE | awk '
     {
-        a[$1"-"$6"-"$NF]++
+        a[$1"-"$6"-"$10"-"$NF]++
     }
     END{
         for (i in a) {
             split(i,b,"-")
-            print b[1]"\t",b[2]"\t",b[3]
+            print b[1]"\t",b[2]"\t",b[3]"\t",b[4]
         }
-    }' |sort -k 2 -n -r|head -n 10
+    }' |sort -k 3 -n -r|head -n 10
     rm -rf $MEMTEMFILE
 }
 
@@ -52,7 +52,7 @@ cpu() {
             split(i,b,"-")
             print b[1]"\t",b[2]"\t",b[3]
         }
-    }' |sort -k 2 -n -r|head -n 10
+    }' |sort -k 2 -n|head -n 10
     rm -rf $CPUTEMFILE
 }
 
