@@ -33,7 +33,7 @@ memory() {
     END{
         for (i in a) {
             split(i,b,"-")
-            print c[1]"\t",c[2]"\t",c[3]
+            print b[1]"\t",b[2]"\t",b[3]
         }
     }' |sort -k 1 -n -r|head -n 10
     rm -rf $TEMFILE
