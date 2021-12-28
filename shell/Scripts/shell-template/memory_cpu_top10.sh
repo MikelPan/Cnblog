@@ -25,21 +25,21 @@ memory() {
     local TEMFILE=`mktemp memory.XXX`
     top -b -n 1 > $TEMFILE
 
-    tail -n +8 $TEMFILE | awk '{arrary[$NF]+=$6}END{for (i in arrary) print arrary[i],i}' |sort -k 1 -n -r | head -10
+    tail -n +8 $TEMFILE | awk 'BEGIN{print "PID\tRES\tCOMMAND"}{arrary[$NF]+=$6}END{for (i in arrary) print $1,arrary[i],i}' |sort -k 1 -n -r | head -10
     rm -rf $TEMFILE
 }
 
 cpu() {
     local TEMFILE=`mktemp cpu.XXX`
     top -b -n 1 > $TEMFILE
-    tail -n +8 $TEMFILE | awk '{arrary[$NF]+=$9}END{for (i in array) print arrary[i],i}'|sort -k 1 -n -r |head -10
+    tail -n +8 $TEMFILE | awk '{BEGIN{print "PID\t%CPU\tCOMMAND"}arrary[$NF]+=$9}END{for (i in array) print $1,arrary[i],i}'|sort -k 1 -n -r |head -10
     rm -rf $TEMFILE
 }
 
 main() {
     echo -e "${YELLOW}==========================memory===================================${RESET}"
     memory
-    echo -e "${YELLOW}==========================cpu===================================${RESET}" 
+    echo -e "${YELLOW}==========================cpu======================================${RESET}" 
     cpu
 }
 
