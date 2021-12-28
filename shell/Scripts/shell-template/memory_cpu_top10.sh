@@ -22,11 +22,11 @@ CYAN='\033[38;5;6m'
 #########################
 
 memory() {
-    local TEMFILE=`mktemp memory.XXX`
-    top -b -n 1 > $TEMFILE
+    local MEMTEMFILE=`mktemp memory.XXX`
+    top -b -n 1 > $MEMTEMFILE
     
     awk 'BEGIN {print "PID\tRES\tCOMMAND"}' 
-    tail -n +8 $TEMFILE | awk '
+    tail -n +8 $MEMTEMFILE | awk '
     {
         a[$1"-"$6"-"$NF]++
     }
@@ -36,15 +36,24 @@ memory() {
             print b[1]"\t",b[2]"\t",b[3]
         }
     }' |sort -k 1 -n -r|head -n 10
-    rm -rf $TEMFILE
+    rm -rf $MEMTEMFILE
 }
 
 cpu() {
-    local TEMFILE=`mktemp cpu.XXX`
-    top -b -n 1 > $TEMFILE
+    local CPUTEMFILE=`mktemp cpu.XXX`
+    top -b -n 1 > $CPUTEMFILE
     awk 'BEGIN {print "PID\t%CPU\tCOMMAND"}' 
-    tail -n +8 $TEMFILE | awk '{arrary[$NF]+=$9}END{for (i in array) print $1    ,arrary[i]    ,i}' |sort -k 1 -n -r|head -n 10
-    rm -rf $TEMFILE
+    tail -n +8 $CPUTEMFILE | awk '
+    {   
+        a[$1"-"$9"-"$NF]++
+    }
+    END{
+        for (i in a) {
+            split(i,b,"-")
+            print b[1]"\t",b[2]"\t",b[3]
+        }
+    }' |sort -k 1 -n -r|head -n 10
+    rm -rf $CPUTEMFILE
 }
 
 main() {
