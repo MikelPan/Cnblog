@@ -27,7 +27,7 @@ main() {
     local IP=${1:?missing hostIP}
     local PORT=${2:?missing port}
     [[ ! -x /usr/bin/telnet ]] && echo -e "${YELLOW} [WARNING] telnet: not found command${RESET}" && exit 1
-    echo "quit" |telnet $IP $PORT  &> $TEMFILE
+    echo -e "quit" |telnet $IP $PORT  &> $TEMFILE
     if egrep "\^]" $TEMFILE &> /dev/null;then
         echo -e "${GREEN} [INFO] $IP $PORT is opening!${RESET}"
     else
