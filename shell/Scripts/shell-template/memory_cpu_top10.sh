@@ -26,7 +26,19 @@ memory() {
     top -b -n 1 > $TEMFILE
     
     awk 'BEGIN {print "PID\tRES\tCOMMAND"}' 
-    tail -n +8 $TEMFILE | awk '{arrary[$NF]+=$6}END{for (i in arrary) print $1"\t",arrary[i]"\t",i}' |sort -k 1 -n -r|head -n 10
+    tail -n +8 $TEMFILE | awk '
+    {
+        a[$1]++
+        b[$1"_"$6]++
+        c[$6"_"$NF]++
+    }
+    END{
+        for (i in b) {
+            split(i,c,"_")
+            split(i,d,"_")
+            print c[1]"\t",d[2]"\t",b[i]"\t"
+        }
+    ' |sort -k 1 -n -r|head -n 10
     rm -rf $TEMFILE
 }
 
