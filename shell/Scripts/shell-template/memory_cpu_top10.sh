@@ -29,14 +29,13 @@ memory() {
     tail -n +8 $TEMFILE | awk '
     {
         a[$1]++
-        b[$1"_"$6]++
-        c[$6"_"$NF]++
+        b[$1"_"$6"-"$NF]++
     }
     END{
         for (i in b) {
             split(i,c,"_")
-            split(i,d,"_")
-            print c[1]"\t",d[2]"\t",b[i]"\t"
+            split(i,d,"-")
+            print c[1]"\t",d[2]"\t",b[i]
         }
     }' |sort -k 1 -n -r|head -n 10
     rm -rf $TEMFILE
