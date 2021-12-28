@@ -38,7 +38,7 @@ memory() {
             split(i,d,"_")
             print c[1]"\t",d[2]"\t",b[i]"\t"
         }
-    ' |sort -k 1 -n -r|head -n 10
+    }' |sort -k 1 -n -r|head -n 10
     rm -rf $TEMFILE
 }
 
