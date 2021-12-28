@@ -29,9 +29,10 @@ main() {
     [[ ! -x /usr/bin/telnet ]] && echo -e "${YELLOW} [WARNING] telnet: not found command${RESET}" && exit 1
     echo -e "quit" |telnet $IP $PORT  &> $TEMFILE
     if egrep "\^]" $TEMFILE &> /dev/null;then
+        cat $TEMFILE
         echo -e "${GREEN} [INFO] $IP $PORT is opening!${RESET}"
     else
-        echo -e "${RED} [ERROR] $PORT is closening!${RESET}"
+        echo -e "${RED} [ERROR] $IP $PORT is closening!${RESET}"
     fi
     rm -rf $TEMFILE
 }
