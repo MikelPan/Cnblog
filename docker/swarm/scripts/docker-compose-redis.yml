@@ -1,0 +1,50 @@
+version: "3.8"
+
+# secrets:
+#   influxdb_pwd:
+#     #external: true
+#     file: "/root/.secret/influxdb_pwd"
+services:
+  rabbitmq:
+    image: redis
+    # environment:
+    networks:
+      - yfgj_net
+    volumes:
+      - /data/redis-6379:/data
+      - /data/redis-6379/redis.conf:/etc/redis/redis.conf
+      #- /data/influxdb/config.yml:/etc/influxdb2/config.yml
+    command: redis-server /etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    # secrets:
+    #   - influxdb_pwd 
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.redis_redis.loadbalancer.server.port=6379"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        #- "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.tcp.routers.redis.rule=Host(`redis.ctq6.cn`)"
+        #- "traefik.http.routers.rabbitmq.tls=true"
+        - "traefik.tcp.routers.redis.entrypoints=tcp"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
