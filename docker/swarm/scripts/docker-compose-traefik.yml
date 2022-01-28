@@ -22,6 +22,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.tcp.address=:6379"
       #- "--entrypoints.webnossl.address=:8443"
       - "--api=true"
       - "--api.dashboard=true"
@@ -49,6 +50,7 @@ services:
       - "443:443"
       - "8080:8080"
       - "8020:8020"
+      - "16379:6379"
     secrets:
       - "aliyun_region_id"
       - "aliyun_access_key"
