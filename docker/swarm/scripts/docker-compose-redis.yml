@@ -40,7 +40,7 @@ services:
         - "traefik.tcp.routers.redis.tls.domains[0].main=ctq6.cn"
         - "traefik.tcp.routers.redis.tls.domains[0].sans=*.ctq6.cn"
         #- "traefik.http.routers.rabbitmq.tls=true"
-        - "traefik.tcp.routers.redis.entrypoints=tcp"
+        - "traefik.tcp.routers.redis.entrypoints=redis"
       placement:
         constraints: [node.role == manager]
       restart_policy:
