@@ -14,7 +14,7 @@ services:
       - /data/redis-6379:/data
       - /data/redis-6379/redis.conf:/etc/redis/redis.conf
       #- /data/influxdb/config.yml:/etc/influxdb2/config.yml
-    command: redis-server /etc/redis/redis.conf
+    command: redis-server 0.0.0.0:6379
     ports:
       - "6379:6379"
     # secrets:
