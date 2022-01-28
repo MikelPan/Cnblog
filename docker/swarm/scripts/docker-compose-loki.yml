@@ -5,27 +5,28 @@ version: "3.8"
 #     #external: true
 #     file: "/root/.secret/influxdb_pwd"
 services:
-  redis:
-    image: redis:5.0.14
+  loki:
+    image: grafana/loki
     # environment:
     networks:
       - yfgj_net
-    volumes:
-      - /data/redis-6379:/data
-      - /data/redis-6379/redis.conf:/etc/redis/redis.conf
       #- /data/influxdb/config.yml:/etc/influxdb2/config.yml
-    command: redis-server /etc/redis/redis.conf
     ports:
-      - "6379:6379"
+      - "3100:3100"
     # secrets:
     #   - influxdb_pwd 
+    volumes:
+      - /data/loki/config:/etc/loki/config
+      - /data/loki/index:/opt/loki/index
+      - /data/loki/chunks:/opt/loki/chunks
+    command: --config.file=/etc/loki/config/loki-config.yaml
     deploy:
       mode: replicated
       replicas: 1
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=yfgj_net"
-        - "traefik.tcp.services.redis_redis.loadbalancer.server.port=6379"
+        - "traefik.http.services.loki_loki.loadbalancer.server.port=3100"
         # http 80
         # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
         # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
@@ -33,15 +34,14 @@ services:
         #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
         #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
         # https 443
-        #- "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
-        - "traefik.tcp.routers.redis.rule=HostSNI(`redis.ctq6.cn`)"
-        - "traefik.tcp.routers.redis.tls=true"
-        - "traefik.tcp.routers.redis.tls.passthrough=true"
-        - "traefik.tcp.routers.redis.tls.certresolver=foo"
-        - "traefik.tcp.routers.redis.tls.domains[0].main=ctq6.cn"
-        - "traefik.tcp.routers.redis.tls.domains[0].sans=*.ctq6.cn"
-        #- "traefik.http.routers.rabbitmq.tls=true"
-        - "traefik.tcp.routers.redis.entrypoints=tcp"
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.loki.rule=Host(`grafana.ctq6.cn`)"
+        - "traefik.http.routers.loki.tls=true"
+        - "traefik.http.routers.loki.tls.certresolver=foo"
+        - "traefik.http.routers.loki.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.loki.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.loki.entrypoints=websecure"
+        - "traefik.http.routers.loki.middlewares=redirect-https"
       placement:
         constraints: [node.role == manager]
       restart_policy:
