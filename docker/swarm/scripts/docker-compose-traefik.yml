@@ -22,7 +22,7 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.tcp.address=:6379"
+      - "--entrypoints.tcp.address=:16379"
       #- "--entrypoints.webnossl.address=:8443"
       - "--api=true"
       - "--api.dashboard=true"
