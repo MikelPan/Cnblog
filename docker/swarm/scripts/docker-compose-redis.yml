@@ -5,7 +5,7 @@ version: "3.8"
 #     #external: true
 #     file: "/root/.secret/influxdb_pwd"
 services:
-  rabbitmq:
+  redis:
     image: redis
     # environment:
     networks:
