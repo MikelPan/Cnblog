@@ -1,0 +1,50 @@
+version: "3.8"
+
+# secrets:
+#   influxdb_pwd:
+#     #external: true
+#     file: "/root/.secret/influxdb_pwd"
+services:
+  grafana:
+    image: grafana/grafana
+    # environment:
+    networks:
+      - yfgj_net
+      #- /data/influxdb/config.yml:/etc/influxdb2/config.yml
+    ports:
+      - "3000:3000"
+    # secrets:
+    #   - influxdb_pwd 
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=yfgj_net"
+        - "traefik.http.services.grafana_grafana.loadbalancer.server.port=3000"
+        # http 80
+        # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
+        # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
+        # http 8443
+        #- "traefik.http.routers.traefik-ui-8443.rule=Host(`traefik-8443.ctq6.cn`)" 
+        #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
+        # https 443
+        - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+        - "traefik.http.routers.grafana.rule=Host(`grafana.ctq6.cn`)"
+        - "traefik.http.routers.grafana.tls=true"
+        - "traefik.http.routers.grafana.tls.certresolver=foo"
+        - "traefik.http.routers.grafana.tls.domains[0].main=ctq6.cn"
+        - "traefik.http.routers.grafana.tls.domains[0].sans=*.ctq6.cn"
+        - "traefik.http.routers.grafana.entrypoints=websecure"
+        - "traefik.http.routers.grafana.middlewares=redirect-https"
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+networks:
+  yfgj_net:
+    external: true
+    name: yfgj_net
