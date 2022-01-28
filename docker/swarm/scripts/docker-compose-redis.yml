@@ -25,7 +25,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=yfgj_net"
-        - "traefik.http.services.redis_redis.loadbalancer.server.port=6379"
+        - "traefik.tcp.services.redis_redis.loadbalancer.server.port=6379"
         # http 80
         # - "traefik.http.routers.traefik-ui-80.rule=Host(`traefik.ctq6.cn`)" 
         # - "traefik.http.routers.traefik-ui-80.entrypoints=web"
@@ -34,7 +34,7 @@ services:
         #- "traefik.http.routers.traefik-ui-8443.entrypoints=webnossl"
         # https 443
         #- "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
-        - "traefik.tcp.routers.redis.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.redis.rule=HostSNI(`redis.ctq6.cn`)"
         - "traefik.tcp.routers.redis.tls=true"
         - "traefik.tcp.routers.redis.tls.passthrough=true"
         - "traefik.tcp.routers.redis.tls.certresolver=foo"
