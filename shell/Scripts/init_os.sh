@@ -110,7 +110,7 @@ EOF
 
     yum -y install wget vim iftop iotop net-tools nmon telnet lsof iptraf nmap httpd-tools lrzsz mlocate ntp ntpdate strace libpcap nethogs iptraf iftop nmon bridge-utils bind-utils telnet nc nfs-utils rpcbind nfs-utils dnsmasq python python-devel tcpdump mlocate tree
 
-    yum install -y kubelet-1.15.2 kubeadm-1.15.2 kubectl-1.15.2 ipvsadm ipset
+    yum install -y kubelet kubeadm kubectl ipvsadm ipset
     systemctl start kubelet && systemctl enable kubelet
 
     cat >> ~/.bashrc <<EOF

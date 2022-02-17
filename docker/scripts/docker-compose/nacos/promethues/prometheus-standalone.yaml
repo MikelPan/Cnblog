@@ -28,7 +28,26 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'nacos'
-    metrics_path: '/nacos/actuator/prometheus'
-    static_configs:
-      - targets: ['nacos:8848']
+  # - job_name: 'nacos'
+  #   metrics_path: '/nacos/actuator/prometheus'
+  #   static_configs:
+  #     - targets: ['nacos:8848']
+
+  - job_name: 'operator-platform'
+    metrics_path: /metrics
+    consul_sd_configs:
+      - server: '10.11.1.88:8500'
+        services: []
+    relabel_configs:
+    - source_labels: ['__meta_consul_dc']
+      target_label: 'idc'
+    - source_labels: ['__meta_consul_tags']
+      regex: .*backend.*
+      action: keep
+    - source_labels: ['__meta_consul_tags'] 
+      target_label: 'service'
+      regex: (.*)(backend)(.*)
+      action: replace
+      replacement: $2
+    - regex: __meta_consul_service_metadata_(.+)
+      action: labelmap

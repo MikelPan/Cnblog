@@ -819,3 +819,6 @@ pidstat -T ALL -r -p 20955 1 10
 03:12:16 PM   UID       PID minflt-nr majflt-nr  Command
 03:12:17 PM   995     20955         0         0  java
 ```
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbLTU5Nzk0MzI4NV19
+-->

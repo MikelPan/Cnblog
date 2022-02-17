@@ -1,0 +1,115 @@
+---
+
+- hosts: mongo
+  remote_user: root
+  gather_facts: false
+  tasks:
+    - name: configure hosts
+      shell: |
+        cat >> /etc/hosts <<- 'EOF'
+        # mongo
+        172.17.0.3 mongo01
+        172.17.0.4 mongo02
+        172.17.0.5 mongo03
+        EOF
+      tags:
+      - install
+
+    - name: download mongo
+      shell: wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-4.0.4.tgz -P /usr/local/src
+      tags:
+      - install
+    
+    - name: unarchive
+      unarchive:
+        src: /usr/local/src/mongodb-linux-x86_64-4.0.4.tgz
+        dest: /usr/local/src
+        mode: 0755
+        copy: no
+      tags:
+      - install
+
+    - name: mkdir dir
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+      - "/usr/local/mongo"
+      - "/data/mongo/db"
+      tags:
+      - install
+
+    - name: create log file
+      file:
+        path: "{{ item }}/mongod.log"
+        state: touch
+      with_items:
+      - "/data/mongo"
+      tags:
+      - log
+      - install
+
+    - name: copy files
+      shell: mv "{{ item }}"/* /usr/local/mongo/
+      with_items:
+      - "/usr/local/src/mongodb-linux-x86_64-4.0.4"
+      tags:
+      - install
+
+    - name: configure env 
+      shell: |
+        echo 'export PATH=/usr/local/mongo/bin:$PATH' >> /etc/profile
+        source /etc/profile
+      tags:
+      - env
+      - install
+
+    - name: configure conf file
+      shell: |
+        cat > /data/mongo/mongodb.cnf <<- 'EOF'
+        systemLog:
+          destination: file
+          logAppend: true
+          path: /data/mongo/mongod.log
+        net:
+          port: 27017
+          bindIp: 0.0.0.0
+        storage:
+          dbPath: /data/mongo/db
+        journal:
+          enabled: true
+        processManagement:
+          fork: true
+          pidFilePath: /data/mongo/mongod.pid
+        security:
+          authorization: enabled
+          keyFile: data/mongo/keyfile
+          clusterAuthMode: keyFile
+        replication:
+          replSetName: rs0
+        EOF
+      tags:
+      - conf
+      - install
+
+    - name: reboot to start
+      shell: |
+        cat > /etc/systemd/system/mongod.service <<- 'EOF'
+        [Unit]
+        Description=mongodb
+        After=network.target remote-fs.target nss-lookup.target
+
+        [Service]
+        Type=forking
+        ExecStart=/usr/local/mongo/bin/mongod --config /data/mongo/mongodb.cnf
+        ExecReload=/bin/kill -s HUP $MAINPID
+        ExecStop=/usr/local/mongo/bin/mongod --shutdown --config /data/mongo/mongodb.cnf
+        PrivateTmp=true
+        [Install]
+        WantedBy=multi-user.target
+        EOF
+        systemctl enable mongod.servcie
+        systemctl start mongod
+      tags:
+      - start
+      - install

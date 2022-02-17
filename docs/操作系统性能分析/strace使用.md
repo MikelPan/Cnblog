@@ -10,3 +10,4 @@ strace -T -tt -e trace=process -v -p 22149
 -e trace=ipc 进程见同学相关，比如shmget等
 strace -T -tt -e trace=network -v -p 22149
 ```
+

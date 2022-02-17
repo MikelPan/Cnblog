@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  zookeeeper:
+    image: zookeeper
+    ports:
+      - "2224:22"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - $(pwd)/zoo.cfg:/conf/zoo.cfg
+    environment:
+      ZOO_INIT_LIMIT: 10
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: always
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+#configs:
+#  gitlab:
+#    file: /tencent-cfs/gitlab/gitlab.rb
+secrets:
+  gitlab_root_password:
+    file: /root/.secret/gitlab_root_password.txt

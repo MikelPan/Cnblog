@@ -104,3 +104,7 @@ systemctl start frpc
 systemctl status frpc
 ```
 
+### 配置域名转发
+
+
+

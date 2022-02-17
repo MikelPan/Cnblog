@@ -25,13 +25,14 @@ deploy_docker(){
     mkdir /etc/docker
     cat > /etc/docker/daemon.json <<EOF
 {
-  "exec-opts": ["native.cgroupdriver=cgroupfs"],
+  "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
   "data-root":"/var/lib/docker",
   "log-opts": {
     "max-size": "100m",
     "max-file": "3"
    },
+  "oom-score-adjust": -1000,
   "storage-driver": "overlay2",
   "storage-opts": [
     "overlay2.override_kernel_check=true"

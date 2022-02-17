@@ -76,7 +76,82 @@ GET /bank/_search
     { "account_number": "asc" }
   ]
 }
+
+POST /es_user_member_94e8c881-26d3-46cd-bd8d-34ea9c39e98f/_search 
+{
+  "query": {
+    "term": {
+      "member_id": {
+        "value": "02yyp41en764eqlt"
+      }
+    }
+  }
+}
+
+
+POST /es_user_member_94e8c881-26d3-46cd-bd8d-34ea9c39e98f/_search 
+{
+  "query": {
+    "match": {
+      "member_id": "02yyp41en764eqlt"
+    }
+  }
+}
+
+# 查询数据量
+GET /_cat/count/index?v
+# 分页查询
+GET /index/_search
+{
+  "from": 0, 
+  "size": 20
+}
+
 ```
 
+### Elasticsearch 插入数据
+```bash
+# 创建索引
+PUT my_index
+{
+   "settings" : {
+      "number_of_shards" : 5,
+      "number_of_replicas" : 1
+   }
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "title":    { "type": "text"  },
+        "name":     { "type": "text"  },
+        "age":      { "type": "integer" }, 
+        "created":  {
+          "type":   "date",
+          "format": "strict_date_optional_time||epoch_millis"
+        }
+      }
+    }
+  }
+}
 
+# 插入
+POST -H 'Content-Type: application/json' locahost:9200/index/_doc -d '
+{
+  "member_id": "02yyp41en764eqlt"
+}
+'
+
+# 动态增加分片
+POST -H 'Content-Type: application/json' locahost:9200/index/_settings -d '
+{
+  "index": {
+    "number_of_shards": 5,
+    "number_of_replicas": 1
+  }
+}
+'
+
+# es创建空表
+
+
+```
 

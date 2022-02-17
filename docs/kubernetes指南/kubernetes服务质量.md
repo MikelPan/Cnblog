@@ -1,0 +1,6 @@
+服务质量（QoS）类是Kubernetes的概念，它确定Pod的调度和驱逐优先级。 Kubernetes调度程序使用QoS类来做出有关将Pod调度到节点上的决策。
+
+Kubelet使用它来管理驱逐pod的顺序，以及使用高级CPU管理策略允许更复杂的pod调度决策。
+
+QoS类由Kubernetes本身分配给Pod。但是，DevOps可以通过处理Pod内各个容器的资源请求和限制来控制分配给容器的QoS类。
+

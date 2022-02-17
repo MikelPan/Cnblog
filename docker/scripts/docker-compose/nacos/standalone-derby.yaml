@@ -9,6 +9,7 @@ services:
     volumes:
     - ./standalone-logs/:/home/nacos/logs
     - ./init.d/custom.properties:/home/nacos/init.d/custom.properties
+    network_mode: bridge
     ports:
     - "8850:8848"
   prometheus:
@@ -18,12 +19,14 @@ services:
     - ./promethues/prometheus-standalone.yaml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    network_mode: bridge
     depends_on:
       - nacos
     restart: on-failure
   grafana:
     container_name: grafana
     image: grafana/grafana:latest
+    network_mode: bridge
     ports:
       - 3000:3000
     restart: on-failure

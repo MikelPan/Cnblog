@@ -1,0 +1,38 @@
+groups:
+    - name: 容器-监控告警
+      rules:
+      - alert: 容器停止服务
+        expr: absent(container_last_seen{name=~"tencent.*"}) == 1
+        for: 1m
+        labels:
+          status: 严重告警
+          severity: critical
+        annotations:
+          description: "位于{{$labels.instance}} 上的{{$labels.name }} 容器已经停止服务1分钟了"
+
+      - alert: 容器内存使用量过高
+        expr: container_memory_usage_bytes{image!=''} /1024/1024/1024 > 3
+        for: 3m
+        labels:
+          status: 严重告警
+          severity: critical
+        annotations: 
+          description: "位于{{$labels.instance}} 上的{{$labels.name }} 容器内存使用量已经超过3G了,当前使用量为{{ $values }}G"
+
+      - alert: 容器文件系统使用量过高
+        expr: container_fs_usage_bytes{image!=''} /1024/1024/1024 > 2
+        for: 3m
+        labels:
+          status: 严重告警
+          severity: critical
+        annotations: 
+          description: "位于{{$labels.instance}} 上的{{$labels.name }} 容器文件系统使用量已经超过2G了,当前使用量为{{ $values }}G"
+
+      - alert: CPU使用量过高
+        expr: sum(irate(container_cpu_usage_seconds_total{image!=""}[1m])) without (cpu) * 100 > 10
+        for: 3m
+        labels:
+          status: 严重告警
+          severity: critical
+        annotations: 
+          description: "位于{{$labels.instance}} 上的{{$labels.name }} 容器CPU使用量已经超过10%了,当前使用量为{{ $values }}%"

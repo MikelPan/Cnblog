@@ -9,6 +9,7 @@ services:
     volumes:
       - ./standalone-logs/:/home/nacos/logs
       - ./init.d/custom.properties:/home/nacos/init.d/custom.properties
+    network_mode: bridge
     ports:
       - "8848:8848"
       - "9555:9555"
@@ -18,8 +19,9 @@ services:
   mysql:
     container_name: mysql
     image: nacos/nacos-mysql:5.7
+    network_mode: bridge
     env_file:
-      - ../env/mysql.env
+      - ../env/nacos-standone-mysql.env
     volumes:
       - ./mysql:/var/lib/mysql
     ports:

@@ -173,13 +173,14 @@ tmpfs                          184M     0  184M   0% /run/user/0
 tmpfs                          184M     0  184M   0% /run/user/1000
 /dev/mapper/VolGroup00-lvData  493G   73M  467G   1% /apps
 ```
+
 #### 1.4、lvm扩容
 ```shell
 # 新增分区
 fdisk /dev/sdd
 # 创建pv
 yum install -y lvm2
-PV pvcreate /dev/sdd1 && partprob
+pvcreate /dev/sdd1 && partprob
 # 扩展VG
 vgextend VolGroup00 /dev/sdd1
 # 拓展LV
@@ -196,7 +197,8 @@ blkid
 2、添加到开机启动
 vim /etc/fstab
 UUID=f4bc2e98-1c5f-4792-84ed-6ecd5e94ea9b /data xfs defaults 0 0
-``` 
+```
+
 #### 1.5、lv缩容
 ```shell
 # 查看挂载

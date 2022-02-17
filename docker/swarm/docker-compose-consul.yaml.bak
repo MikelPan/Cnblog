@@ -1,0 +1,99 @@
+version: '3.3'
+
+services:
+  consul-node1:
+    image: bitnami/consul
+    environment:
+      - CONSUL_BOOTSTRAP_EXPECT=3
+      - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
+      - CONSUL_DISABLE_KEYRING_FILE=true
+      - CONSUL_RETRY_JOIN_ADDRESS=10.11.1.88
+      - CONSUL_BIND_INTERFACE=eth0
+    ports:
+      - '8300:8300'
+      - '8301:8301'
+      - '8301:8301/udp'
+      - '8500:8500'
+      - '8600:8600'
+      - '8600:8600/udp'
+    network_mode: bridge
+    # networks:
+    #   - yfgj_net
+    #   - host
+    # deploy:
+    #   mode: replicated
+    #   replicas: 1
+    #   placement:
+    #     constraints: [node.role == manager]
+    #   restart_policy:
+    #     condition: on-failure
+    #     delay: 5s
+    #     max_attempts: 3
+    #     window: 120s
+    volumes:
+      - 'consul-node1_data:/bitnami'
+
+  consul-node2:
+    image: bitnami/consul
+    environment:
+      - CONSUL_BOOTSTRAP_EXPECT=3
+      - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
+      - CONSUL_DISABLE_KEYRING_FILE=true
+      - CONSUL_RETRY_JOIN_ADDRESS=10.11.1.88
+      - CONSUL_ENABLE_UI=false
+      - CONSUL_BIND_INTERFACE=eth0
+    network_mode: bridge
+    # networks:
+    #   - yfgj_net
+    #   - host
+    # deploy:
+    #   mode: replicated
+    #   replicas: 1
+    #   placement:
+    #     constraints: [node.role == manager]
+    #   restart_policy:
+    #     condition: on-failure
+    #     delay: 5s
+    #     max_attempts: 3
+    #     window: 120s
+    volumes:
+      - 'consul-node2_data:/bitnami'
+
+  consul-node3:
+    image: bitnami/consul
+    environment:
+      - CONSUL_BOOTSTRAP_EXPECT=3
+      - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
+      - CONSUL_DISABLE_KEYRING_FILE=true
+      - CONSUL_RETRY_JOIN_ADDRESS=10.11.1.88
+      - CONSUL_ENABLE_UI=false
+      - CONSUL_BIND_INTERFACE=eth0
+    network_mode: bridge
+    # networks:
+    #   - yfgj_net
+    #   - host
+    # deploy:
+    #   mode: replicated
+    #   replicas: 1
+    #   placement:
+    #     constraints: [node.role == manager]
+    #   restart_policy:
+    #     condition: on-failure
+    #     delay: 5s
+    #     max_attempts: 3
+    #     window: 120s
+    volumes:
+      - 'consul-node3_data:/bitnami'
+
+networks:
+  yfgj_net:
+    external: true
+    # name: yfgj_net
+
+volumes:
+  consul-node1_data:
+    driver: local
+  consul-node2_data:
+    driver: local
+  consul-node3_data:
+    driver: local

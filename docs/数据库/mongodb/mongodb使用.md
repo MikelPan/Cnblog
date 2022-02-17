@@ -137,6 +137,20 @@ db.createUser({
   ]
 })
 
+db.createUser({
+  user : 'mongo-metrics',
+  pwd : '123456',
+  roles : [
+    'readAnyDatabase',
+    {
+    	role: "read", db: "local"
+    },
+    {
+        role: "clusterMonitor", db: "admin"    
+    }
+  ]
+})
+
 # 新增权限
 db.grantRolesToUser("admin", [ { role:"dbAdminAnyDatabase", db:"admin"} ])
 db.grantRolesToUser("test", [ { role:"readWrite", db:"apiplatform"} ])

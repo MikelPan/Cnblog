@@ -1,0 +1,141 @@
+variables:
+  PROJECT_NAME: "api"
+  HOST_PRODUCTION_1: ""
+  HOST_PRODUCTION_2: ""
+
+stages:
+  - test
+  - build_image
+  - deploy
+
+test:
+  stage: test
+  image: 
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - vendor/
+      - storage/api-docs/
+  before_script:
+    - composer install
+    - php artisan l5-swagger:generate Http/Admin/Web admin.json
+    - php artisan l5-swagger:generate Http/Api/V08 app.json
+    - php artisan l5-swagger:generate Http/Admin/App/V01/ adminAppV01.json
+    - php artisan l5-swagger:generate Http/Api/Mp mp.json
+    - php artisan config:clear
+  script:
+    - echo "test stage"
+  only:
+    - master
+
+deploy_production:
+  stage: deploy
+  image: 
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - vendor/
+      - storage/api-docs/
+    policy: pull
+  before_script:
+    - git clone --depth 1 ssh://
+    - cp prod-config/xx.stg .env
+    - rm -rf prod-config
+  script:
+    - echo "Deploy to production server"
+    - rsync -avzp --delete --partial --exclude='.git/' -e "ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no" ./ root@$HOST_PRODUCTION_1:/srv/$CI_PROJECT_NAME |grep -v /$
+    - ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no root@$HOST_PRODUCTION_1 'sudo -u www-data php /srv/artisan horizon:terminate'
+    - rsync -avzp --delete --partial --exclude='.git/' -e "ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no" ./ root@$HOST_PRODUCTION_2:/srv/$CI_PROJECT_NAME |grep -v /$
+    - ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no root@$HOST_PRODUCTION_2 'sudo -u www-data php /srv/artisan horizon:terminate'
+  environment:
+    name: production
+    url: 
+  only:
+  - master
+
+######################
+
+ttest:
+  stage: test
+  image: 
+  tags:
+    - runner
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - vendor/
+      - storage/api-docs/
+  before_script:
+    - composer install
+    - php artisan l5-swagger:generate Http/Admin/Web admin.json
+    - php artisan l5-swagger:generate Http/Api/V08 app.json
+    - php artisan l5-swagger:generate Http/Admin/App/V01/ adminAppV01.json
+    - php artisan l5-swagger:generate Http/Api/Mp mp.json
+    - php artisan config:clear
+  script:
+    - echo "test stage"
+  only:
+    - /^release.*$/
+
+build_image:
+  stage: build_image
+  image: 
+  tags:
+    - runner
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - vendor/
+      - storage/api-docs/
+    policy: pull
+  script:
+    - docker login -u $HARBOR_USER -p $HARBOR_PWD xxxx
+    - |-
+      if [ $CI_COMMIT_REF_NAME == "development" ]; then
+        docker build -t registry/test/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA .
+        docker push registry/test/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA
+      fi
+      if echo $CI_COMMIT_REF_NAME | grep -q "release"; then
+        docker build -t registry/staging/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA .
+        docker push registry/staging/$PROJECT_NAME:$CI_COMMIT_SHORT_SHA
+      fi
+  only:
+    - /^release.*$/
+
+deploy_test:
+  stage: deploy
+  image: 
+  tags:
+    - runner
+  script:
+    - helm init --client-only --skip-refresh
+    - cd helm/chart
+    - sed -i "s/PARAM-WWWROOT/$PROJECT_NAME/" values-test.yaml
+    - sed -i "s/PARAM-TAGS/$CI_COMMIT_SHORT_SHA/" values-test.yaml
+    - helm dep update .
+    - export DEPLOYS=$(helm ls |awk '{print $1}' |grep "^qa-$PROJECT_NAME$" |wc -l)
+    - if [ ${DEPLOYS}  -eq 0 ]; then helm install --name="qa-$PROJECT_NAME" -f values-test.yaml . --namespace=kube-test; else helm upgrade -f values-test.yaml qa-$PROJECT_NAME . --namespace=kube-test; fi
+  environment:
+    name: test
+    url: 】
+  only:
+    - development
+
+deploy_staging:
+  stage: deploy
+  image: 
+  tags:
+    -  runner
+  script:
+    - helm init --client-only --skip-refresh
+    - cd helm/chart
+    - sed -i "s/PARAM-WWWROOT/$PROJECT_NAME/" values-staging.yaml
+    - sed -i "s/PARAM-TAGS/$CI_COMMIT_SHORT_SHA/" values-staging.yaml
+    - helm dep update .
+    - export DEPLOYS=$(helm ls |awk '{print $1}' |grep "^stg-$PROJECT_NAME$" |wc -l)
+    - if [ ${DEPLOYS}  -eq 0 ]; then helm install --name="stg-$PROJECT_NAME" -f values-staging.yaml . --namespace=kube-staging; else helm upgrade -f values-staging.yaml stg-$PROJECT_NAME . --namespace=kube-staging; fi
+  environment:
+    name: staging
+    url: 
+  only:
+    - /^release.*$/

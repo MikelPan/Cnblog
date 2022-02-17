@@ -193,10 +193,10 @@ ansible-playbook deploy.yml --tags install
 ## 登陆主节点
 mongo
 use admin
-rs.initiate({_id:'rs0',members: [{ _id: 0 , host: "mongo01:27017"}]})
+rs.initiate({_id:'rs0',members: [{ _id: 0 , host: "mongodb-rs-01:27017"}]})
 ## 添加次节点
-rs.add('mongo02:27017')
-rs.add('mongo03:27017')
+rs.add('mongodb-rs-02:27017')
+rs.add('mongodb-rs-03:27017')
 ## 查看配置
 rs.conf()
 {

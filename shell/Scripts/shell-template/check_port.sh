@@ -29,7 +29,6 @@ main() {
     local TEMFILE=`mktemp port_status.XXX`
     echo -e "quit" |telnet $IP $PORT  &> $TEMFILE
     if egrep "\^]" $TEMFILE &> /dev/null;then
-        cat $TEMFILE
         echo -e "${GREEN} [INFO] $IP $PORT is opening!${RESET}"
     else
         echo -e "${RED} [ERROR] $IP $PORT is closening!${RESET}"

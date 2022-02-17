@@ -22,14 +22,12 @@ kubectl completion bash >/etc/bash_completion.d/kubectl
 ```bash
 # 安装
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-install minikube-linux-amd64 /usr/local/bin/minikube
+install minikube-linux-arm64 /usr/local/bin/minikube
 # 启动集群
 yum install -y conntrack socat
 echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
 minikube start --driver=none
 minikube start --driver=none --network-plugin=cni --extra-config=kubeadm.ignore-preflight-errors=NumCPU --force --cpus 1
-## 国内启动
-minikube start --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --driver=none --network-plugin=cni --image-mirror-country=cn
 # 初始化
 mv /root/.kube /root/.minikube $HOME
 chown -R $USER $HOME/.kube $HOME/.minikube
@@ -361,7 +359,7 @@ sudo systemctl enable --now kubelet
 sudo systemctl start kubelet
 # 集群初始化
 kubeadm init \
---apiserver-advertise-address=10.100.0.1 \
+--apiserver-advertise-address=192.168.68.129 \
 --image-repository registry.aliyuncs.com/google_containers \
 --pod-network-cidr=10.244.0.0/16
 
@@ -456,13 +454,13 @@ helm repo add  gitlab     https://charts.gitlab.io
 helm repo add  harbor     https://helm.goharbor.io
 helm repo add  bitnami    https://charts.bitnami.com/bitnami
 helm repo add  incubator  https://kubernetes-charts-incubator.storage.googleapis.com
-helm repo add  stable     https://kubernetes-charts.storage.googleapis.com
+helm repo add  stable     https://charts.helm.sh/stable
 helm repo add  aliyuncs   https://apphub.aliyuncs.com
-helm repo add  stable     https://kubernetes-charts.storage.googleapis.com
 helm repo add  traefik    https://containous.github.io/traefik-helm-chart
 helm repo add  loki       https://grafana.github.io/loki/charts
 helm repo add  stakater   https://stakater.github.io/stakater-charts
 helm repo add  kubernetes-dashboard	 https://kubernetes.github.io/dashboard/
+helm repo add  jaegertractracing     https://jaegertracing.github.io/helm-charts
 helm repo update
 ```
 #### awx 安装在k8s中
@@ -530,6 +528,36 @@ kubectl patch pvc awx-postgres-pvc  -p '{"metadata":{"finalizers":null}}' -n awx
 
 ### kubernetes 维护管理
 #### kubernetes 集群访问
+
+##### 通过kubectl config访问
+
+```bash
+# 配置集群配置文件
+cat > $HOME/.kube/config <<- 'EOF'
+apiVersion: v1
+clusters:
+- cluster:
+    #certificate-authority: /Users/admin/.minikube/ca.crt
+    insecure-skip-tls-verify: true
+    server: https://47.243.34.122:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    namespace: default
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /Users/admin/.minikube/client.crt
+    client-key: /Users/admin/.minikube/client.key
+EOF
+```
+
 ##### 通过token访问
 ```bash
 # 查看所有的集群，因为你的 .kubeconfig 文件中可能包含多个上下文
@@ -635,4 +663,8 @@ CACERT=${SERVICEACCOUNT}/ca.crt
 curl --cacert ${CACERT} --header "Authorization: Bearer ${TOKEN}" -X GET ${APISERVER}/api
 ```
 #### 通过API 查询服务
+
+
+
+
 

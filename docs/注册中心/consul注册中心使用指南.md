@@ -53,25 +53,91 @@ consul agent -dev -config-dir /etc/consul.d/
 ```bash
 cat > register.json <<- 'EOF'
 {
-    "ID": "falsk-1",
+    "ID": "falsk",
     "Name": "flask",
     "Address": "172.31.49.221",
-    "Port": 5000,
+    "Port": 5001,
     "Tags": [
-        "v1",
-        "web"
+      "flask"
     ],
     "EnableTagOverride": false,
     "Check": {
-        "DeregisterCriticalServiceAfter": "12h",
-        "HTTP": "http://172.31.49.221:5000/health",
-        "Interval": "10s"
+      "name": "telnet tcp on port 5001",
+      "tcp": "172.31.49.221:5001",
+      "interval": "10s",
+      "timeout": "1s"
     }
 }
 EOF
 # 注册
 curl -XPUT -d @register.json https://consul.01member.com/v1/agent/service/register
+# 注册node-export到consul中
+cat > node-export.register.json <<- 'EOF'
+{
+    "ID": "prometheus-node-export",
+    "Name": "prometheus-node-export",
+    "Address": "prometheus-operator-prometheus-node-exporter.kube-system.svc.cluster.local",
+    "Port": 9100,
+    "Tags": [
+        "node-export"
+    ],
+    "Meta": {
+        "project": "bigdata"
+    }, 
+    "EnableTagOverride": false,
+    "Check": {
+        "DeregisterCriticalServiceAfter": "12h",
+        "HTTP": "http://prometheus-operator-prometheus-node-exporter.kube-system.svc.cluster.local:9100/metrics",
+        "Interval": "10s"
+    }
+}
+EOF
+curl -XPUT -d @node-export.register.json https://consul.01member.com/v1/agent/service/register
+# 注册web服务到consul中
+cat > flask-1.register.json <<- 'EOF'
+{
+    "ID": "prometheus-flask-1",
+    "Name": "prometheus-falsk",
+    "Address": "172.31.49.221",
+    "Port": 5000,
+    "Tags": [
+        "flask"
+    ],
+    "Meta": {
+        "project": "web"
+    }, 
+    "EnableTagOverride": false,
+    "Check": {
+        "DeregisterCriticalServiceAfter": "12h",
+        "HTTP": "http://172.31.49.221:5000/metrics",
+        "Interval": "10s"
+    }
+}
+EOF
+cat > flask-2.register.json <<- 'EOF'
+{
+    "ID": "prometheus-flask-2",
+    "Name": "prometheus-falsk",
+    "Address": "172.31.49.221",
+    "Port": 5001,
+    "Tags": [
+        "flask"
+    ],
+    "Meta": {
+        "project": "web"
+    }, 
+    "EnableTagOverride": false,
+    "Check": {
+        "DeregisterCriticalServiceAfter": "12h",
+        "HTTP": "http://172.31.49.221:5001/metrics",
+        "Interval": "10s"
+    }
+}
+EOF
+curl -XPUT -d @flask-1.register.json https://consul.01member.com/v1/agent/service/register
+curl -XPUT -d @flask-2.register.json https://consul.01member.com/v1/agent/service/register
 ```
+
 2、服务查询
 > HTTP APi 方式
 
@@ -107,8 +173,6 @@ dig @127.0.0.1 -p 8600 flask.service.consul
 dig @127.0.0.1 -p 8600 v1.flask.service.consul 
 ```
 
-### consul与监控结合使用
-
 ### k8s服务自动注册到consul集群中
 修改无状态服务，添加env
 ```bash
@@ -121,7 +185,7 @@ dig @127.0.0.1 -p 8600 v1.flask.service.consul
             valueFrom:
               filedRef:
                 filedPath: metadata.name
-          - name: POD_NAME
+          - name: POD_NAMESPACE
             valueFrom:
               filedRef:
                 filedPath: metadata.namespace
@@ -130,3 +194,284 @@ dig @127.0.0.1 -p 8600 v1.flask.service.consul
           - name: CONSUL_PORT
             value: "8500"
 ``` 
+添加postStart和preStop处理函数
+```bash
+      volumes:
+        - name: scripts
+          configMap:
+            name: consul-register-sh 
+            items:
+            - key: consul-register.sh
+              path: consul-register.sh
+      containers:
+        - name: {{ .Release.Name }}
+        volumeMounts:
+            - mountPath: /tmp/consul-register.sh
+              name: scripts
+              subPath: consul-register.sh
+        lifecycle:
+          postStart:
+            exec:
+              command: |
+                - bash
+                - c
+                - /tmp/consul-register.sh
+          preStop:
+            exec:
+              command: |
+                - bash
+                - c
+                - curl -XPUST http://$CONSUL_ADDR:$CONSUL_PORT/v1/agent/service/deregister/$POD_NAME
+              
+```
+挂载注册脚本容器中
+```bash
+apiVersion: v1
+Kind: ConfigMap
+metadata:
+  name: consul-register-sh
+data:
+  consul-register.sh: |
+    #!/bin/bash
+    cat > /tmp/pod-info.json <<- 'EOF'
+    {
+        "ID": "$POD_NAME",
+        "Name": "",
+        "Tags": [
+            "-$POD_NAME"
+        ],
+        "Address": "$POD_IP",
+        "Port": ,
+        "Meta": {
+          "app": "",
+          "project": "bus"
+        },
+        "EnableTagOverride": false,
+        "Check": {
+            "HTTP": "http://$POD_IP:/metrics",
+            "Interval": "10s"
+        }
+    }
+    EOF
+    curl -XPUT -d @/tmp/pod-info.json http://$CONSUL_ADDR:$CONSUL_PORT/v1/agent/service/register
+```
+
+### consul与监控结合使用
+
+#### 部署prometheus
+```bash
+helm upgrade --install prometheus-operator stable/prometheus-operator -n kube-system --debug
+```
+配置监控对外访问
+```
+# 添加ingressroute配置在values.yaml中
+ingressRoute:
+    enabled: true
+    domain: prometheus-hk.01member.com
+    middlewares:
+      regex:
+        enabled: false
+    path: /
+    annotations: {}
+    ports:
+      port: 9090
+  # NOTE: Can't use 'false' due to https://github.com/jetstack/kube-lego/issues/173.
+  # kubernetes.io/ingress.allow-http: true
+  # kubernetes.io/ingress.class: gce
+  # kubernetes.io/ingress.global-static-ip-name: ""
+  # kubernetes.io/tls-acme: true
+    labels: {}
+    tls:
+      certResolver: foo
+      domains:
+      - main: 01member.com
+        sans:
+        - '*.01member.com'
+      options:
+        name: ddyw-tlsoption
+      passthrough: false
+# 配置ingressroute资源
+{{- if .Values.prometheus.ingressRoute.enabled -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ template "prometheus-operator.name" . }}-prometheus
+  annotations:
+    helm.sh/hook: "post-install,post-upgrade"
+  labels:
+    app.kubernetes.io/name: {{ template "prometheus-operator.name" . }}-prometheus
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ template "prometheus-operator.name" . }}-prometheus
+    {{- with .Values.prometheus.ingressRoute.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  entryPoints:
+    - websecure
+  tls:
+  {{- with .Values.prometheus.ingressRoute.tls }}
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  routes:
+  - match: "Host(`{{ .Values.prometheus.ingressRoute.domain }}`) && PathPrefix(`{{ .Values.prometheus.ingressRoute.path }}`)"
+    {{- if .Values.prometheus.ingressRoute.middlewares.regex.enable }}
+    middlewares:
+    - name: replace-path-regex-mid
+    {{- end }}
+    kind: Rule
+    services:
+    - name: {{ template "prometheus-operator.fullname" . }}-prometheus
+    {{- with .Values.prometheus.ingressRoute.ports }}
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+{{- end -}}
+# 重新更新一下监控
+helm upgrade --install prometheus-operator stable/prometheus-operator -n kube-system --debug
+```
+#### 配置prometheus抓取consul服务
+```bash
+# 在prometheus-operator 配置文件中values.yaml中配置additionalScrapeConfigs
+additionalScrapeConfigs:
+    - job_name: 'prometheus-consul-bigdata'
+      consul_sd_configs:
+      - server: 'consul-consul-server.kube-system.svc.cluster.local:8500'
+        services: []
+      relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*node-export.*
+        action: keep
+      - action: labelmap
+        regex: __meta_consul_service_metadata_(.+)
+    - job_name: 'prometheus-consul-flask'
+      consul_sd_configs:
+      - server: 'consul-consul-server.kube-system.svc.cluster.local:8500'
+        services: []
+      relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*flask.*
+        action: keep
+      - action: labelmap
+        regex: __meta_consul_service_metadata_(.+) 
+# 更新配置
+helm upgrade --install prometheus-operator prometheus-operator/ -n kube-system --debug
+```
+
+#### 安装prometheus-consul-export监控consul服务
+```bash
+# 安装consul配置中心
+helm upgrade --install prometheus-consul-exporter stable/prometheus-consul-exporter -n kube-system --debug
+```
+
+#### Prometheus 中查询对应服务
+```bash
+https://prometheus-hk.01member.com/graph?g0.range_input=1h&g0.expr=consul_service_checks&g0.tab=1
+```
+
+#### consul 注册服务健康检查使用场景
+
+1、脚本检查
+```bash
+{
+  "check": {
+    "id": "mem-util",
+    "name": "Memory utilization",
+    "args": ["/usr/local/bin/check_mem.py", "-limit", "256MB"],
+    "interval": "10s",
+    "timeout": "1s"
+  }
+}
+```
+
+2、HTTP检查
+```bash
+{
+  "check": {
+    "id": "api",
+    "name": "HTTP API on port 5000",
+    "http": "https://localhost:5000/health",
+    "tls_server_name": "",
+    "tls_skip_verify": false,
+    "method": "POST",
+    "header": {"Content-Type": ["application/json"]},
+    "body": "{\"method\":\"health\"}",
+    "interval": "10s",
+    "timeout": "1s"
+  }
+}
+```
+
+3、TCP检查
+```bash
+{
+  "check": {
+    "id": "ssh",
+    "name": "SSH TCP on port 22",
+    "tcp": "localhost:22",
+    "interval": "10s",
+    "timeout": "1s"
+  }
+}
+```
+
+4、TTL检查
+```bash
+{
+  "check": {
+    "id": "web-app",
+    "name": "Web App Status",
+    "notes": "Web app does a curl internally every 10 seconds",
+    "ttl": "30s"
+  }
+}
+```
+
+5、Docker检查
+```bash
+{
+  "check": {
+    "id": "mem-util",
+    "name": "Memory utilization",
+    "docker_container_id": "f972c95ebf0e",
+    "shell": "/bin/bash",
+    "args": ["/usr/local/bin/check_mem.py"],
+    "interval": "10s"
+  }
+}
+```
+
+6、对整个程序grpc检查
+```bash
+{
+  "check": {
+    "id": "mem-util",
+    "name": "Memory utilization",
+    "docker_container_id": "f972c95ebf0e",
+    "shell": "/bin/bash",
+    "args": ["/usr/local/bin/check_mem.py"],
+    "interval": "10s"
+  }
+}
+```
+
+7、h2ping检查
+```bash
+{
+  "check": {
+    "id": "h2ping-check",
+    "name": "h2ping",
+    "h2ping": "localhost:22222",
+    "interval": "10s",
+  }
+}
+```
+
+检查脚本通常可以自由地做任何事情来确定检查的状态。唯一的限制是退出代码必须遵守这个约定：
+
+退出代码 0 - 检查通过
+退出代码 1 - 检查是警告
+任何其他代码 - 检查失败
+
+
+通过监控consul_service_checks监控指标查询在consul中是否有异常的服务
+
+
