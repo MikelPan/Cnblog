@@ -7,7 +7,7 @@ push_code() {
 	printf "\033[0;32mDeploying updates to code...\033[0m\n"
 
 	# Add changes to git.
-	git pull
+	git pull origin master
 	git add .
 
 	# Commit changes.
