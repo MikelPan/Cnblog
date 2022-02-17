@@ -2,22 +2,22 @@
 
 | 序号 | 外网IP         | 内网IP      | 主机名          | 服务器登录              | 安装软件|
 | ---- | -------------- | ----------- | --------------- | ----------------------- |
-| 1    | 42.192.11.152  | 172.16.0.4  | rl-server1 | ssh root@42.192.11.152 | docker<br>docker-compose<br>mysql-client<br>redis-cli<br>rabbitmq|
-| 2    | 42.192.186.9 | 172.16.0.16 | rl-server2 | ssh root@42.192.186.9 | docker<br>docker-compose|
-| 3    | 121.4.134.130 | 172.16.0.13 | rl-server3 | ssh root@121.4.134.130 |docker<br>docker-compose|
+| 1    | N/A  | node01  | rl-server1 | ssh root@N/A | docker<br>docker-compose<br>mysql-client<br>redis-cli<br>rabbitmq|
+| 2    | N/A | node02 | rl-server2 | ssh root@N/A | docker<br>docker-compose|
+| 3    | N/A | node03 | rl-server3 | ssh root@N/A |docker<br>docker-compose|
 
 #### 服务器初始化
 ```bash
-# 主机名配置
+# 主机名配
 hostnamectl set-hostname rl-server1
 hostnamectl set-hostname rl-server2
 hostnamectl set-hostname rl-server3
 # 配置hosts
 cat >> /etc/hosts <<- 'EOF'
 # hosts
-172.16.0.4 rl-server1
-172.16.0.16 rl-server2
-172.16.0.13 rl-server3
+IP rl-server1
+IP rl-server2
+IP rl-server3
 EOF
 ```
 #### docker 安装

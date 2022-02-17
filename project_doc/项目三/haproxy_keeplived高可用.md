@@ -2,8 +2,8 @@
 
 | 序号 | 外网IP         | 内网IP      | 主机名          | 服务器登录              |
 | ---- | -------------- | ----------- | --------------- | ----------------------- |
-| 1    | 118.178.252.87  | 10.155.14.125  | k8s-master1 | ssh k8s-master1  |
-| 2    | N/A | 10.155.14.123 | k8s-master2 | ssh k8s-master2 |
+| 1    | N/A  | N/A  | k8s-master1 | ssh k8s-master1  |
+| 2    | N/A | N/A | k8s-master2 | ssh k8s-master2 |
 
 #### 服务器初始化
 
@@ -14,8 +14,8 @@ hostnamectl set-hostname k8s-master2
 # 配置hosts
 cat >> /etc/hosts <<- 'EOF'
 # hosts
-10.155.14.125 k8s-master1
-10.155.14.123 k8s-master2
+IP k8s-master1
+IP k8s-master2
 EOF
 # ansible 管理主机
 ## 安装ansible
@@ -23,8 +23,8 @@ yum install -y ansible
 ## 配置主机
 cat >> /etc/ansible/hosts <<- 'EOF'
 [node]
-10.155.14.125
-10.155.14.123
+node01
+node02
 EOF
 ```
 
@@ -79,8 +79,8 @@ listen rabbitmq_cluster
     balance roundrobin
     #rabbitmq集群节点配置 #inter 每隔五秒对mq集群做健康检查，2次正确证明服务器可用，
     #2次失败证明服务器不可用，并且配置主备机制
-    server k8s-master1 10.155.14.125:5000 check inter 5000 rise 2 fall 2
-    server k8s-master2 10.155.14.123:5001 check inter 5000 rise 2 fall 2
+    server k8s-master1 IP:5000 check inter 5000 rise 2 fall 2
+    server k8s-master2 IP:5001 check inter 5000 rise 2 fall 2
         
 # 配置 haproxy web 监控，查看统计信息
 listen admin_status
@@ -127,7 +127,7 @@ vrrp_instance VI_1 {
     state MASTER ##主节点为MASTER,备份节点为BACKUP
     interface eth0 ##绑定虚拟ip的网络接口(网卡)
     virtual_router_id 13    ##虚拟路由id号，主备节点相同
-    #mcast_src_ip 172.16.0.12 ##本机ip地址
+    #mcast_src_ip node01 ##本机ip地址
     priority 200 ##优先级(0-254)
     #nopreempt
     advert_int 1    ##组播信息发送间隔，两个节点必须一致,默认1s
@@ -139,7 +139,7 @@ vrrp_instance VI_1 {
         chk_haproxy
     }
     virtual_ipaddress {
-        10.155.14.200 dev eth0 label ha:net ##虚拟ip,可以指定多个
+        外网IP dev eth0 label ha:net ##虚拟ip,可以指定多个
     }
 }
 EOF
@@ -165,7 +165,7 @@ vrrp_instance VI_1 {
     state BACKUP ##主节点为MASTER,备份节点为BACKUP
     interface eth0 ##绑定虚拟ip的网络接口(网卡)
     virtual_router_id 13    ##虚拟路由id号，主备节点相同
-    mcast_src_ip 172.16.0.15 ##本机ip地址
+    mcast_src_ip ndoe03 ##本机ip地址
     priority 100 ##优先级(0-254)
     #nopreempt
     advert_int 1    ##组播信息发送间隔，两个节点必须一致,默认1s
@@ -177,7 +177,7 @@ vrrp_instance VI_1 {
         chk_haproxy
     }
     virtual_ipaddress {
-        10.155.14.200 dev eth0 label ha:net ##虚拟ip,可以指定多个
+        外网IP dev eth0 label ha:net ##虚拟ip,可以指定多个
     }
 }
 EOF

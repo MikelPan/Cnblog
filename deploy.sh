@@ -28,7 +28,7 @@ push_code() {
 
 
 main() {
-	push_code "修改文件"
+	push_code $1
 }
 
 main "$*"

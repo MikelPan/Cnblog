@@ -2,9 +2,9 @@
 
 | 序号 | 外网IP         | 内网IP      | 主机名          | 服务器登录              |
 | ---- | -------------- | ----------- | --------------- | ----------------------- |
-| 1    | 106.53.153.19  | 172.16.0.4  | Rabbitmq-node01 | ssh root@106.53.153.19  |
-| 2    | 106.52.212.134 | 172.16.0.12 | Rabbitmq-node02 | ssh root@106.52.212.134 |
-| 3    | 42.193.143.225 | 172.16.0.15 | Rabbitmq-node03 | ssh root@42.193.143.225 |
+| 1    | N/A  | N/A  | Rabbitmq-node01 | ssh root@N/A  |
+| 2    | N/A | N/A | Rabbitmq-node02 | ssh root@N/A |
+| 3    | N/A | N/A | Rabbitmq-node03 | ssh root@N/A |
 
 #### 服务器初始化
 
@@ -16,9 +16,9 @@ hostnamectl set-hostname rabbitmq-node03
 # 配置hosts
 cat >> /etc/hosts <<- 'EOF'
 # hosts
-172.16.0.4 rabbitmq-node01
-172.16.0.12 rabbitmq-node02
-172.16.0.15 rabbitmq-node03
+node01 rabbitmq-node01
+node02 rabbitmq-node02
+node03 rabbitmq-node03
 EOF
 # ansible 管理主机
 ## 安装ansible
@@ -26,9 +26,9 @@ yum install -y ansible
 ## 配置主机
 cat >> /etc/ansible/hosts <<- 'EOF'
 [rabbitmq]
-172.16.0.4
-172.16.0.12
-172.16.0.15
+node01
+node02
+node03
 EOF
 ```
 
@@ -46,28 +46,28 @@ wget --content-disposition https://packagecloud.io/rabbitmq/erlang/packages/el/7
 scp /usr/local/src/erlang-23.0.2-1.el7.x86_64.rpm root@rabbitmq-node02,3:/usr/local/src
 # 三台机器上安装erlang
 yum localinstall -y erlang-23.0.2-1.el7.x86_64.rpm
-ssh root@172.16.0.12 'yum localinstall -y erlang-23.0.2-1.el7.x86_64.rpm'
-ssh root@172.16.0.15 'yum localinstall -y erlang-23.0.2-1.el7.x86_64.rpm'
+ssh root@node02 'yum localinstall -y erlang-23.0.2-1.el7.x86_64.rpm'
+ssh root@node03 'yum localinstall -y erlang-23.0.2-1.el7.x86_64.rpm'
 # 下载ｍｑ
 wget https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.8.5/rabbitmq-server-3.8.5-1.el7.noarch.rpm
 # 拷贝mq至另外两台机器
 scp /usr/local/src/rabbitmq-server-3.8.5-1.el7.noarch.rpm root@rabbitmq-node02,3:/usr/local/src 
 # 三台机器导入key
 rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc
-ssh root@172.16.0.12 'rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc'
-ssh root@172.16.0.15 'rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc'
+ssh root@node02 'rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc'
+ssh root@node03 'rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc'
 # 三台安装ｍｑ
 yum localinstall rabbitmq-server-3.8.5-1.el7.noarch.rpm
-ssh root@172.16.0.12 'yum localinstall rabbitmq-server-3.8.5-1.el7.noarch.rpm'
-ssh root@172.16.0.15 'yum localinstall rabbitmq-server-3.8.5-1.el7.noarch.rpm'
+ssh root@node02 'yum localinstall rabbitmq-server-3.8.5-1.el7.noarch.rpm'
+ssh root@node03 'yum localinstall rabbitmq-server-3.8.5-1.el7.noarch.rpm'
 # 配置开机启动
 systemctl enable rabbitmq-server
-ssh root@172.16.0.12 'systemctl enable rabbitmq-server'
-ssh root@172.16.0.15 'systemctl enable rabbitmq-server'
+ssh root@node02 'systemctl enable rabbitmq-server'
+ssh root@node03 'systemctl enable rabbitmq-server'
 # 启动
 systemctl start rabbitmq-server
-ssh root@172.16.0.12 'systemctl start rabbitmq-server'
-ssh root@172.16.0.15 'systemctl start rabbitmq-server'
+ssh root@node02 'systemctl start rabbitmq-server'
+ssh root@node03 'systemctl start rabbitmq-server'
 EOF
 ```
 
@@ -77,8 +77,8 @@ EOF
 scp /var/lib/rabbitmq/.erlang.cookie root@rabbitmq-node02,3:/var/lib/rabbitmq/.erlang.cookie
 # 添加权限
 chown -R rabbitmq:rabbitmq /var/lib/rabbitmq
-ssh root@172.16.0.12 'chown -R rabbitmq:rabbitmq /var/lib/rabbitmq'
-ssh root@172.16.0.15 'chown -R rabbitmq:rabbitmq /var/lib/rabbitmq'
+ssh root@node02 'chown -R rabbitmq:rabbitmq /var/lib/rabbitmq'
+ssh root@node03 'chown -R rabbitmq:rabbitmq /var/lib/rabbitmq'
 # 其他节点重启
 systemctl restart rabbitmq-server
 
@@ -101,8 +101,8 @@ rabbitmqctl set_policy ha-all "^" '{"ha-mode":"all"}'
 ```bash
 # 启用管理端控制台
 rabbitmq-plugins enable rabbitmq_management
-ssh root@172.16.0.12 'rabbitmq-plugins enable rabbitmq_management'
-ssh root@172.16.0.15 'rabbitmq-plugins enable rabbitmq_management'
+ssh root@node02 'rabbitmq-plugins enable rabbitmq_management'
+ssh root@node03 'rabbitmq-plugins enable rabbitmq_management'
 # mq配置账号
 rabbitmqctl add_user admin Wx7CoNh9FuxARi4j3az91st5
 rabbitmqctl set_user_tags admnin administrator
@@ -210,7 +210,7 @@ vrrp_instance VI_1 {
     state BACKUP ##主节点为MASTER,备份节点为BACKUP
     interface eth0 ##绑定虚拟ip的网络接口(网卡)
     virtual_router_id 13    ##虚拟路由id号，主备节点相同
-    mcast_src_ip 172.16.0.12 ##本机ip地址
+    mcast_src_ip node02 ##本机ip地址
     priority 200 ##优先级(0-254)
     nopreempt
     advert_int 1    ##组播信息发送间隔，两个节点必须一致,默认1s
@@ -244,7 +244,7 @@ vrrp_instance VI_1 {
     state BACKUP ##主节点为MASTER,备份节点为BACKUP
     interface eth0 ##绑定虚拟ip的网络接口(网卡)
     virtual_router_id 13    ##虚拟路由id号，主备节点相同
-    mcast_src_ip 172.16.0.15 ##本机ip地址
+    mcast_src_ip node03 ##本机ip地址
     priority 100 ##优先级(0-254)
     nopreempt
     advert_int 1    ##组播信息发送间隔，两个节点必须一致,默认1s
