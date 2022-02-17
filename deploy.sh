@@ -4,7 +4,7 @@
 #set -e
 
 push_code() {
-	printf "\033[0;32mDeploying updates to gitea...\033[0m\n"
+	printf "\033[0;32mDeploying updates to code...\033[0m\n"
 
 	# Add changes to git.
 	git pull
